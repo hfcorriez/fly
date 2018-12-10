@@ -8,7 +8,7 @@ const path = require('path')
 const depcheck = require('depcheck2')
 const querystring = require('querystring')
 const childProcess = require('child_process')
-const PM = require('fly-pm')
+const PM = require('../lib/pm')
 const debug = require('debug')('fly/app/bin')
 
 const FLY = require('../lib/fly')
