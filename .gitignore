@@ -1,0 +1,10 @@
+node_modules/
+*.log
+.idea
+*.heapsnapshot
+.vscode
+.DS_Store
+tests/
+vendor/
+dist/
+lib/client-php

@@ -1,0 +1,15 @@
+functions:
+  websocket.connect:
+    events:
+      websocket:
+        event: connect
+
+  websocket.message:
+    events:
+      websocket:
+        event: message
+
+  websocket.close:
+    events:
+      websocket:
+        event: close

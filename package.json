@@ -1,0 +1,31 @@
+{
+  "name": "qi-node",
+  "version": "1.0.0",
+  "description": "提供程序运行能力，提供 HTTP API 接口让函数可以运行",
+  "main": "index.js",
+  "bin": {
+    "qi-node": "bin/qi.js"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cli-table2": "^0.2.0",
+    "debug": "^3.1.0",
+    "depcheck2": "^0.0.3",
+    "fastify": "^1.2.0",
+    "fs-extra": "^5.0.0",
+    "js-yaml": "^3.11.0",
+    "mime": "^2.2.2",
+    "querystring": "^0.2.0",
+    "uuid": "^3.2.1",
+    "wcwidth": "^1.0.1",
+    "moment": "^2.21.0",
+    "pm2": "^2.10.1"
+  }
+}

@@ -1,0 +1,69 @@
+name: fly-example-site
+version: 0.0.1
+
+provider:
+  runtime: node
+
+functions:
+  web.home:
+    handler: web/home
+    events:
+      http: /
+
+  test.ping:
+    events:
+      http: /ping
+
+  event.show:
+    handler: events/show
+    events:
+      http:
+        path: /events
+        stacks: common.authUser
+
+  event.redirect:
+    handler: events/redirect
+    events:
+      http: /events/redirect
+
+  event.add:
+    handler: events/event:add
+    events:
+      http: /events/add
+
+  common.authUser:
+    handler: common/authUser
+
+  app.list:
+    handler: server/app:list
+    events:
+      http: /fly.app.list
+
+  web.static:
+    handler: web/static
+    events:
+      http:
+        path: /static/(.*)
+
+  job.cron:
+    handler: job/cron
+    events:
+      cron: "* * * * *"
+
+  job.queueAdd:
+    handler: job/queue:add
+    events:
+      http: /queue/add
+
+  system.start:
+    handler: system:start
+    events:
+      system: start
+  system.error:
+    handler: system:error
+    events:
+      system: error
+  system.stop:
+    handler: system:stop
+    events:
+      system: stop
