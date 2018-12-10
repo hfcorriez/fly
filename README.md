@@ -3,12 +3,15 @@
 ```bash
 fly [command] [options] [file | dir] 
 
-= commands
+= Commands
+
 start               Run on the fly  [Default command]
     -d, --daemon        Run in daemon mode
     -l, --link          Link multi folder
     -w, --watch         Start with hot reload mode
     -a, --autoname      Auto set function name base on directory
+    -p, --port          Bind port
+    -b, --bind          Bind address
 restart             Restart service
 stop                Stop service
 status              Status service
@@ -22,8 +25,6 @@ install             Install deps
     -l                  List deps
 new                 Create new project
 
-
-
-= global options
+= Global options
 -V      Verbose
 ```
