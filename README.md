@@ -29,7 +29,7 @@ config:
 # Link 主要作用是为了减少重写
 #   1、使用函数
 #   2、继承服务
-link:
+links:
   module:
     module: module-name
     http:
@@ -72,14 +72,25 @@ module.exports =  {
     return await db.users.insert(event)
   },
 
+  interceptor: 'httpServiceV1',
+
+  before: function() {
+  },
+
+  after: function() {
+  },
+
   // 事件配置
   events: {
+    // API 服务注册，默认都打开
+    api: false,
+
     // HTTP 服务的注册
     http: {
       method: 'post',
       path: '/api/users/create',
       before: ['api.authUser', 'logstash', function (event) {
-        event.results['api.authUser'] = 'aaa'
+        // ?event.results['api.authUser']
         return {
           username: event.body.username,
           password: event.body.password
@@ -92,10 +103,20 @@ module.exports =  {
         }
       }
     },
+
     // 命令行注册
     command: {
       name: 'user.create',
       before: 'command.autoParse'
+    },
+
+    startup: {
+      before: ['log.startup@log', function (event, ctx) {
+        return {
+          username: 'corrie',
+          password: 'haha'
+        }
+      }]
     }
   }
 }
@@ -116,6 +137,9 @@ start                 Run on the fly  [Default command]
     -p, --port          Bind port
     -b, --bind          Bind address
     -m, --mode          Start mode: api, http or together
+    --disable-http-link Disable http link
+    --enable-api-link   Enabled links api, accesss via service@function
+    --api-prefix        Api url prefix, default is /api
 restart               Restart service
 stop                  Stop service
 status                Status service
