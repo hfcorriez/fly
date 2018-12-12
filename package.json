@@ -1,10 +1,10 @@
 {
-  "name": "qi-node",
+  "name": "node-fly",
   "version": "1.0.0",
   "description": "提供程序运行能力，提供 HTTP API 接口让函数可以运行",
   "main": "index.js",
   "bin": {
-    "qi-node": "bin/qi.js"
+    "fly": "bin/fly.js"
   },
   "directories": {
     "lib": "lib"
