@@ -1,46 +1,9 @@
 # node-fly
 
+- 独立性：每个函数具有独立性，注册名字即为全局名字，全局唯一
+- 可继承：可继承函数进行修改部分属性发布为新的函数
 - 模块化：一个文件就是一个模块，包含（主函数、事件声明http、command等、转换器、中间件？）
 - 可配置：包含一个 fly.yml 的配置文件，可以配置
-- 独立性：每个函数具有独立性，注册名字即为全局名字，全局唯一
-- 可继承：可继承函数进行修改
-
-## 配置示例
-
-=== fly.yml
-
-```yaml
-# HTTP 服务的一些配置，默认值，函数可以强制声明来覆盖
-http:
-  domain:
-    - api.com
-    - localhost
-
-# 程序可以通过 fly.config.db 来获取下级的节点
-# @开头的为 link 的配置覆盖
-config:
-  db:
-    host: localhost
-  @module:
-    db: 'test:3333'
-  @url:
-    url: hello
-
-# Link 主要作用是为了减少重写
-#   1、使用函数
-#   2、继承服务
-links:
-  module:
-    module: module-name
-    http:
-      url: module/{url}
-  dir:
-    dir: /dirname
-  file:
-    file: /filename
-  url:
-    url: localhost:3333
-```
 
 ## 程序示例
 
@@ -122,6 +85,74 @@ module.exports =  {
 }
 ```
 
+## 使用示例
+
+### 1. `fly-proxy-google.js`
+
+```javascript
+module.exports = {
+  name: 'proxyGoogle',
+
+  main: async () => {
+    return await request.get('https://google.com')
+  },
+
+  events: {
+    http: {
+      method: 'get',
+      path: '/google',
+      after: (result) => {
+        return {
+          status: 200,
+          body: result.body
+        }
+      }
+    },
+    command: {
+      args: ['google-proxy'],
+      after: (result) => {
+        return {
+          stdout: result.body
+        }
+      }
+    }
+  }
+}
+```
+
+### 2. 启动
+
+```bash
+fly fly-proxy-google.js
+```
+
+### 3. 访问
+
+**访问网页**
+
+```
+$ curl https://localhost:5000/google
+<!doctype html>...
+```
+
+**访问命令行**
+
+```
+$fly run google-proxy
+<!doctype html>...
+```
+
+**访问API**
+
+```bash
+$ curl -X POST https://localhost:5000/api/proxyGoogle
+
+{
+  ...: ...
+  body: "<!doctype html>..."
+}
+```
+
 ## 命令行
 
 ```bash
@@ -169,4 +200,43 @@ await flyUrl.call('test', {host: 'api.com'})
 
 const flyModule = new Fly('fly-node')
 await flyModule.call('abc')
+```
+
+## 配置示例
+
+> 常规情况下简单的东西不需要配置，但是也可以通过配置来声明约束，方斌啊管理
+
+`fly.yml`
+
+```yaml
+# HTTP 服务的一些配置，默认值，函数可以强制声明来覆盖
+http:
+  domain:
+    - api.com
+    - localhost
+
+# 程序可以通过 fly.config.db 来获取下级的节点
+# @开头的为 link 的配置覆盖
+config:
+  db:
+    host: localhost
+  @module:
+    db: 'test:3333'
+  @url:
+    url: hello
+
+# Link 主要作用是为了减少重写
+#   1、使用函数
+#   2、继承服务
+links:
+  module:
+    module: module-name
+    http:
+      url: module/{url}
+  dir:
+    dir: /dirname
+  file:
+    file: /filename
+  url:
+    url: localhost:3333
 ```
