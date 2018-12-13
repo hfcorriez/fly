@@ -35,6 +35,13 @@ module.exports =  {
     return await db.users.insert(event)
   },
 
+  // Validate infomations
+  validate: async (event) => {
+    if (!event.username || !event.password) return
+
+    return !ctx.getDB().exists(event.username)
+  },
+
   interceptor: 'httpServiceV1',
 
   before: function() {
@@ -107,14 +114,6 @@ module.exports = {
           body: result.body
         }
       }
-    },
-    command: {
-      args: ['google-proxy'],
-      after: (result) => {
-        return {
-          stdout: result.body
-        }
-      }
     }
   }
 }
@@ -134,13 +133,6 @@ fly fly-proxy-google.js
 
 ```
 $ curl https://localhost:5000/google
-<!doctype html>...
-```
-
-**通过命令行**
-
-```
-$fly run google-proxy
 <!doctype html>...
 ```
 
