@@ -128,27 +128,41 @@ fly fly-proxy-google.js
 
 ### 3. 访问
 
-**访问网页**
+//通过事件提供服务
+
+**通过网页**
 
 ```
 $ curl https://localhost:5000/google
 <!doctype html>...
 ```
 
-**访问命令行**
+**通过命令行**
 
 ```
 $fly run google-proxy
 <!doctype html>...
 ```
 
-**访问API**
+//通过FLY提供API
+
+**通过命令行API**
+
+```bash
+$fly call fly-proxy-google.js
+{
+  ...: ...,
+  body: "<!doctype html>..."
+}
+```
+
+**通过HTTP API**
 
 ```bash
 $ curl -X POST https://localhost:5000/api/proxyGoogle
 
 {
-  ...: ...
+  ...: ...,
   body: "<!doctype html>..."
 }
 ```
