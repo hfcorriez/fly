@@ -47,19 +47,19 @@ module.exports =  {
    */
   main: async function (event, fly) {
     // Call to local module
-    await fly.call('ga.event@module', {
+    await fly.call('module@ga.event', {
       type:'create',
       username: event.username
     })
 
     // Call with function name
-    await fly['ga.test@module']({name: 'abc'})
+    await fly['module@ga.test']({name: 'abc'})
 
     // Call remote with config
-    await fly.call('test@url', {host: 'api.com'})
+    await fly.call('url@ga.test', {host: 'api.com'})
 
     // Call directly
-    await fly.call('test@abc.com:3333')
+    await fly.call('abc.com:3333@test')
 
     // Fly result
     return await db.users.insert(event)
@@ -77,9 +77,6 @@ module.exports =  {
     return !ctx.getDB().exists(event.username)
   },
 
-  /**
-   * Use `httpServiceV1` function before after and validate service
-   */
   interceptor: 'httpServiceV1',
 
   /**
@@ -112,7 +109,7 @@ module.exports =  {
     http: {
       method: 'post',
       path: '/api/users/create',
-      before: ['api.authUser', 'logstash', function (event) {
+      before: ['api.authUser', 'logstash@reportHttp', function (event) {
         // ?event.results['api.authUser']
         return {
           username: event.body.username,
@@ -128,7 +125,7 @@ module.exports =  {
     },
 
     startup: {
-      before: ['log.startup@log', function (event, ctx) {
+      before: ['log@logEvent', function (event, ctx) {
         return {
           username: 'corrie',
           password: 'haha'
@@ -270,9 +267,9 @@ events:
 config:
   db:
     host: localhost
-  @module:
+  module@:
     db: 'test:3333'
-  @url:
+  url@:
     url: hello
 
 # Link 主要作用是为了减少重写
