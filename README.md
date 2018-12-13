@@ -5,6 +5,14 @@
 - 模块化：一个文件就是一个模块，包含（主函数、事件声明http、command等、转换器、中间件？）
 - 可配置：包含一个 fly.yml 的配置文件，可以配置
 
+## 当前问题
+
+- [ ] 安装依赖是否要存储到工作目录？
+- [ ] before 处理后的返回必须是 event？作为拦截器和变形器
+- [ ] 对于拦截器这类函数是否需要特殊的定义？
+- [ ] 命名是否是必须的？
+- [ ] config 配置是否有更好的方式？
+
 ## 程序示例
 
 === userCreate.js
@@ -17,11 +25,12 @@ module.exports =  {
   // 默认配置项目
   // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
   // 2. 可以通过 fly_[FLY_ENV].yml 中的 config.db 进行覆盖
-  // 3. 可以通过 fly.yml 中的 config['[userCreate]'].db 进行覆盖
-  // 4. 可以通过 fly_[FLY_ENV].yml 中的 config['[userCreate]'].db 进行覆盖
+  // 3. 可以通过 fly.yml 中的 config['@userCreate'].db 进行覆盖
+  // 4. 可以通过 fly_[FLY_ENV].yml 中的 config['[MODULE]@userCreate'].db 进行覆盖
   // 5. 可以通过 CONFIG_DB 覆盖
   // 6. 可以通过 CONFIG_USERCREATE_DB 覆盖
-  // 7. 可以通过 CONFIG_[PROJECT]_USERCREATE_DB 覆盖
+  // 7. 可以通过 CONFIG_[PROJECT]__ALL__DB 覆盖
+  // 8. 可以通过 CONFIG_[PROJECT]__AT__USERCREATE_DB 覆盖
   config: {
     db: 'localhost:27017'
   }
@@ -33,7 +42,8 @@ module.exports =  {
   // 4. 可以通过 fly_[FLY_ENV].yml 中的 links['[userCreate]'].module 进行覆盖
   // 5. 可以通过 LINKS_MODULE 覆盖
   // 6. 可以通过 LINKS_USERCREATE_MODULE 覆盖
-  // 7. 可以通过 LINKS_[PROJECT]_USERCREATE_MODULE 覆盖
+  // 7. 可以通过 LINKS_[PROJECT]__ALL__MODULE 覆盖
+  // 8. 可以通过 LINKS_[PROJECT]__AT__USERCREATE_MODULE 覆盖
   links: {
     module: '/dir',
     url: 'http://url'
@@ -210,7 +220,7 @@ start                 Run on the fly  [Default command]
     -d, --daemon        Run in daemon mode
     -l, --link          Link multi folder
     -w, --watch         Start with hot reload mode
-    -a, --autopath      Auto set function name base on directory
+    -a, --autoname      Auto set function name base on directory
     -p, --port          Bind port
     -b, --bind          Bind address
     -m, --mode          Start mode: api, http or together
