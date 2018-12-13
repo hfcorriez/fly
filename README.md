@@ -7,11 +7,11 @@
 
 ## 当前问题
 
-- [ ] 安装依赖是否要存储到工作目录？
-- [ ] before 处理后的返回必须是 event？作为拦截器和变形器
+- [x] 安装依赖是否要存储到工作目录？否
+- [ ] before 处理后的返回必须是 event，如何管理 before 前的 event？作为拦截器和变形器
 - [ ] 对于拦截器这类函数是否需要特殊的定义？
 - [ ] 命名是否是必须的？
-- [ ] config 配置是否有更好的方式？
+- [x] config 配置是否有更好的方式？
 
 ## 程序示例
 
@@ -26,11 +26,8 @@ module.exports =  {
   // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
   // 2. 可以通过 fly_[FLY_ENV].yml 中的 config.db 进行覆盖
   // 3. 可以通过 fly.yml 中的 config['@userCreate'].db 进行覆盖
-  // 4. 可以通过 fly_[FLY_ENV].yml 中的 config['[MODULE]@userCreate'].db 进行覆盖
-  // 5. 可以通过 CONFIG_DB 覆盖
-  // 6. 可以通过 CONFIG_USERCREATE_DB 覆盖
-  // 7. 可以通过 CONFIG_[PROJECT]__ALL__DB 覆盖
-  // 8. 可以通过 CONFIG_[PROJECT]__AT__USERCREATE_DB 覆盖
+  // 4. 可以通过 CONFIG_DB 覆盖
+  // 5. 可以通过 CONFIG_USERCREATE_DB 覆盖
   config: {
     db: 'localhost:27017'
   }
@@ -41,9 +38,6 @@ module.exports =  {
   // 3. 可以通过 fly.yml 中的 links['[userCreate]'].module 进行覆盖
   // 4. 可以通过 fly_[FLY_ENV].yml 中的 links['[userCreate]'].module 进行覆盖
   // 5. 可以通过 LINKS_MODULE 覆盖
-  // 6. 可以通过 LINKS_USERCREATE_MODULE 覆盖
-  // 7. 可以通过 LINKS_[PROJECT]__ALL__MODULE 覆盖
-  // 8. 可以通过 LINKS_[PROJECT]__AT__USERCREATE_MODULE 覆盖
   links: {
     module: '/dir',
     url: 'http://url'
