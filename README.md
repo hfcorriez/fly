@@ -12,9 +12,39 @@
 ```javascript
 module.exports =  {
   // 命名，全局唯一，继承可以修改
-  name: 'user.create',
+  name: 'userCreate',
 
-  // 主函数
+  // 默认配置项目
+  // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
+  // 2. 可以通过 fly_[FLY_ENV].yml 中的 config.db 进行覆盖
+  // 3. 可以通过 fly.yml 中的 config['[userCreate]'].db 进行覆盖
+  // 4. 可以通过 fly_[FLY_ENV].yml 中的 config['[userCreate]'].db 进行覆盖
+  // 5. 可以通过 CONFIG_DB 覆盖
+  // 6. 可以通过 CONFIG_USERCREATE_DB 覆盖
+  // 7. 可以通过 CONFIG_[PROJECT]_USERCREATE_DB 覆盖
+  config: {
+    db: 'localhost:27017'
+  }
+
+  // 需要 Link 的项目
+  // 1. 可以通过 fly.yml 中的 links.module 进行覆盖
+  // 2. 可以通过 fly_[FLY_ENV].yml 中的 links.module 进行覆盖
+  // 3. 可以通过 fly.yml 中的 links['[userCreate]'].module 进行覆盖
+  // 4. 可以通过 fly_[FLY_ENV].yml 中的 links['[userCreate]'].module 进行覆盖
+  // 5. 可以通过 LINKS_MODULE 覆盖
+  // 6. 可以通过 LINKS_USERCREATE_MODULE 覆盖
+  // 7. 可以通过 LINKS_[PROJECT]_USERCREATE_MODULE 覆盖
+  links: {
+    module: '/dir',
+    url: 'http://url'
+  }
+
+  /**
+   * 主函数
+   *
+   * @param {Object} event    Event
+   * @param {Object} ctx      Context
+   */
   main: async function (event, fly) {
     // Call to local module
     await fly.call('ga.event@module', {
@@ -35,22 +65,45 @@ module.exports =  {
     return await db.users.insert(event)
   },
 
-  // Validate infomations
-  validate: async (event) => {
+  /**
+   * Validate function
+   *
+   * @param {Object} event    Event
+   * @param {Object} ctx      Context
+   */
+  validate: async (event, ctx) => {
     if (!event.username || !event.password) return
 
     return !ctx.getDB().exists(event.username)
   },
 
+  /**
+   * Use `httpServiceV1` function before after and validate service
+   */
   interceptor: 'httpServiceV1',
 
-  before: function() {
+  /**
+   * Before interceptor for function
+   *
+   * @param {Object} event    Event
+   * @param {Object} ctx      Context
+   */
+  before: (event, ctx) => {
   },
 
-  after: function() {
+  /**
+   * After interceptor for function
+   *
+   * @param {Object} event    Event
+   * @param {Object} ctx      Context
+   */
+  after: (event, ctx) => {
   },
 
-  // 事件配置
+  /**
+   * Events declare
+   * Support: http, api, startup, shutdown
+   */
   events: {
     // API 服务注册，默认都打开
     api: false,
@@ -72,12 +125,6 @@ module.exports =  {
           body: result
         }
       }
-    },
-
-    // 命令行注册
-    command: {
-      name: 'user.create',
-      before: 'command.autoParse'
     },
 
     startup: {
@@ -127,16 +174,12 @@ fly fly-proxy-google.js
 
 ### 3. 访问
 
-//通过事件提供服务
-
-**通过网页**
+**通过网页提供服务**
 
 ```
 $ curl https://localhost:5000/google
 <!doctype html>...
 ```
-
-//通过FLY提供API
 
 **通过命令行API**
 
@@ -216,10 +259,11 @@ await flyModule.call('abc')
 
 ```yaml
 # HTTP 服务的一些配置，默认值，函数可以强制声明来覆盖
-http:
-  domain:
-    - api.com
-    - localhost
+events:
+  http:
+    domain:
+      - api.com
+      - localhost
 
 # 程序可以通过 fly.config.db 来获取下级的节点
 # @开头的为 link 的配置覆盖
