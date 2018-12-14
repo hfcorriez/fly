@@ -148,11 +148,26 @@ module.exports = function (event) {
   after: Function(Event, Context) | Array[String | Function],
 
   // 默认配置信息
+  // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
+  // 2. 可以通过 fly_[FLY_ENV].yml 中的 config.db 进行覆盖
+  // 3. 可以通过 fly.yml 中的 config['@userCreate'].db 进行覆盖
+  // 4. 可以通过 CONFIG_DB 覆盖
+  // 5. 可以通过 CONFIG_USERCREATE_DB 覆盖
   config: Object,
 
-  // 依赖信息
+  // 需要 Link 的项目
+  // 1. 可以通过 fly.yml 中的 links.module 进行覆盖
+  // 2. 可以通过 fly_[FLY_ENV].yml 中的 links.module 进行覆盖
+  // 3. 可以通过 fly.yml 中的 links['[userCreate]'].module 进行覆盖
+  // 4. 可以通过 fly_[FLY_ENV].yml 中的 links['[userCreate]'].module 进行覆盖
+  // 5. 可以通过 LINKS_MODULE 覆盖
   links: {
-    // 模块引入：module:fly-oauth
+    // 模块引入：MODULE:fly-oauth
+    // 1. NPM方式：MODULE:abc
+    // 2. FLY-RPC方式：MODULE:http://abc:3333
+    // 3. FLY-DIR方式：MODULE:/dir/foo/bar
+    // 4. GITHUB方式：MODULE:hfcorriez/fly-abc
+    // 5. GITHUB方式：MODULE:hfcorriez/fly-abc#master
     String: String
   }
 }
@@ -164,25 +179,12 @@ module.exports = function (event) {
 
 ```javascript
 module.exports = {
-  // 命名，全局唯一，继承可以修改
-  static name: 'userCreate',
+  name: 'userCreate',
 
-  // 默认配置项目
-  // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
-  // 2. 可以通过 fly_[FLY_ENV].yml 中的 config.db 进行覆盖
-  // 3. 可以通过 fly.yml 中的 config['@userCreate'].db 进行覆盖
-  // 4. 可以通过 CONFIG_DB 覆盖
-  // 5. 可以通过 CONFIG_USERCREATE_DB 覆盖
   config: {
     db: 'localhost:27017'
   }
 
-  // 需要 Link 的项目
-  // 1. 可以通过 fly.yml 中的 links.module 进行覆盖
-  // 2. 可以通过 fly_[FLY_ENV].yml 中的 links.module 进行覆盖
-  // 3. 可以通过 fly.yml 中的 links['[userCreate]'].module 进行覆盖
-  // 4. 可以通过 fly_[FLY_ENV].yml 中的 links['[userCreate]'].module 进行覆盖
-  // 5. 可以通过 LINKS_MODULE 覆盖
   links: {
     module: '/dir',
     url: 'http://url'
