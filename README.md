@@ -53,7 +53,7 @@
   call: Function
 
   // 调用链路信息
-  Trace traces: [{
+  traces: [{
     // 函数名称
     fn: String,
 
