@@ -8,9 +8,9 @@
 ## 当前问题
 
 - [x] 安装依赖是否要存储到工作目录？否
-- [ ] before 处理后的返回必须是 event，如何管理 before 前的 event？作为拦截器和变形器
-- [ ] 对于拦截器这类函数是否需要特殊的定义？
-- [ ] 命名是否是必须的？
+- [x] before 处理后的返回必须是 event，如何管理 before 前的 event？返回即是下一个事件，但是带上原始的，prevEvent
+- [x] 对于拦截器这类函数是否需要特殊的定义？否
+- [x] 命名是否是必须的？否
 - [x] config 配置是否有更好的方式？
 
 ## 程序示例
@@ -18,9 +18,9 @@
 === userCreate.js
 
 ```javascript
-module.exports =  {
+class Fn  {
   // 命名，全局唯一，继承可以修改
-  name: 'userCreate',
+  static name: 'userCreate',
 
   // 默认配置项目
   // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
