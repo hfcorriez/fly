@@ -12,13 +12,158 @@
 - [x] 对于拦截器这类函数是否需要特殊的定义？否
 - [x] 命名是否是必须的？否
 - [x] config 配置是否有更好的方式？
+- [ ] 多事件匹配？
+- [ ] 路径等支持函数配置？模版变量？
+- [x] 支持类和函数两种写法？是
+
+## 接口定义
+
+### Event 事件定义
+
+```javascript
+{
+  // 属性定义
+  [String]: [Any]
+}
+```
+
+### Context 上下文定义
+
+```javascript
+{
+  // 配置信息
+  config: Object
+
+  // 事件 ID
+  eventId: String
+
+  // 事件类型：http, command, null is internal
+  eventType: String
+
+  // 原始事件
+  originalEvent: Event,
+
+  // 上一级的事件
+  parentEvent: Event,
+
+  // 函数名：调用函数容器，会加载所有离线的可用的函数到该上下文
+  [String]: [Function]
+
+  // 调用方法 call([Function Name])
+  call: Function
+
+  // 调用链路信息
+  Trace traces: [{
+    // 函数名称
+    fn: String,
+
+    // 调用事件类型
+    type: String,
+
+    // 开始事件
+    startTime: Number,
+
+    // 结束事件
+    endTime: Number,
+
+    // 下级调用信息
+    traces: [Trace]
+  }]
+}
+```
+
+### Function 函数定义
+
+单函数
+
+```javascript
+module.exports = function (event) {
+  return processEvent(event)
+}
+```
+
+类接口
+
+```javascript
+{
+  // 函数名称，在服务内内唯一
+  name: String,
+
+  // 主函数
+  main: Function (Event, Context),
+
+  // 事件声明
+  events: {
+
+    // Http 事件声明
+    http: {
+      // 方法
+      method: String,
+
+      // 路径
+      path: String,
+
+      // 域名
+      domain: String,
+
+      // 验证事件是否合法
+      validate: Function(Event, Context) | Array[String | Function]
+
+      // 前置拦截器
+      before: Function(Event, Context) | Array[String | Function],
+
+      // 后置拦截器
+      after: Function(Event, Context) | Array[String | Function],
+    },
+
+    // API 事件开关
+    api: Boolean,
+
+    // 系统启动事件
+    stratup: Boolean | {
+      // 前置拦截器
+      before: Function(Event, Context) | Array[String | Function],
+
+      // 后置拦截器
+      after: Function(Event, Context) | Array[String | Function],
+    }
+
+    // 系统关闭事件
+    shutdown: Boolean | {
+      // 前置拦截器
+      before: Function(Event, Context) | Array[String | Function],
+
+      // 后置拦截器
+      after: Function(Event, Context) | Array[String | Function],
+    }
+  }
+
+  // 验证事件是否合法
+  validate: Function(Event, Context) | Array[String | Function]
+
+  // 前置拦截器
+  before: Function(Event, Context) | Array[String | Function],
+
+  // 后置拦截器
+  after: Function(Event, Context) | Array[String | Function],
+
+  // 默认配置信息
+  config: Object,
+
+  // 依赖信息
+  links: {
+    // 模块引入：module:fly-oauth
+    String: String
+  }
+}
+```
 
 ## 程序示例
 
 === userCreate.js
 
 ```javascript
-class Fn  {
+module.exports = {
   // 命名，全局唯一，继承可以修改
   static name: 'userCreate',
 
