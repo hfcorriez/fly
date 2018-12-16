@@ -15,6 +15,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "arg": "^3.0.0",
     "cli-table2": "^0.2.0",
     "debug": "^3.1.0",
     "depcheck2": "^0.0.3",
