@@ -1,6 +1,7 @@
 module.exports = {
   name: 'testCommand',
   main: async function (event, ctx) {
+    console.log('command args', event)
     await ctx.call('testFunction')
   },
   events: {
