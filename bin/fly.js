@@ -2,11 +2,9 @@
 
 const program = require('commander')
 const yaml = require('js-yaml')
-const Table = require('cli-table2')
 const fs = require('fs-extra')
 const path = require('path')
 const depcheck = require('depcheck2')
-const querystring = require('querystring')
 const childProcess = require('child_process')
 const PM = require('../lib/pm')
 const debug = require('debug')('fly/app/bin')
@@ -26,44 +24,6 @@ const pm = new PM({
   path: __filename,
   root: path.join(__dirname, '../')
 })
-
-async function list (type) {
-  const fly = new FLY()
-  let table = new Table({
-    head: ['Function', 'Events', 'File'],
-    chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
-  })
-
-  let functions = fly.list(typeof type === 'string' ? type : null)
-
-  Object.keys(functions).forEach(key => {
-    let fnConfig = functions[key]
-
-    table.push([
-      fnConfig.name,
-      fnConfig.events ? Object.keys(fnConfig.events).join(', ') : '@',
-      fnConfig.file.replace(fly.runtime.dir + '/', '')
-    ])
-  })
-
-  console.log(table.toString())
-}
-
-/**
- * Show configs
- */
-async function show (name) {
-  const fly = new FLY()
-
-  let func = fly.get(name)
-
-  if (!func) {
-    console.error(`function "${name}" is not exists.`)
-    return
-  }
-
-  console.log(yaml.safeDump({ [func.name]: func }, { skipInvalid: true }))
-}
 
 /**
  * Check dep or install dep
@@ -254,32 +214,9 @@ program
   .action(wrap(log))
 
 program
-  .command('call <function>')
-  .option('-d, --data <event>', 'Event data')
-  .option('-t, --type <type>', 'Event type')
-  .description('Call function with event data.')
-  .action(wrap(call))
-
-program
   .command('dep <check|install>')
   .description('Dep check and install.')
   .action(wrap(dep))
-
-program
-  .command('new [dir]')
-  .option('-n, --name', 'Project name.')
-  .description('Create new fly project.')
-  .action(init)
-
-program
-  .command('list [type]')
-  .description('List service functions.')
-  .action(list)
-
-program
-  .command('show <function>')
-  .description('Show one function.')
-  .action(show)
 
 program
   .command('config')
