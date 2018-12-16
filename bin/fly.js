@@ -120,77 +120,6 @@ async function dep (type) {
   }
 }
 
-/**
- * Create new project
- *
- * @param dir
- */
-async function init (dir) {
-  let runtime = FLY.getRuntime(dir)
-
-  let dstDir = path.resolve(runtime.dir)
-  let srcDir = path.join(ROOT_DIR, 'examples/newExample')
-
-  if (fs.existsSync(dstDir)) {
-    console.log('dir exists.')
-    return false
-  }
-
-  try {
-    fs.ensureDir(dstDir)
-    fs.copySync(srcDir, dstDir)
-    fs.writeFileSync(path.join(runtime.dir, 'package.json'), JSON.stringify({
-      name: dstDir.split('/').pop(),
-      version: '0.0.1',
-      description: '',
-      dependencies: {}
-    }, null, 2))
-
-    console.log(`FLY Project created: ${runtime.dir}.`)
-  } catch (err) {
-    console.log(`FLY Project create failed: ${err.message}`)
-    return false
-  }
-}
-
-/**
- * Call function
- *
- * @param name
- * @param opts
- */
-async function call (name, opts) {
-  const fly = new FLY()
-
-  let eventData = opts.data || (await getStdin())
-  let event, ctx
-
-  if (eventData) {
-    try {
-      event = JSON.parse(eventData)
-    } catch (err) {
-      event = querystring.parse(eventData)
-      if (!event) {
-        console.error(`Event data parse failed: ${err.message}`)
-      }
-    }
-  }
-
-  ctx = { callType: 'cli' }
-
-  if (opts.type) {
-    ctx.eventType = opts.type
-  }
-
-  try {
-    let result = await fly.call(name, event, ctx)
-
-    console.log(`Call "${name}" result:\n`)
-    console.log(result ? JSON.stringify(result, null, 2) : '<void>')
-  } catch (err) {
-    console.error('Error:', err.message)
-  }
-}
 
 async function run (names, opts) {
   const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1'
@@ -418,30 +347,4 @@ function registerShutdown (fn) {
       process.exit(1)
     }
   }))
-}
-
-function getStdin () {
-  const stdin = process.stdin
-  let ret = ''
-
-  return new Promise(resolve => {
-    if (stdin.isTTY) {
-      resolve(ret)
-      return
-    }
-
-    stdin.setEncoding('utf8')
-
-    stdin.on('readable', () => {
-      let chunk
-
-      while ((chunk = stdin.read())) {
-        ret += chunk
-      }
-    })
-
-    stdin.on('end', () => {
-      resolve(ret)
-    })
-  })
 }
