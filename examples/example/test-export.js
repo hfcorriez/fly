@@ -1,6 +1,7 @@
 module.exports = {
   name: 'testExport',
-  main: function (event, ctx) {
-    console.log('export function', ctx.traces)
+  main: async function (event, ctx) {
+    await ctx.call('testFunction')
+    console.log('export function', ctx)
   }
 }
