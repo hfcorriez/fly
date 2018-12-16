@@ -1,9 +1,10 @@
 const Fly = require('../lib/fly')
-const fly = new Fly('examples/example')
+const fly = new Fly('lib/service')
+fly.add('web', 'examples/example')
 
 ~~(async () => {
   // console.log('functions', fly.list())
 
-  await fly.call('testExport', {id: 1})
+  await fly.call('http-server')
   // await fly.call('testFunction')
 })()
