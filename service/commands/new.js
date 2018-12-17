@@ -35,6 +35,7 @@ module.exports = {
       },
       descriptions: {
         _: 'Create new service dir',
+        '[dir]': 'Dir name',
         '--force': 'Force create when dir exists'
       }
     }
