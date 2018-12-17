@@ -13,11 +13,11 @@ module.exports = {
     /**
      * Rpc server
      */
-    fastify.options('/api/*', async (request, reply) => {
+    fastify.options('/*', async (request, reply) => {
       reply.send('')
     })
 
-    fastify.post('/api/:fn', async (request, reply) => {
+    fastify.post('/:fn', async (request, reply) => {
       try {
         let context = { callType: 'rpc' }
 
