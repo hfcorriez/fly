@@ -5,6 +5,7 @@ const ROOT_DIR = path.dirname(__dirname)
 const fly = new Fly(ROOT_DIR + '/lib/events')
 
 fly.add(ROOT_DIR + '/lib/commands', 'command')
+fly.add(ROOT_DIR + '/lib/events', 'event')
 
 ~~(async () => {
   // console.log('functions', fly.list())
