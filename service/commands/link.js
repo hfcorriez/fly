@@ -9,8 +9,8 @@ module.exports = {
   events: {
     command: {
       _: 'link',
-      args: {
-        '--type': String,
+      descriptions: {
+        _: 'Show links',
       }
     }
   }

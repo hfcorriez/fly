@@ -52,7 +52,9 @@ module.exports = {
   events: {
     command: {
       _: 'http [command]',
-      args: {
+      descriptions: {
+        _: 'Manage http service',
+        '[command]': 'start | stop | restart | status | log'
       }
     }
   }

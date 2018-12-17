@@ -59,6 +59,11 @@ module.exports = {
       args: {
         '--list': Boolean,
         '--list-all': Boolean,
+      },
+      descriptions: {
+        _: 'Install deps',
+        '--list': 'List packages to install',
+        '--list-all': 'List all packages'
       }
     }
   }

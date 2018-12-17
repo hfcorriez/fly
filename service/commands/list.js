@@ -15,6 +15,10 @@ module.exports = {
       _: 'list',
       args: {
         '--type': String,
+      },
+      descriptions: {
+        _: 'List functions',
+        '--type': 'List with type'
       }
     }
   }

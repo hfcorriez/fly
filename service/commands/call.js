@@ -70,7 +70,15 @@ module.exports = {
       args: {
         '--type': String,
         '--data': String,
-        '-d': '--data'
+      },
+      alias: {
+        '--data': '-d'
+      },
+      descriptions: {
+        '_': 'Call function',
+        '<fn>': 'Function name',
+        '--type': 'Set event type',
+        '--data': 'Set event data'
       }
     }
   }

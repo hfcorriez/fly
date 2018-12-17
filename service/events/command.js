@@ -1,4 +1,5 @@
 const arg = require('arg')
+const utils = require('../../lib/utils')
 const debug = require('debug')('fly/srv/cmd')
 
 module.exports = {
@@ -58,7 +59,16 @@ module.exports = {
     let matched = false
 
     const result = { args: {}, params: {} }
-    const args = arg(Object.assign({}, this.config.args, target.args || {}), { permissive: true, argv: source.argv })
+    const args = arg(
+      Object.assign(
+        {}, this.config.args, target.args || {},
+        target.alias ? utils.invert(target.alias) : {}
+      ),
+      {
+        permissive: true,
+        argv: source.argv
+      }
+    )
 
     const paramsNames = target._.match(/(\<\S+\>)|(\[\S+\])/g)
     if (paramsNames) {

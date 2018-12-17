@@ -10,7 +10,10 @@ module.exports = {
 
   events: {
     command: {
-      _: 'show <fn>'
+      _: 'show <fn>',
+      descriptions: {
+        _: 'Show function info',
+      }
     }
   }
 }
