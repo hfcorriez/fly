@@ -1,6 +1,17 @@
 const path = require('path')
 
-exports.main = function (event) {
-  /* Here is your logic */
-  return { file: path.join(__dirname, '/index.html') }
+const Fn = {
+  main: function (event) {
+    /* Here is your logic */
+    return { file: path.join(__dirname, '/index.html') }
+  },
+
+  events: {
+    http: {
+      method: 'get',
+      path: '/'
+    }
+  }
 }
+
+module.exports = Fn
