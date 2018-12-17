@@ -36,6 +36,7 @@ module.exports = {
           name,
           args: ['http', 'run']
         })
+        await pm.status(name)
         break;
       case 'run':
         await ctx.call('http-server')
