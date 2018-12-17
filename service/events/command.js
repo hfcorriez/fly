@@ -17,17 +17,21 @@ module.exports = {
   main: async function (event, ctx) {
     let functions = ctx.list('command')
     let evt = {
-      argv: event.argv
+      argv: event.argv,
+      args: {},
+      params: {}
     }
 
     let fn = functions.find(f => {
-      let params = this.match(event, f.events.command)
-      if (params) {
-        Object.assign(evt, params)
+      let result = this.match(event, f.events.command)
+      if (result) {
+        Object.assign(evt, result)
         return true
       }
       return false
     })
+
+    if (!fn) fn = functions.find(f => f.events.command.fallback)
 
     if (!fn) {
       console.error('no command found')
