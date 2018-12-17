@@ -1,6 +1,6 @@
 const Fly = require('../lib/fly')
 const fly = new Fly('lib/service')
-fly.add('example', 'test/example')
+fly.add('test/example', 'example')
 
 ~~(async () => {
   // console.log('functions', fly.list())
