@@ -2,13 +2,14 @@ const path = require('path')
 
 const Fn = {
   main: function (event) {
-    return { file: path.join(__dirname, 'static', event.params[0]) }
+    console.log(event)
+    return { file: path.join(__dirname, 'static', event.params.path) }
   },
 
   events: {
     http: {
       method: 'get',
-      path: '/static/*'
+      path: '/static/:path+'
     }
   }
 }

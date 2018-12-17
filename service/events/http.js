@@ -6,6 +6,9 @@ const fastify = require('fastify')()
 const debug = require('debug')('fly/srv/htt')
 
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
+const ERROR_PAGES = {
+  '404': '404'
+}
 
 module.exports = {
   name: 'http-server',
@@ -74,14 +77,14 @@ module.exports = {
 
         try {
           let functions = ctx.list('http')
-          let params
+          let matched
           let fn = functions.find(f => {
-            params = this.match(evt, f.events.http)
-            return !!params
+            matched = this.match(evt, f.events.http)
+            return !!matched
           })
           if (fn) result = await ctx.call(
             fn.id,
-            Object.assign(evt, { params }),
+            Object.assign(evt, matched),
             { eventId, eventType: 'http' }
           )
         } catch (err) {
@@ -106,7 +109,8 @@ module.exports = {
         }
 
         if (result.file) {
-          reply.type(mime.getType(request.file)).send(fs.createReadStream(request.file))
+          res.type(mime.getType(result.file))
+          res.send(fs.createReadStream(result.file))
           return
         }
 
