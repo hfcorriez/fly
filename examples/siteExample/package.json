@@ -1,9 +1,0 @@
-{
-  "name": "fly-site-example",
-  "version": "0.0.1",
-  "description": "",
-  "dependencies": {
-    "mongodb": "^2.2.26",
-    "oauth": "^0.9.15"
-  }
-}

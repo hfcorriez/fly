@@ -1,7 +1,0 @@
-service: mail
-
-functions:
-  reply:
-    events:
-      mail:
-        to: test@mail.local
