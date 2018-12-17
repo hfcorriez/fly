@@ -2,10 +2,7 @@
 
 const program = require('commander')
 const yaml = require('js-yaml')
-const fs = require('fs-extra')
 const path = require('path')
-const depcheck = require('depcheck2')
-const childProcess = require('child_process')
 const PM = require('../lib/pm')
 const debug = require('debug')('fly/app/bin')
 
@@ -14,7 +11,6 @@ const utils = require('../lib/utils')
 const Errors = require('../lib/errors')
 const Service = require(`../`)
 
-const ROOT_DIR = path.join(__dirname, '/..')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
 
 process.env.DEBUG_FD = 1
@@ -24,62 +20,6 @@ const pm = new PM({
   path: __filename,
   root: path.join(__dirname, '../')
 })
-
-/**
- * Check dep or install dep
- *
- * @param type
- */
-async function dep (type) {
-  const runtime = FLY.getRuntime()
-
-  try {
-    let result = await new Promise(function (resolve, reject) {
-      depcheck(runtime.dir, {}, (unused) => {
-        resolve(unused)
-      })
-    })
-
-    let missingPackages = []
-
-    if (type === 'user') {
-      if (Object.keys(result.missing).length) {
-        console.log(`user used packages: ${Object.keys(result.missing).join(', ')}.`)
-      } else {
-        console.log('user has not use any packages.')
-      }
-    } else {
-      Object.keys(result.missing).forEach(function (name) {
-        if (!fs.existsSync(path.join(ROOT_DIR, `node_modules/${name}`))) missingPackages.push(name)
-      })
-
-      console.log((missingPackages.length ? `${missingPackages.length} packages need to install: ${missingPackages.join(', ')}.` : 'no missing packages.'))
-    }
-
-    if (missingPackages.length) {
-      if (type === 'check') {
-        console.log('\nrun "fly dep install" to install.')
-      } else if (type === 'install') {
-        console.log(`ready to install ${missingPackages.length} packages.`)
-
-        await new Promise(function (resolve, reject) {
-          let child = childProcess.spawn('npm', ['i', '--save'].concat(missingPackages), {
-            cwd: config.runtime.dir,
-            env: process.env,
-            stdio: 'inherit'
-          })
-
-          child.on('close', (code) => {
-            code ? reject(code) : resolve()
-          })
-        })
-      }
-    }
-  } catch (err) {
-    console.log(err)
-  }
-}
-
 
 async function run (names, opts) {
   const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1'
@@ -212,11 +152,6 @@ program
   .command('log [names...]')
   .description('Show service logs')
   .action(wrap(log))
-
-program
-  .command('dep <check|install>')
-  .description('Dep check and install.')
-  .action(wrap(dep))
 
 program
   .command('config')
