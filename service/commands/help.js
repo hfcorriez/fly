@@ -11,7 +11,8 @@ module.exports = {
   main: async function (event, ctx) {
     let functions = ctx.list('command')
     console.log('Usage:\n')
-    console.log(' fly <command> [--options]\n')
+    console.log('  fly <command> [--options]\n')
+    console.log('Commands:\n')
     functions.map(fn => {
       let command = fn.events.command
       let descriptions = command.descriptions || {}
@@ -22,15 +23,15 @@ module.exports = {
         if (key.startsWith('<') || key.startsWith('[')) commandDescriptions[key] = descriptions[key]
       })
 
-      console.log(utils.padding(command._, 30), descriptions._ || '')
+      console.log(' ', utils.padding(command._, 30), descriptions._ || '')
 
       Object.keys(commandDescriptions).forEach(key => {
-        console.log(' ', utils.padding(key, 30), commandDescriptions[key])
+        console.log('   ', utils.padding(key, 30), commandDescriptions[key])
       })
 
       Object.keys(args).forEach(key => {
         console.log(
-          ' ',
+          '   ',
           utils.padding(
             [
               key + (alias[key] ? ',' + alias[key] : ''),
@@ -41,10 +42,6 @@ module.exports = {
           descriptions[key] || ''
         )
       })
-
-      if (command.descriptions) {
-
-      }
     })
   },
 
