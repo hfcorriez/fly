@@ -3,6 +3,7 @@ const mime = require('mime')
 const pathToRegexp = require('path-to-regexp')
 const { URL } = require('url')
 const fastify = require('fastify')()
+const debug = require('debug')('fly/srv/htt')
 
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
 

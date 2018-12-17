@@ -1,14 +1,10 @@
-const PM = require('../pm')
+const PM = require('../../lib/pm')
 const pm = new PM({
   name: 'fly:http',
   path: process.argv[1]
 })
 
 module.exports = {
-  links: {
-    app: process.cwd()
-  },
-
   main: async function (event, ctx) {
     let name = ctx.links.app.split('/').pop()
 

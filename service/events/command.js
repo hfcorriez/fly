@@ -1,4 +1,5 @@
 const arg = require('arg')
+const debug = require('debug')('fly/srv/cmd')
 
 module.exports = {
   name: 'command',
@@ -7,6 +8,10 @@ module.exports = {
     args: {
       '--event-id': String
     }
+  },
+
+  links: {
+    app: process.cwd()
   },
 
   main: async function (event, ctx) {

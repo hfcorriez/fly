@@ -2,9 +2,7 @@ const Fly = require('../lib/fly')
 const path = require('path')
 
 const ROOT_DIR = path.dirname(__dirname)
-const fly = new Fly(ROOT_DIR + '/lib/events')
-
-fly.load(ROOT_DIR + '/lib/commands', 'command')
+const fly = new Fly(ROOT_DIR + '/service')
 
 ~(async () => {
   // console.log('functions', fly.list())
