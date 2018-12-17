@@ -10,10 +10,6 @@ module.exports = {
     }
   },
 
-  links: {
-    app: process.cwd()
-  },
-
   main: async function (event, ctx) {
     let functions = ctx.list('command')
     let evt = {
