@@ -21,11 +21,14 @@ module.exports = {
     //   console.error('uncaughtException', err)
     // })
 
+    let stop = false
     EXIT_SIGNALS.forEach(status => process.on(status, async () => {
+      if (stop) return
       try {
+        stop = true
         debug('shutdown...')
         await ctx.broadcast('shutdown')
-        process.exit()
+        process.exit(0)
       } catch (err) {
         console.error(`shutdown with error: ${err.message} `)
         process.exit(1)

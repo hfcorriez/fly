@@ -39,7 +39,7 @@ module.exports = {
         await pm.status(name)
         break;
       case 'run':
-        await ctx.call('http-server')
+        await ctx.call('http-server', { port: event.args.port })
         return true
     }
     return false
@@ -52,9 +52,16 @@ module.exports = {
   events: {
     command: {
       _: 'http [command]',
+      args: {
+        '--port': Number
+      },
+      alias: {
+        '--port': '-p'
+      },
       descriptions: {
         _: 'Manage http service',
-        '[command]': 'start | stop | restart | status | log'
+        '[command]': 'start | stop | restart | status | log',
+        '--port': 'Bind port'
       }
     }
   }

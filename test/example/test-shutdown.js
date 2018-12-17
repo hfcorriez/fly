@@ -1,9 +1,9 @@
 module.exports = {
   main: function (event) {
-    console.log('startup')
+    console.log('shutdown')
   },
 
   events: {
-    startup: true
+    shutdown: true
   }
 }
