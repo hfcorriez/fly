@@ -1,18 +1,21 @@
 const utils = require('../../lib/utils')
+const Fly = require('../../lib/fly')
 
 module.exports = {
-  links: {
-    app: process.cwd()
-  },
-
   config: {
   },
 
   main: async function (event, ctx) {
-    let functions = ctx.list('command')
+    const fly = new Fly()
     console.log('Usage:\n')
     console.log('  fly <command> [--options]\n')
-    console.log('Commands:\n')
+    console.log('System Commands:\n')
+    this.outputCommands(ctx.list('command'))
+    console.log('Service Commands:\n')
+    this.outputCommands(fly.list('command'))
+  },
+
+  outputCommands: function (functions) {
     functions.map(fn => {
       let command = fn.events.command
       let descriptions = command.descriptions || {}
@@ -43,6 +46,7 @@ module.exports = {
         )
       })
     })
+    console.log('')
   },
 
   events: {

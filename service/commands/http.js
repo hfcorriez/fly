@@ -5,12 +5,8 @@ const pm = new PM({
 })
 
 module.exports = {
-  links: {
-    app: process.cwd()
-  },
-
   main: async function (event, ctx) {
-    let name = ctx.links.app.split('/').pop()
+    let name = process.cwd().split('/').pop()
 
     switch (event.params.command) {
       case 'start':

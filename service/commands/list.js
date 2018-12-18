@@ -1,14 +1,21 @@
+const Table = require('cli-table2')
+const Fly = require('../../lib/fly')
+
 module.exports = {
-  links: {
-    app: process.cwd()
-  },
-
   main: async function (event, ctx) {
-    let list = ctx.list(event.args.type)
+    let fly = new Fly()
+    let functions = fly.list(event.args.type)
 
-    list.forEach(fn => {
-      console.log(fn.id, Object.keys(fn.events).join(',') || '-', fn.path)
+    let table = new Table({
+      head: ['ID', 'Type', 'File'],
+      chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
+
+    functions.forEach(fn => {
+      table.push([fn.id, Object.keys(fn.events).join(',') || '-', fn.path])
+    })
+
+    console.log(table.toString())
   },
   events: {
     command: {

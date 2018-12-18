@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const Fly = require('../lib/fly')
 const path = require('path')
 

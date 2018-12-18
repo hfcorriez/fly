@@ -1,10 +1,10 @@
-module.exports = {
-  links: {
-    app: process.cwd()
-  },
 
+const Fly = require('../../lib/fly')
+
+module.exports = {
   main: async function (event, ctx) {
-    let fn = ctx.get(event.params[0])
+    const fly = new Fly()
+    let fn = fly.get(event.params[0])
     console.log(JSON.stringify(fn, null, 4))
   },
 

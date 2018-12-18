@@ -4,6 +4,7 @@ const pathToRegexp = require('path-to-regexp')
 const { URL } = require('url')
 const fastify = require('fastify')()
 const debug = require('debug')('fly/srv/htt')
+const Fly = require('../../lib/fly')
 
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
 const ERROR_PAGES = {
@@ -18,7 +19,8 @@ module.exports = {
   },
 
   before: async function (event, ctx) {
-    await ctx.broadcast('startup')
+    this.fly = new Fly()
+    await this.fly.broadcast('startup')
 
     // process.on('uncaughtException', (err) => {
     //   console.error('uncaughtException', err)
@@ -30,7 +32,7 @@ module.exports = {
       try {
         stop = true
         debug('shutdown...')
-        await ctx.broadcast('shutdown')
+        await this.fly.broadcast('shutdown')
         process.exit(0)
       } catch (err) {
         console.error(`shutdown with error: ${err.message} `)
@@ -76,13 +78,13 @@ module.exports = {
         let eventId = req.headers['x-fly-id'] || null
 
         try {
-          let functions = ctx.list('http')
+          let functions = this.fly.list('http')
           let matched
           let fn = functions.find(f => {
             matched = this.match(evt, f.events.http)
             return !!matched
           })
-          if (fn) result = await ctx.call(
+          if (fn) result = await this.fly.call(
             fn.id,
             Object.assign(evt, matched),
             { eventId, eventType: 'http' }
