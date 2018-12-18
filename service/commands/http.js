@@ -39,7 +39,8 @@ module.exports = {
         await pm.status(name)
         break;
       case 'run':
-        await ctx.call('events@http', { port: event.args.port })
+        let { address } = await ctx.call('events@http', { port: event.args.port })
+        console.log('fly http at ' + address)
         return true
     }
     return false

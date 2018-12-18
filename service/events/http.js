@@ -166,9 +166,9 @@ module.exports = {
 
     return new Promise((resolve, reject) => {
       const port = event && event.port || this.config.port
-      fastify.listen(port, function (err) {
+      fastify.listen(port, function (err, address) {
         if (err) return reject(err)
-        resolve(port)
+        resolve({ address })
       })
     })
   },
