@@ -10,7 +10,7 @@ module.exports = {
     }
 
     let table = new Table({
-      head: ['Name', 'Type', 'File'],
+      head: ['Name', 'Events', 'File'],
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
 
