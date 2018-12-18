@@ -1,6 +1,10 @@
 const querystring = require('querystring')
 
 module.exports = {
+  links: {
+    _: process.cwd()
+  },
+
   main: async function (event, ctx) {
     let name = event.params[0]
     let eventData = event.args.data || (await this.getStdin())
@@ -22,14 +26,23 @@ module.exports = {
     }
 
     let result
+    let fn
+
     try {
-      result = await ctx.call(name, evt, ctx)
+      if (name.includes('.')) {
+        fn = ctx.add(path.resolve(name))
+      } else {
+        fn = ctx.get('_@' + name)
+      }
+      if (!fn) throw new Error('no function found')
+
+      result = await ctx.call(fn, evt, ctx)
     } catch (err) {
-      console.error(err)
+      console.error(err.message)
       return
     }
 
-    console.log(`"${name}" result:\n`)
+    console.log(`"${fn.name}" result:\n`)
     console.log(JSON.stringify(result, null, 4))
   },
 
