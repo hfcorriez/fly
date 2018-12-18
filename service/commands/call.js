@@ -27,18 +27,17 @@ module.exports = {
 
     let result
     let fn
-    name = name.includes('.') ? path.resolve(name) : (name.includes('@') ? name : '_@' + name)
 
     try {
-      let m = fly
+      let obj = fly
       fn = fly.get(name)
       if (!fn) {
         fn = ctx.get(name)
-        m = ctx
+        obj = ctx
       }
       if (!fn) throw new Error('no function found')
 
-      result = await m.call(fn, evt, ctx)
+      result = await obj.call(fn, evt, ctx)
     } catch (err) {
       console.error(err.message)
       process.exit(1)

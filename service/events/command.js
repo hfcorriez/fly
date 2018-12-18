@@ -11,7 +11,6 @@ module.exports = {
   },
 
   links: {
-    _: process.cwd(),
     'commands': '../commands',
   },
 
@@ -49,7 +48,7 @@ module.exports = {
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
       )
     } catch (err) {
-      console.error(err)
+      console.error(err.message)
       return
     }
 

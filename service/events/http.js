@@ -178,6 +178,13 @@ module.exports = {
     if (!target.method) target.method = 'get'
     if (!target.path) return false
     if (source.method !== target.method && target.method !== '*') return false
+    if (target.domain) {
+      if (typeof target.domain === 'string') target.domain = [target.domain]
+      let domainValid = target.domain.some(domain => {
+        return new RegExp('^' + domain.replace(/\./g, '\\.').replace(/\*/g, '.*?') + '$').test(source.domain)
+      })
+      if (!domainValid) return false
+    }
 
     if (target.path[0] !== '/') {
       console.warn('warn: http path is not start with "/", recommend to add it')
