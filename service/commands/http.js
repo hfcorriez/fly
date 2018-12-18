@@ -39,7 +39,7 @@ module.exports = {
         await pm.status(name)
         break;
       case 'run':
-        await ctx.call('events@http-server', { port: event.args.port })
+        await ctx.call('events@http', { port: event.args.port })
         return true
     }
     return false

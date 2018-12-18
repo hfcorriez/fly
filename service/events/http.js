@@ -4,7 +4,6 @@ const pathToRegexp = require('path-to-regexp')
 const { URL } = require('url')
 const fastify = require('fastify')()
 const debug = require('debug')('fly/srv/htt')
-const Fly = require('../../lib/fly')
 
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
 const ERROR_PAGES = {
@@ -12,17 +11,18 @@ const ERROR_PAGES = {
 }
 
 module.exports = {
-  name: 'http-server',
-
   config: {
     port: 5000
   },
 
-  before: async function (event, ctx) {
-    this.fly = new Fly()
-    this.functions = this.fly.list('http')
+  links: {
+    _: process.cwd()
+  },
 
-    await this.fly.broadcast('startup')
+  before: async function (event, ctx) {
+    this.functions = ctx.list('http')
+
+    await ctx.broadcast('startup')
 
     // process.on('uncaughtException', (err) => {
     //   console.error('uncaughtException', err)
@@ -34,7 +34,7 @@ module.exports = {
       try {
         stop = true
         debug('shutdown...')
-        await this.fly.broadcast('shutdown')
+        await ctx.broadcast('shutdown')
         process.exit(0)
       } catch (err) {
         console.error(`shutdown with error: ${err.message} `)
@@ -80,17 +80,15 @@ module.exports = {
         let eventId = req.headers['x-fly-id'] || null
 
         try {
-          let functions = this.functions
           let matched
-          let fn = functions.find(f => {
+          let fn = this.functions.find(f => {
             matched = this.match(evt, f.events.http)
             return !!matched
           })
-          if (fn) result = await this.fly.call(
-            fn.name,
-            Object.assign(evt, matched),
-            { eventId, eventType: 'http' }
-          )
+
+          if (fn) {
+            result = await ctx.call(fn, Object.assign(evt, matched), { eventId, eventType: 'http' })
+          }
         } catch (err) {
           res.code(502).type('application/json').send({
             code: err.code || 10,
@@ -169,7 +167,7 @@ module.exports = {
     })
 
     return new Promise((resolve, reject) => {
-      const port = event.port || this.config.port
+      const port = event && event.port || this.config.port
       fastify.listen(port, function (err) {
         if (err) return reject(err)
         resolve(port)

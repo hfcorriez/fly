@@ -3,8 +3,6 @@ const fastify = require('fastify')()
 const debug = require('debug')('fly/srv/api')
 
 module.exports = {
-  name: 'api-server',
-
   config: {
     port: 5000
   },

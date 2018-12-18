@@ -4,8 +4,6 @@ const Fly = require('../../lib/fly')
 const debug = require('debug')('fly/srv/cmd')
 
 module.exports = {
-  name: 'command',
-
   config: {
     args: {
       '--event-id': String
