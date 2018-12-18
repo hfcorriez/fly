@@ -1,12 +1,11 @@
 const querystring = require('querystring')
 const path = require('path')
+const Fly = require('../../lib/fly')
 
 module.exports = {
-  links: {
-    _: process.cwd()
-  },
-
   main: async function (event, ctx) {
+    const fly = new Fly()
+
     let name = event.params[0]
     let eventData = event.args.data || (await this.getStdin())
     let evt
@@ -28,19 +27,27 @@ module.exports = {
 
     let result
     let fn
+    name = name.includes('.') ? path.resolve(name) : (name.includes('@') ? name : '_@' + name)
 
     try {
-      fn = ctx.get(name.includes('.') ? path.resolve(name) : (name.includes('@') ? name : '_@' + name))
+      let m = fly
+      fn = fly.get(name)
+      if (!fn) {
+        fn = ctx.get(name)
+        m = ctx
+      }
       if (!fn) throw new Error('no function found')
 
-      result = await ctx.call(fn, evt, ctx)
+      result = await m.call(fn, evt, ctx)
     } catch (err) {
       console.error(err.message)
+      process.exit(1)
       return
     }
 
     console.log(`"${fn.name}" result:\n`)
     console.log(JSON.stringify(result, null, 4))
+    process.exit(0)
   },
 
 
