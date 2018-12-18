@@ -13,8 +13,8 @@ module.exports = {
   },
 
   links: {
+    _: process.cwd(),
     'commands': '../commands',
-    _: process.cwd()
   },
 
   main: async function (event, ctx) {
