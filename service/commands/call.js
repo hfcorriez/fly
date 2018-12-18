@@ -1,4 +1,5 @@
 const querystring = require('querystring')
+const path = require('path')
 
 module.exports = {
   links: {
@@ -29,11 +30,7 @@ module.exports = {
     let fn
 
     try {
-      if (name.includes('.')) {
-        fn = ctx.add(path.resolve(name))
-      } else {
-        fn = ctx.get('_@' + name)
-      }
+      fn = ctx.get(name.includes('.') ? path.resolve(name) : (name.includes('@') ? name : '_@' + name))
       if (!fn) throw new Error('no function found')
 
       result = await ctx.call(fn, evt, ctx)
