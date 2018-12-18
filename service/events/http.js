@@ -3,6 +3,7 @@ const mime = require('mime')
 const pathToRegexp = require('path-to-regexp')
 const { URL } = require('url')
 const fastify = require('fastify')()
+const Fly = require('../../lib/fly')
 const debug = require('debug')('fly/srv/htt')
 
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
@@ -15,14 +16,11 @@ module.exports = {
     port: 5000
   },
 
-  links: {
-    _: process.cwd()
-  },
-
   before: async function (event, ctx) {
-    this.functions = ctx.list('http')
+    this.fly = new Fly()
+    this.functions = this.fly.list('http')
 
-    await ctx.broadcast('startup')
+    await this.fly.broadcast('startup')
 
     // process.on('uncaughtException', (err) => {
     //   console.error('uncaughtException', err)
@@ -34,7 +32,7 @@ module.exports = {
       try {
         stop = true
         debug('shutdown...')
-        await ctx.broadcast('shutdown')
+        await this.fly.broadcast('shutdown')
         process.exit(0)
       } catch (err) {
         console.error(`shutdown with error: ${err.message} `)
@@ -87,7 +85,7 @@ module.exports = {
           })
 
           if (fn) {
-            result = await ctx.call(fn, Object.assign(evt, matched), { eventId, eventType: 'http' })
+            result = await this.fly.call(fn, Object.assign(evt, matched), { eventId, eventType: 'http' })
           }
         } catch (err) {
           res.code(502).type('application/json').send({
