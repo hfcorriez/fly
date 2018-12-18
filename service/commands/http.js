@@ -5,6 +5,10 @@ const pm = new PM({
 })
 
 module.exports = {
+  links: {
+    'events': '../events'
+  },
+
   main: async function (event, ctx) {
     let name = process.cwd().split('/').pop()
 
@@ -35,7 +39,7 @@ module.exports = {
         await pm.status(name)
         break;
       case 'run':
-        await ctx.call('http-server', { port: event.args.port })
+        await ctx.call('events@http-server', { port: event.args.port })
         return true
     }
     return false

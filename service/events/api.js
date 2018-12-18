@@ -9,6 +9,10 @@ module.exports = {
     port: 5000
   },
 
+  links: {
+    _: process.cwd()
+  },
+
   main: async function (event, ctx) {
     /**
      * Rpc server

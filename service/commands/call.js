@@ -1,10 +1,6 @@
 const querystring = require('querystring')
 
 module.exports = {
-  links: {
-    app: process.cwd()
-  },
-
   main: async function (event, ctx) {
     let name = event.params[0]
     let eventData = event.args.data || (await this.getStdin())

@@ -20,6 +20,8 @@ module.exports = {
 
   before: async function (event, ctx) {
     this.fly = new Fly()
+    this.functions = this.fly.list('http')
+
     await this.fly.broadcast('startup')
 
     // process.on('uncaughtException', (err) => {
@@ -78,14 +80,14 @@ module.exports = {
         let eventId = req.headers['x-fly-id'] || null
 
         try {
-          let functions = this.fly.list('http')
+          let functions = this.functions
           let matched
           let fn = functions.find(f => {
             matched = this.match(evt, f.events.http)
             return !!matched
           })
           if (fn) result = await this.fly.call(
-            fn.id,
+            fn.name,
             Object.assign(evt, matched),
             { eventId, eventType: 'http' }
           )

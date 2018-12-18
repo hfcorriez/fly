@@ -1,5 +1,6 @@
 const arg = require('arg')
 const utils = require('../../lib/utils')
+const Fly = require('../../lib/fly')
 const debug = require('debug')('fly/srv/cmd')
 
 module.exports = {
@@ -9,6 +10,11 @@ module.exports = {
     args: {
       '--event-id': String
     }
+  },
+
+  links: {
+    'commands': '../commands',
+    _: process.cwd()
   },
 
   main: async function (event, ctx) {
@@ -28,7 +34,10 @@ module.exports = {
       return false
     })
 
-    if (!fn) fn = functions.find(f => f.events.command.fallback)
+    if (!fn) {
+      fn = functions.find(f => f.events.command.fallback)
+      if (fn) evt.fallback = true
+    }
 
     if (!fn) {
       console.error('no command found')
@@ -37,7 +46,10 @@ module.exports = {
 
     let result
     try {
-      result = await ctx.call(fn.id, evt, { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' })
+      result = await ctx.call(
+        fn, evt,
+        { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
+      )
     } catch (err) {
       console.error(err)
       return

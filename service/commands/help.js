@@ -1,18 +1,25 @@
 const utils = require('../../lib/utils')
 const Fly = require('../../lib/fly')
+const path = require('path')
+const ROOT_DIR = path.join(__dirname, '../..')
 
 module.exports = {
   config: {
   },
 
   main: async function (event, ctx) {
-    const fly = new Fly()
     console.log('Usage:\n')
     console.log('  fly <command> [--options]\n')
-    console.log('System Commands:\n')
-    this.outputCommands(ctx.list('command'))
-    console.log('Service Commands:\n')
-    this.outputCommands(fly.list('command'))
+    if (event.args.all || event.fallback) {
+      console.log('System Commands:\n')
+      this.outputCommands(ctx.list('command'))
+    }
+
+    if (ROOT_DIR !== process.cwd()) {
+      const fly = new Fly()
+      console.log('Current Commands:\n')
+      this.outputCommands(fly.list('command'))
+    }
   },
 
   outputCommands: function (functions) {
@@ -29,7 +36,7 @@ module.exports = {
       console.log(' ', utils.padding(command._, 30), descriptions._ || '')
 
       Object.keys(commandDescriptions).forEach(key => {
-        console.log('   ', utils.padding(key, 30), commandDescriptions[key])
+        console.log('   ', utils.padding(key, 28), commandDescriptions[key])
       })
 
       Object.keys(args).forEach(key => {
@@ -40,7 +47,7 @@ module.exports = {
               key + (alias[key] ? ',' + alias[key] : ''),
               ['Boolean'].includes(args[key].name) ? '' : args[key].name.toLowerCase()
             ].join(' '),
-            30
+            28
           ),
           descriptions[key] || ''
         )
@@ -53,8 +60,12 @@ module.exports = {
     command: {
       fallback: true,
       _: 'help',
+      args: {
+        '--all': Boolean
+      },
       descriptions: {
-        _: 'Show help'
+        _: 'Show help',
+        '--all': 'Show all commands'
       }
     }
   }
