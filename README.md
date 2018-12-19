@@ -3,18 +3,7 @@
 - 独立性：每个函数具有独立性，注册名字即为全局名字，全局唯一
 - 可继承：可继承函数进行修改部分属性发布为新的函数
 - 模块化：一个文件就是一个模块，包含（主函数、事件声明http、command等、转换器、中间件？）
-- 可配置：包含一个 fly.yml 的配置文件，可以配置
-
-## 当前问题
-
-- [x] 安装依赖是否要存储到工作目录？否
-- [x] before 处理后的返回必须是 event，如何管理 before 前的 event？返回即是下一个事件，但是带上原始的，prevEvent
-- [x] 对于拦截器这类函数是否需要特殊的定义？否
-- [x] 命名是否是必须的？否
-- [x] config 配置是否有更好的方式？
-- [x] 多事件匹配？否
-- [ ] 路径等支持函数配置？模版变量？
-- [x] 支持类和函数两种写法？是
+- 可配置：包含一个 `fly.yml` 的配置文件，可以配置
 
 ## 接口定义
 
@@ -427,14 +416,10 @@ config:
 #   1、使用函数
 #   2、继承服务
 links:
-  module:
-    module: module-name
-    http:
-      url: module/{url}
-  dir:
-    dir: /dirname
-  file:
-    file: /filename
-  url:
-    url: localhost:3333
+  module: module-name
+  dir: /dirname
+  file: /filename
+  url: http://localhost:3333
+  git: git@gitlab.com:hfcorriez/test.git
+  github: hfcorriez/test.git
 ```
