@@ -2,18 +2,20 @@ const fs = require('fs')
 const mime = require('mime')
 const pathToRegexp = require('path-to-regexp')
 const { URL } = require('url')
+const path = require('path')
 const fastify = require('fastify')()
 const Fly = require('../../lib/fly')
 const debug = require('debug')('fly/srv/htt')
 
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
-const ERROR_PAGES = {
-  '404': '404'
-}
 
 module.exports = {
   config: {
-    port: 5000
+    port: 5000,
+    errors: {
+      '404': fs.readFileSync(path.join(__dirname, './http/404.html')),
+      '500': fs.readFileSync(path.join(__dirname, './http/500.html'))
+    }
   },
 
   before: async function (event, ctx) {
@@ -97,8 +99,8 @@ module.exports = {
         }
 
         if (!result) {
-          if (ERROR_PAGES['404']) {
-            res.code(404).type('text/html').send(ERROR_PAGES['404'])
+          if (this.config.errors['404']) {
+            res.code(404).type('text/html').send(this.config.errors['404'])
           } else {
             res.code(404).type('application/json').send({
               code: 404,
@@ -109,8 +111,7 @@ module.exports = {
         }
 
         if (result.file) {
-          res.type(mime.getType(result.file))
-          res.send(fs.createReadStream(result.file))
+          res.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
           return
         }
 
@@ -153,8 +154,8 @@ module.exports = {
         }
 
         // no body and other options response 500
-        if (errors['500']) {
-          res.code(500).type('text/html').send(errors['500'])
+        if (this.config.errors['500']) {
+          res.code(500).type('text/html').send(this.config.errors['500'])
         } else {
           res.code(500).type('application/json').send({
             code: 500,
@@ -166,9 +167,16 @@ module.exports = {
 
     return new Promise((resolve, reject) => {
       const port = event && event.port || this.config.port
-      fastify.listen(port, function (err, address) {
+      fastify.listen(port, (err, address) => {
         if (err) return reject(err)
-        resolve({ address })
+
+        resolve({
+          address,
+          routes: this.functions.map(fn => {
+            let e = fn.events.http
+            return { method: e.method || 'get', path: e.path, domain: e.domain }
+          })
+        })
       })
     })
   },

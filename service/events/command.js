@@ -48,7 +48,7 @@ module.exports = {
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
       )
     } catch (err) {
-      console.error(err.message)
+      console.error(err)
       return
     }
 

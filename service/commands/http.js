@@ -1,3 +1,4 @@
+const Table = require('cli-table2')
 const PM = require('../../lib/pm')
 const pm = new PM({
   name: 'fly:http',
@@ -39,8 +40,14 @@ module.exports = {
         await pm.status(name)
         break;
       case 'run':
-        let { address } = await ctx.call('events@http', { port: event.args.port })
-        console.log('fly http at ' + address)
+        const table = new Table({
+          head: ['Method', 'Path', 'Domain'],
+          chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
+        })
+        let { address, routes } = await ctx.call('events@http', { port: event.args.port })
+        routes.forEach(route => table.push([route.method.toUpperCase(), route.path, (route.domain || []).join(', ')]))
+        console.log(table.toString())
+        console.log('fly http server at ' + address)
         return true
     }
     return false
