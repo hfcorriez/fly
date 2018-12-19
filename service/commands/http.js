@@ -41,11 +41,12 @@ module.exports = {
         break;
       case 'run':
         const table = new Table({
-          head: ['Method', 'Path', 'Domain'],
+          head: ['Method', 'Path', 'Domain', 'Fn'],
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
         let { address, routes } = await ctx.call('events@http', { port: event.args.port })
-        routes.forEach(route => table.push([route.method.toUpperCase(), route.path, (route.domain || []).join(', ')]))
+        routes.forEach(route =>
+          table.push([route.method.toUpperCase(), route.path, (route.domain || []).join(', '), route.fn]))
         console.log(table.toString())
         console.log('fly http server at ' + address)
         return true
