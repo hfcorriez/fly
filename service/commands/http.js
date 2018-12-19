@@ -16,7 +16,7 @@ module.exports = {
       case 'start':
         await pm.start({
           name,
-          args: ['http', 'run']
+          args: ['http', 'run'].concat(event.argv)
         })
         await pm.status(name)
         break;
@@ -34,7 +34,7 @@ module.exports = {
         await pm.stop(name)
         await pm.start({
           name,
-          args: ['http', 'run']
+          args: ['http', 'run'].concat(event.argv)
         })
         await pm.status(name)
         break;

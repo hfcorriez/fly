@@ -67,7 +67,7 @@ module.exports = {
 
     let matched = false
 
-    const result = { args: {}, params: {} }
+    const result = { args: {}, params: {}, argv: [] }
     const args = arg(
       Object.assign(
         {}, this.config.args, target.args || {},
@@ -91,9 +91,11 @@ module.exports = {
           result.params[i] = result.params[paramName.substr(1, paramName.length - 2)] = matchedParams[i + 1]
         })
         matched = true
+        result.argv = source.argv.slice(2)
       }
     } else if (args._.join(" ").startsWith(target._)) {
       matched = true
+      result.argv = source.argv.slice(target._.split(' ').length)
     }
 
     if (matched) {
