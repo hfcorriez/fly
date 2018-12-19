@@ -172,12 +172,16 @@ module.exports = {
 
         resolve({
           address,
-          routes: this.functions.map(fn => {
-            let e = fn.events.http
-            return { method: e.method || 'get', path: e.path, domain: e.domain, fn: fn.id }
-          })
+          routes: this.buildRoutes()
         })
       })
+    })
+  },
+
+  buildRoutes: function () {
+    return this.functions.map(fn => {
+      let e = fn.events.http
+      return { method: e.method || 'get', path: e.path, domain: e.domain, fn: fn.id }
     })
   },
 
