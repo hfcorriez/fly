@@ -1,5 +1,6 @@
 // Require the framework and instantiate it
 const fastify = require('fastify')()
+const Fly = require('../../lib/fly')
 const debug = require('debug')('fly/srv/api')
 
 module.exports = {
@@ -11,7 +12,8 @@ module.exports = {
     _: process.cwd()
   },
 
-  main: async function (event, ctx) {
+  main: async function (event) {
+    const fly = new Fly()
     /**
      * Rpc server
      */
@@ -21,7 +23,7 @@ module.exports = {
 
     fastify.post('/:fn', async (request, reply) => {
       try {
-        let context = { callType: 'rpc' }
+        let context = { callType: 'api' }
 
         if (request.headers['x-fly-id']) {
           context.id = request.headers['x-fly-id']
@@ -36,9 +38,9 @@ module.exports = {
         // Check if async will async to do, such as background jobs
         if (context.async) {
           reply.send({ code: 0, data: null })
-          ctx.call(request.params.fn, request.body || {}, context)
+          fly.call(request.params.fn, request.body || {}, context)
         } else {
-          let data = await ctx.call(request.params.fn, request.body || {}, context)
+          let data = await fly.call(request.params.fn, request.body || {}, context)
           reply.send({ code: 0, data })
         }
       } catch (err) {
@@ -52,9 +54,9 @@ module.exports = {
 
     return new Promise((resolve, reject) => {
       const port = event.port || this.config.port
-      fastify.listen(port, function (err) {
+      fastify.listen(port, function (err, address) {
         if (err) return reject(err)
-        resolve(port)
+        resolve({ address })
       })
     })
   }

@@ -18,7 +18,7 @@ module.exports = {
     }
   },
 
-  before: async function (event, ctx) {
+  before: async function (event) {
     this.fly = new Fly()
     this.functions = this.fly.list('http')
 
