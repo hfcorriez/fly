@@ -10,7 +10,7 @@ module.exports = {
     let name = process.cwd().split('/').pop()
     let mode = event.args.api ? 'api' : 'http'
 
-    if (event.args.foregroud) {
+    if (event.args.foreground) {
       const table = new Table({
         head: ['Method', 'Path', 'Domain', 'Fn'],
         chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
@@ -51,7 +51,8 @@ module.exports = {
         await pm.stop(name)
         await pm.start({
           name,
-          args: ['up', '-f'].concat(event.argv)
+          args: ['up', '-f'].concat(event.argv),
+          instance: event.args.instance
         })
         await pm.status(name)
         break;
@@ -59,7 +60,8 @@ module.exports = {
       case undefined:
         await pm.start({
           name,
-          args: ['up', '-f'].concat(event.argv)
+          args: ['up', '-f'].concat(event.argv),
+          instance: event.args.instance
         })
         await pm.status(name)
         break;
@@ -75,17 +77,21 @@ module.exports = {
       _: 'up [command]',
       args: {
         '--port': Number,
-        '--foregroud': Boolean,
-        '--api': Boolean
+        '--foreground': Boolean,
+        '--api': Boolean,
+        '--instance': Number
       },
       alias: {
         '--port': '-p',
-        '--foregroud': '-f',
+        '--foreground': '-f',
+        '--instance': '-i',
       },
       descriptions: {
         _: 'Manage http service',
         '[command]': 'start | stop | restart | status | log',
-        '--port': 'Bind port'
+        '--port': 'Bind port',
+        '--foreground': 'Run in foreground',
+        '--instance': 'The instance number',
       }
     }
   }
