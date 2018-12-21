@@ -181,7 +181,7 @@ module.exports = {
   buildRoutes: function () {
     return this.functions.map(fn => {
       let e = fn.events.http
-      return { method: e.method || 'get', path: e.path, domain: e.domain, fn: fn.id }
+      return { method: e.method || 'get', path: e.path, domain: e.domain, fn: fn.name }
     })
   },
 
