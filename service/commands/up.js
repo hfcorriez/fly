@@ -48,12 +48,11 @@ module.exports = {
         await pm.status(name)
         break;
       case 'restart':
-        await pm.stop(name)
-        await pm.start({
-          name,
-          args: ['up', '-f'].concat(event.argv),
-          instance: event.args.instance
-        })
+        await pm.restart(name)
+        await pm.status(name)
+        break;
+      case 'reload':
+        await pm.reload(name)
         await pm.status(name)
         break;
       case 'start':
