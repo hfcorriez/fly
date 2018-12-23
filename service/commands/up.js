@@ -64,7 +64,7 @@ module.exports = {
           args: ['up', '-f'],
           instance: event.args.instance,
           env: {
-            PORT: event.args.port
+            PORT: event.args.port || 5000
           }
         })
         await pm.status(name)
