@@ -1,19 +1,12 @@
 const depcheck = require('depcheck2')
 const fs = require('fs')
 const path = require('path')
-
 const dir = process.env.DIR ? path.resolve(process.env.DIR) : process.cwd()
 
 module.exports = {
   main: async function (event, ctx) {
-
     try {
-      let result = await new Promise(function (resolve, reject) {
-        depcheck(dir, {}, (unused) => {
-          resolve(unused)
-        })
-      })
-
+      let result = await new Promise((resolve, reject) => depcheck(dir, {}, unused => resolve(unused)))
       let missingPackages = []
 
       if (event.args['list-all']) {
