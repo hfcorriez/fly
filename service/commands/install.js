@@ -1,5 +1,4 @@
 const depcheck = require('depcheck2')
-const fs = require('fs')
 const path = require('path')
 const dir = process.env.DIR ? path.resolve(process.env.DIR) : process.cwd()
 
@@ -7,38 +6,29 @@ module.exports = {
   main: async function (event, ctx) {
     try {
       let result = await new Promise((resolve, reject) => depcheck(dir, {}, unused => resolve(unused)))
-      let missingPackages = []
+      let missingPackages = Object.keys(result.missing)
 
-      if (event.args['list-all']) {
-        if (Object.keys(result.missing).length) {
-          console.log(`All packages:\n- ${Object.keys(result.missing).join('\n- ')}`)
-        } else {
-          console.log('No packages.')
-        }
-      } else {
-        Object.keys(result.missing).forEach(function (name) {
-          if (!fs.existsSync(path.join(dir, `node_modules/${name}`))) missingPackages.push(name)
-        })
-
-        console.log((missingPackages.length ? `${missingPackages.length} packages need to install:\n- ${missingPackages.join('\n -')}` : 'no missing packages'))
+      if (event.args.list) {
+        console.log('[Dependecy packages]')
+        Object.keys(result.missing).forEach(k => console.log(` * ${k}`))
+        Object.keys(result.using).forEach(k => console.log(` - ${k}`))
+        console.log(`\n# ${missingPackages.length} packages to install`)
       }
 
       if (missingPackages.length) {
         if (event.args.list) {
-          console.log('\nrun "fly install" to install.')
+          console.log('\n# Run "fly install" to install.')
         } else {
-          console.log(`ready to install ${missingPackages.length} packages.`)
+          console.log(`# Ready to install ${missingPackages.length} packages.`)
 
-          await new Promise(function (resolve, reject) {
+          await new Promise((resolve, reject) => {
             let child = childProcess.spawn('npm', ['i', '--save'].concat(missingPackages), {
               cwd: dir,
               env: process.env,
               stdio: 'inherit'
             })
 
-            child.on('close', (code) => {
-              code ? reject(code) : resolve()
-            })
+            child.on('close', (code) => code ? reject(code) : resolve())
           })
         }
       }
@@ -51,12 +41,13 @@ module.exports = {
       _: 'install',
       args: {
         '--list': Boolean,
-        '--list-all': Boolean,
+      },
+      alias: {
+        '--list': '-l',
       },
       descriptions: {
         _: 'Install deps',
         '--list': 'List packages to install',
-        '--list-all': 'List all packages'
       }
     }
   }

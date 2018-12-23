@@ -6,11 +6,16 @@ const debug = require('debug')('fly/srv/cmd')
 module.exports = {
   config: {
     args: {
-      '--event-id': String,
+      '--id': String,
       '--verbose': Boolean
     },
     alias: {
-      '--verbose': '-V'
+      '--verbose': '-V',
+      '--id': '-i'
+    },
+    descriptions: {
+      '--verbose': 'Show verbose',
+      '--id': 'Set event id'
     },
   },
 
@@ -23,7 +28,8 @@ module.exports = {
     let evt = {
       argv: event.argv,
       args: {},
-      params: {}
+      params: {},
+      config: this.config
     }
 
     let fn = functions.find(f => {
