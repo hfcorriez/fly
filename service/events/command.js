@@ -1,7 +1,7 @@
 const arg = require('arg')
 const utils = require('../../lib/utils')
 const Fly = require('../../lib/fly')
-const debug = require('debug')('fly/srv/cmd')
+const debug = require('debug')('fly/evt/cmd')
 
 module.exports = {
   config: {

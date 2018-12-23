@@ -1,7 +1,7 @@
 // Require the framework and instantiate it
 const fastify = require('fastify')()
 const Fly = require('../../lib/fly')
-const debug = require('debug')('fly/srv/api')
+const debug = require('debug')('fly/evt/api')
 
 module.exports = {
   config: {

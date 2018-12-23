@@ -5,7 +5,7 @@ const { URL } = require('url')
 const path = require('path')
 const fastify = require('fastify')()
 const Fly = require('../../lib/fly')
-const debug = require('debug')('fly/srv/htt')
+const debug = require('debug')('fly/evt/htt')
 
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'SIGUSR1', 'SIGUSR2']
 
@@ -23,6 +23,7 @@ module.exports = {
     this.functions = this.fly.list('http')
 
     await this.fly.broadcast('startup')
+    debug('startup...')
 
     // process.on('uncaughtException', (err) => {
     //   console.error('uncaughtException', err)
@@ -33,8 +34,8 @@ module.exports = {
       if (stop) return
       try {
         stop = true
-        debug('shutdown...')
         await this.fly.broadcast('shutdown')
+        debug('shutdown')
         process.exit(0)
       } catch (err) {
         console.error(`shutdown with error: ${err.message} `)
