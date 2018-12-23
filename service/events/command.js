@@ -6,8 +6,12 @@ const debug = require('debug')('fly/srv/cmd')
 module.exports = {
   config: {
     args: {
-      '--event-id': String
-    }
+      '--event-id': String,
+      '--verbose': Boolean
+    },
+    alias: {
+      '--verbose': '-V'
+    },
   },
 
   links: {
@@ -71,6 +75,7 @@ module.exports = {
     const args = arg(
       Object.assign(
         {}, this.config.args, target.args || {},
+        this.config.alias ? utils.invert(this.config.alias) : {},
         target.alias ? utils.invert(target.alias) : {}
       ),
       {

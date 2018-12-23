@@ -39,7 +39,8 @@ module.exports = {
 
       result = await obj.call(fn, evt, ctx)
     } catch (err) {
-      console.error(err.message)
+      console.error('Error:', err.message, err.code ? `(${err.code})` : '')
+      if (event.args.verbose) console.error(err)
       process.exit(1)
       return
     }
@@ -48,7 +49,6 @@ module.exports = {
     console.log(JSON.stringify(result, null, 4))
     process.exit(0)
   },
-
 
   getStdin: function () {
     const stdin = process.stdin
