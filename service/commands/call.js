@@ -42,7 +42,7 @@ module.exports = {
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
       process.exit(0)
     } catch (err) {
-      console.error('Error:', err.message, err.code ? `(${err.code})` : '')
+      console.error(`Error${err.code ? `(${err.code})` : ''}:`, err.message)
       if (event.args.verbose) console.error(err)
       process.exit(1)
       return
