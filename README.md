@@ -20,144 +20,63 @@
 
 ```javascript
 {
-  // 配置信息
-  config: Object
-
-  // 事件 ID
-  eventId: String
-
-  // 事件类型：http, command, null is internal
-  eventType: String
-
-  // 原始事件
-  originalEvent: Event,
-
-  // 上一级的事件
-  parentEvent: Event,
-
-  // 函数名：调用函数容器，会加载所有离线的可用的函数到该上下文
-  [String]: [Function]
-
-  // 调用方法 call([Function Name])
-  call: Function
-
-  // 调用链路信息
-  traces: [{
-    // 函数名称
-    fn: String,
-
-    // 调用事件类型
-    type: String,
-
-    // 开始事件
-    startTime: Number,
-
-    // 结束事件
-    endTime: Number,
-
-    // 下级调用信息
-    traces: [Trace]
-  }]
+  '<Fn prop>': '<Fn prop value>',   // All function props
+  eventId: String,                  // 事件 ID
+  eventType: String,                // 事件类型：http, command, null is internal
+  originalEvent: Event,             // 原始事件
+  parentEvent: Event,               // 上一级的事件
+  call: Function,                   // 调用方法 call([Function Name])
+  list: Function,                   // List functions
+  get: Function,                    // Get function
+  broadcast: Function,              // Broadcast to events
+  link: Function,                   // Link function
+  trace: {                          // 调用链路信息
+    fn: String,                     // 函数名称
+    type: String,                   // 调用事件类型
+    error: String,                  // 错误信息
+    startTime: Number,              // 开始时间
+    endTime: Number,                // 结束时间
+    spendTime: Number,              // 结束时间
+  }
 }
 ```
 
 ### Function 函数定义
 
-单函数
-
-```javascript
-module.exports = function (event) {
-  return processEvent(event)
-}
-```
-
-类接口
-
 ```javascript
 {
-  // 函数名称，在服务内内唯一
-  name: String,
+  name: String,             // 名字
+  main: Function,           // 主函数
+  validate: Function,       // 验证事件是否合法
+  before: Function,         // 前置拦截器
+  after: Function,          // 后置拦截器
+  error: Function,          // 错误拦截器
 
-  // 主函数
-  main: Function (Event, Context),
-
-  // 事件声明
-  events: {
-
-    // Http 事件声明
-    http: {
-      // 方法
-      method: String,
-
-      // 路径
-      path: String,
-
-      // 域名
-      domain: String,
-
-      // 验证事件是否合法
-      validate: Function(Event, Context) | Array[String | Function]
-
-      // 前置拦截器
-      before: Function(Event, Context) | Array[String | Function],
-
-      // 后置拦截器
-      after: Function(Event, Context) | Array[String | Function],
-    },
-
-    // API 事件开关
-    api: Boolean,
-
-    // 系统启动事件
-    stratup: Boolean | {
-      // 前置拦截器
-      before: Function(Event, Context) | Array[String | Function],
-
-      // 后置拦截器
-      after: Function(Event, Context) | Array[String | Function],
-    }
-
-    // 系统关闭事件
-    shutdown: Boolean | {
-      // 前置拦截器
-      before: Function(Event, Context) | Array[String | Function],
-
-      // 后置拦截器
-      after: Function(Event, Context) | Array[String | Function],
-    }
-  }
-
-  // 验证事件是否合法
-  validate: Function(Event, Context) | Array[String | Function]
-
-  // 前置拦截器
-  before: Function(Event, Context) | Array[String | Function],
-
-  // 后置拦截器
-  after: Function(Event, Context) | Array[String | Function],
-
-  // 默认配置信息
   // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
   // 2. 可以通过 fly_[FLY_ENV].yml 中的 config.db 进行覆盖
   // 3. 可以通过 fly.yml 中的 config['@userCreate'].db 进行覆盖
-  // 4. 可以通过 CONFIG_DB 覆盖
-  // 5. 可以通过 CONFIG_USERCREATE_DB 覆盖
-  config: Object,
+  config: Object,           // 默认配置信息
 
-  // 需要 Link 的项目
   // 1. 可以通过 fly.yml 中的 links.module 进行覆盖
   // 2. 可以通过 fly_[FLY_ENV].yml 中的 links.module 进行覆盖
   // 3. 可以通过 fly.yml 中的 links['[userCreate]'].module 进行覆盖
   // 4. 可以通过 fly_[FLY_ENV].yml 中的 links['[userCreate]'].module 进行覆盖
-  // 5. 可以通过 LINKS_MODULE 覆盖
   links: {
-    // 模块引入：MODULE:fly-oauth
-    // 1. NPM方式：MODULE:abc
-    // 2. FLY-RPC方式：MODULE:http://abc:3333
-    // 3. FLY-DIR方式：MODULE:/dir/foo/bar
-    // 4. GITHUB方式：MODULE:hfcorriez/fly-abc
-    // 5. GITHUB方式：MODULE:hfcorriez/fly-abc#master
-    String: String
+    String: String          // 需要 Link 的项目
+  }
+
+  events: {                 // 事件声明
+    http: {                 // Http 事件声明
+      method: String,       // 方法
+      path: String,         // 路径
+      domain: String,       // 域名
+      validate: Function,   // 验证事件是否合法
+      before: Function,     // 前置拦截器
+      after: Function,      // 后置拦截器
+    },
+
+    stratup: Boolean,       // 系统启动事件
+    shutdown: Boolean,      // 系统关闭事件
   }
 }
 ```
@@ -186,23 +105,7 @@ module.exports = {
    * @param {Object} ctx      Context
    */
   main: async function (event, fly) {
-    // Call to local module
-    await fly.call('module@ga.event', {
-      type:'create',
-      username: event.username
-    })
-
-    // Call with function name
-    await fly['module@ga.test']({name: 'abc'})
-
-    // Call remote with config
-    await fly.call('url@ga.test', {host: 'api.com'})
-
-    // Call directly
-    await fly.call('abc.com:3333@test')
-
-    // Fly result
-    return await db.users.insert(event)
+    // Process main logic
   },
 
   /**
@@ -212,12 +115,8 @@ module.exports = {
    * @param {Object} ctx      Context
    */
   validate: async (event, ctx) => {
-    if (!event.username || !event.password) return
-
-    return !ctx.getDB().exists(event.username)
+    return true
   },
-
-  interceptor: 'httpServiceV1',
 
   /**
    * Before interceptor for function
@@ -238,13 +137,17 @@ module.exports = {
   },
 
   /**
+   * Hanlde error
+   */
+  error: (error, ctx) => {
+    console.error(error)
+  }
+
+  /**
    * Events declare
    * Support: http, api, startup, shutdown
    */
   events: {
-    // API 服务注册，默认都打开
-    api: false,
-
     // HTTP 服务的注册
     http: {
       method: 'post',
@@ -264,14 +167,7 @@ module.exports = {
       }
     },
 
-    startup: {
-      before: ['log@logEvent', function (event, ctx) {
-        return {
-          username: 'corrie',
-          password: 'haha'
-        }
-      }]
-    }
+    startup: true,
   }
 }
 ```
@@ -342,36 +238,36 @@ $ curl -X POST https://localhost:5000/api/proxyGoogle
 ## 命令行
 
 ```bash
-fly [command] [options] [file | dir]
+Usage:
 
-= Commands
+  fly <command> [--options]
 
-start                 Run on the fly  [Default command]
-    -d, --daemon        Run in daemon mode
-    -l, --link          Link multi folder
-    -w, --watch         Start with hot reload mode
-    -a, --autoname      Auto set function name base on directory
-    -p, --port          Bind port
-    -b, --bind          Bind address
-    -m, --mode          Start mode: api, http or together
-    --disable-http-link Disable http link
-    --enable-api-link   Enabled links api, accesss via service@function
-    --api-prefix        Api url prefix, default is /api
-restart               Restart service
-stop                  Stop service
-status                Status service
-log                   Show log
-config                Show config
-version
-call                  Call function
-    -d, --data          Json or form data
-list                  List functions
-install               Install deps
-    -l                  List deps
-new                   Create new project
+System Commands:
 
-= Global options
--V      Verbose
+  call <fn>                      Call function
+    <fn>                         Function name
+    --type string                Set event type
+    --data,-d string             Set event data
+  help                           Show help
+    --all                        Show all commands
+  install                        Install deps
+    --list                       List packages to install
+    --list-all                   List all packages
+  list                           List functions
+    --type string                List with type
+    --all                        List all commands
+  new [dir]                      Create new service dir
+    [dir]                        Dir name
+    --force                      Force create when dir exists
+  show <fn>                      Show function info
+    <fn>                         Function name
+  up [command]                   Manage http service
+    [command]                    start | stop | reload | restart | status | log
+    --port,-p number             Bind port
+    --foreground,-f              Run in foreground
+    --api                        Run api mode only
+    --instance,-i number         The instance number
+    --all,-a                     All applications
 ```
 
 ## Fly 作为库来使用
