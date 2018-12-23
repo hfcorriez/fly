@@ -9,12 +9,7 @@
 
 ### Event 事件定义
 
-```javascript
-{
-  // 属性定义
-  [String]: [Any]
-}
-```
+> Event 可以是任何值，没有严格的限制，并且要保持干净
 
 ### Context 上下文定义
 
@@ -28,11 +23,11 @@
   call: Function,                   // 调用方法 call([Function Name])
   list: Function,                   // List functions
   get: Function,                    // Get function
-  broadcast: Function,              // Broadcast to events
-  link: Function,                   // Link function
   trace: {                          // 调用链路信息
-    fn: String,                     // 函数名称
-    type: String,                   // 调用事件类型
+    name: String,                   // 函数名称
+    type: String,                   // 调用类型
+    eventType: String,              // Event Type
+    eventId: String,                // Event ID
     error: String,                  // 错误信息
     startTime: Number,              // 开始时间
     endTime: Number,                // 结束时间
