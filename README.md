@@ -109,12 +109,6 @@ module.exports = {
     return event
   },
 
-  /**
-   * After interceptor for function
-   *
-   * @param {Object} event    Event
-   * @param {Object} ctx      Context
-   */
   after: (event, ctx) => {
     return {
       body: {
@@ -123,9 +117,6 @@ module.exports = {
     }
   },
 
-  /**
-   * Hanlde error
-   */
   error: (error, ctx) => {
     return {
       status: 500,
@@ -136,16 +127,11 @@ module.exports = {
     }
   }
 
-  /**
-   * Events declare
-   * Support: http, api, startup, shutdown
-   */
   events: {
     http: {
       method: 'post',
       path: '/api/users/create',
       before: function (event) {
-        // ?event.results['api.authUser']
         return {
           username: event.body.username,
           password: event.body.password
