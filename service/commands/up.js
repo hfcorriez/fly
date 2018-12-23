@@ -94,8 +94,9 @@ module.exports = {
       },
       descriptions: {
         _: 'Manage http service',
-        '[command]': 'start | stop | restart | status | log',
+        '[command]': 'start | stop | reload | restart | status | log',
         '--port': 'Bind port',
+        '--api': 'Run api mode only',
         '--foreground': 'Run in foreground',
         '--instance': 'The instance number',
         '--all': 'All applications',

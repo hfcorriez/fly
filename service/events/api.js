@@ -8,10 +8,6 @@ module.exports = {
     port: parseInt(process.env.PORT || 5000, 10),
   },
 
-  links: {
-    _: process.cwd()
-  },
-
   main: async function (event) {
     const fly = new Fly()
     /**
