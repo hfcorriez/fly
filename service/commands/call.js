@@ -38,16 +38,15 @@ module.exports = {
       if (!fn) throw new Error('no function found')
 
       result = await obj.call(fn, evt, ctx)
+      console.log(`# CALL ${fn.name} <- ${JSON.stringify(evt)}`, ':')
+      console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
+      process.exit(0)
     } catch (err) {
       console.error('Error:', err.message, err.code ? `(${err.code})` : '')
       if (event.args.verbose) console.error(err)
       process.exit(1)
       return
     }
-
-    console.log(`"${fn.name}" result:\n`)
-    console.log(JSON.stringify(result, null, 4))
-    process.exit(0)
   },
 
   getStdin: function () {
