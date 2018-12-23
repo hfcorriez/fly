@@ -81,6 +81,8 @@
 === userCreate.js
 
 ```javascript
+const db = require('./db')
+
 module.exports = {
   name: 'userCreate',
 
@@ -93,33 +95,18 @@ module.exports = {
     url: 'http://url'
   }
 
-  /**
-   * 主函数
-   *
-   * @param {Object} event    Event
-   * @param {Object} ctx      Context
-   */
-  main: async function (event, fly) {
-    // Process main logic
+  main: async function (event, ctx) {
+    await ctx.call('module@log', {event})
+    return await db.insertOne(event)
   },
 
-  /**
-   * Validate function
-   *
-   * @param {Object} event    Event
-   * @param {Object} ctx      Context
-   */
   validate: async (event, ctx) => {
-    return true
+    return !!event.id
   },
 
-  /**
-   * Before interceptor for function
-   *
-   * @param {Object} event    Event
-   * @param {Object} ctx      Context
-   */
   before: (event, ctx) => {
+    await db.bootstrap()
+    return event
   },
 
   /**
@@ -129,13 +116,24 @@ module.exports = {
    * @param {Object} ctx      Context
    */
   after: (event, ctx) => {
+    return {
+      body: {
+        data: event
+      }
+    }
   },
 
   /**
    * Hanlde error
    */
   error: (error, ctx) => {
-    console.error(error)
+    return {
+      status: 500,
+      body: {
+        code: 1,
+        message: error.message
+      }
+    }
   }
 
   /**
@@ -143,17 +141,16 @@ module.exports = {
    * Support: http, api, startup, shutdown
    */
   events: {
-    // HTTP 服务的注册
     http: {
       method: 'post',
       path: '/api/users/create',
-      before: ['api.authUser', 'logstash@reportHttp', function (event) {
+      before: function (event) {
         // ?event.results['api.authUser']
         return {
           username: event.body.username,
           password: event.body.password
         }
-      }]
+      },
       after: function (result) {
         return {
           status: 200,
