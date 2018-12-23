@@ -54,24 +54,13 @@ module.exports = {
     let ret = ''
 
     return new Promise(resolve => {
-      if (stdin.isTTY) {
-        resolve(ret)
-        return
-      }
-
+      if (stdin.isTTY) return resolve(ret)
       stdin.setEncoding('utf8')
-
       stdin.on('readable', () => {
         let chunk
-
-        while ((chunk = stdin.read())) {
-          ret += chunk
-        }
+        while ((chunk = stdin.read())) ret += chunk
       })
-
-      stdin.on('end', () => {
-        resolve(ret)
-      })
+      stdin.on('end', () => resolve(ret))
     })
   },
 

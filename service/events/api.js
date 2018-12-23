@@ -5,7 +5,7 @@ const debug = require('debug')('fly/srv/api')
 
 module.exports = {
   config: {
-    port: 5000
+    port: parseInt(process.env.PORT || 5000, 10),
   },
 
   links: {

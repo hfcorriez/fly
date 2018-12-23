@@ -11,7 +11,7 @@ const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT
 
 module.exports = {
   config: {
-    port: 5000,
+    port: parseInt(process.env.PORT || 5000, 10),
     errors: {
       '404': fs.readFileSync(path.join(__dirname, './http/404.html')),
       '500': fs.readFileSync(path.join(__dirname, './http/500.html'))
@@ -166,10 +166,9 @@ module.exports = {
     })
 
     return new Promise((resolve, reject) => {
-      const port = event && event.port || this.config.port
+      const port = event.port || this.config.port
       fastify.listen(port, (err, address) => {
         if (err) return reject(err)
-
         resolve({
           address,
           routes: this.buildRoutes()

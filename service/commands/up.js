@@ -35,32 +35,37 @@ module.exports = {
       path: process.argv[1]
     })
 
+    let names = !event.args.all && name
+
     switch (event.params.command) {
       case 'status':
-        await pm.status(name)
+        await pm.status(names)
         break;
       case 'log':
-        await pm.log(name)
+        await pm.log(names)
         break;
       case 'end':
       case 'stop':
-        await pm.stop(name)
-        await pm.status(name)
+        await pm.stop(names)
+        await pm.status(names)
         break;
       case 'restart':
-        await pm.restart(name)
-        await pm.status(name)
+        await pm.restart(names)
+        await pm.status(names)
         break;
       case 'reload':
-        await pm.reload(name)
-        await pm.status(name)
+        await pm.reload(names)
+        await pm.status(names)
         break;
       case 'start':
       case undefined:
         await pm.start({
           name,
-          args: ['up', '-f'].concat(event.argv),
-          instance: event.args.instance
+          args: ['up', '-f'],
+          instance: event.args.instance,
+          env: {
+            PORT: event.args.port
+          }
         })
         await pm.status(name)
         break;
@@ -78,12 +83,14 @@ module.exports = {
         '--port': Number,
         '--foreground': Boolean,
         '--api': Boolean,
-        '--instance': Number
+        '--instance': Number,
+        '--all': Boolean,
       },
       alias: {
         '--port': '-p',
         '--foreground': '-f',
         '--instance': '-i',
+        '--all': '-a',
       },
       descriptions: {
         _: 'Manage http service',
@@ -91,6 +98,7 @@ module.exports = {
         '--port': 'Bind port',
         '--foreground': 'Run in foreground',
         '--instance': 'The instance number',
+        '--all': 'All applications',
       }
     }
   }
