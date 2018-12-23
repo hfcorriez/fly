@@ -13,18 +13,18 @@ module.exports = {
     if (event.args.system) {
       console.log('System Commands:\n')
       this.outputCommands(ctx.list('command'))
+
+      if (event.config && event.config.args) {
+        console.log('Global options:\n')
+        this.outputCommand(event.config)
+        console.log('')
+      }
     }
 
     if (ROOT_DIR !== process.cwd() && !event.args.system) {
       const fly = new Fly()
       console.log('Commands:\n')
       this.outputCommands(fly.list('command'))
-    }
-
-    if (event.config && event.config.args) {
-      console.log('Global options:\n')
-      this.outputCommand(event.config)
-      console.log('')
     }
   },
 
