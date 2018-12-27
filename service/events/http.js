@@ -20,7 +20,7 @@ module.exports = {
 
   before: async function (event) {
     this.fly = new Fly()
-    this.functions = this.fly.list('http')
+    this.functions = this.fly.list('http').sort((a, b) => (b.events.http.priority || 0) - (a.events.http.priority || 0))
 
     await this.fly.broadcast('startup')
     debug('startup...')
