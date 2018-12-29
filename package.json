@@ -29,5 +29,8 @@
     "req-fast": "^0.2.18",
     "uuid": "^3.2.1",
     "wcwidth": "^1.0.1"
+  },
+  "devDependencies": {
+    "eslint-plugin-standard": "^4.0.0"
   }
 }
