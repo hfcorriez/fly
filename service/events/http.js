@@ -84,7 +84,7 @@ module.exports = {
           let matched
           let fn = this.functions.find(f => !!(matched = this.match(evt, f.events.http)))
 
-          // Support fallback event
+          // Support fallback function
           if (!fn) fn = this.functions.find(f => f.events.http.fallback)
 
           if (fn) {
