@@ -82,13 +82,13 @@ module.exports = {
 
         try {
           let matched
-          let fn = this.functions.find(f => {
-            matched = this.match(evt, f.events.http)
-            return !!matched
-          })
+          let fn = this.functions.find(f => !!(matched = this.match(evt, f.events.http)))
+
+          // Support fallback event
+          if (!fn) fn = this.functions.find(f => f.events.http.fallback)
 
           if (fn) {
-            result = await this.fly.call(fn, Object.assign(evt, matched), { eventId, eventType: 'http' })
+            result = await this.fly.call(fn, Object.assign(evt, matched || {}), { eventId, eventType: 'http' })
           }
         } catch (err) {
           res.code(502).type('application/json').send({
