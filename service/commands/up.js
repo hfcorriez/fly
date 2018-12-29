@@ -38,6 +38,7 @@ module.exports = {
     let names = !event.args.all && name
 
     switch (event.params.command) {
+      case 'list':
       case 'status':
         await pm.status(names)
         break;
