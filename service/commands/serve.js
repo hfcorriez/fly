@@ -16,11 +16,15 @@ module.exports = {
       url: '/*',
       handler: async (req, res) => {
         const urlObj = new URL('http://' + req.headers.host + req.raw.url)
-        const filePath = path.join(root, urlObj.pathname.substr(1))
+        const filePath = path.join(root, decodeURIComponent(urlObj.pathname.substr(1)))
         if (fs.existsSync(filePath)) {
           const stat = fs.statSync(filePath)
+
           if (stat.isDirectory()) {
             const files = fs.readdirSync(filePath)
+              .map(file => Object.assign(fs.statSync(path.join(filePath, file)), { name: file }))
+              .sort((a, b) => (b.isDirectory() ? 1 : 0) - (a.isDirectory() ? 1 : 0))
+
             res.type('html').send([
               `<!DOCTYPE html>
 <html lang="en">
@@ -28,9 +32,13 @@ module.exports = {
   <meta charset="UTF-8">
   <title>${urlObj.pathname}</title>
 </head>
-<body><ul>`,
-              (urlObj.pathname === '/' ? [] : ['..']).concat(files).map(f => {
-                return `<li><a href="${path.join(urlObj.pathname, f)}">${f}</a></li>`
+<body>
+<h3>${filePath}</h3>
+<ul>`,
+              (urlObj.pathname === '/' ? [] : ['..']).concat(files).map(file => {
+                const icon = (typeof file === 'string' || file.isDirectory()) ? '📔' : '🧾'
+                const name = typeof file === 'string' ? file : file.name
+                return `<li>${icon} <a href="${path.join(urlObj.pathname, name)}">${name}</a></li>`
               }).join(''),
               `</ul></body></html>`
             ].join(''))
