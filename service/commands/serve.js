@@ -23,17 +23,16 @@ module.exports = {
             const files = fs.readdirSync(filePath)
             res.type('html').send([
               `<!DOCTYPE html>
-              <html lang="en">
-              <head>
-                <meta charset="UTF-8">
-                <title>${filePath}</title>
-              </head>
-              <body><ul>`,
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${urlObj.pathname}</title>
+</head>
+<body><ul>`,
               (urlObj.pathname === '/' ? [] : ['..']).concat(files).map(f => {
                 return `<li><a href="${path.join(urlObj.pathname, f)}">${f}</a></li>`
               }).join(''),
-              `</ul></body>
-              </html>`
+              `</ul></body></html>`
             ].join(''))
           } else {
             res.type(mime.getType(filePath)).send(fs.createReadStream(filePath))
@@ -48,7 +47,7 @@ module.exports = {
       const port = event.port || this.config.port
       fastify.listen(port, (err, address) => {
         if (err) return reject(err)
-        console.log('Server listen at: ' + address)
+        console.log('Serve at: ' + address)
         resolve({ address })
       })
     })
