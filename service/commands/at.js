@@ -67,7 +67,7 @@ module.exports = {
 
   events: {
     command: {
-      _: 'serve [dir]',
+      _: 'at [dir]',
       args: {
         '--port': Number,
       },
