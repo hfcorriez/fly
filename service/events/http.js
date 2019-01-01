@@ -111,11 +111,6 @@ module.exports = {
           return
         }
 
-        if (result.file) {
-          res.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
-          return
-        }
-
         if (result.headers) {
           Object.keys(result.headers).forEach(key => {
             res.header(key, result.headers[key])
@@ -124,6 +119,11 @@ module.exports = {
 
         if (result.redirect) {
           res.redirect(result.status || 302, result.redirect)
+          return
+        }
+
+        if (result.file) {
+          res.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
           return
         }
 
