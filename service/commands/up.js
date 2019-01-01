@@ -50,10 +50,12 @@ module.exports = {
         await pm.stop(names)
         await pm.status(names)
         break;
+      case 'again':
       case 'restart':
         await pm.restart(names)
         await pm.status(names)
         break;
+      case 'hot':
       case 'reload':
         await pm.reload(names)
         await pm.status(names)
