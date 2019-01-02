@@ -69,15 +69,15 @@ module.exports = {
     command: {
       _: 'at [dir]',
       args: {
-        '--port': Number,
+        '--port': Number
       },
       alias: {
-        '--port': '-p',
+        '--port': '-p'
       },
       descriptions: {
         _: 'Serve dir as http service',
         '[dir]': 'optional dir',
-        '--port': 'Bind port',
+        '--port': 'Bind port'
       }
     }
   }

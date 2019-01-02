@@ -1,6 +1,5 @@
 const arg = require('arg')
 const utils = require('../../lib/utils')
-const debug = require('debug')('fly/evt/cmd')
 
 module.exports = {
   config: {
@@ -15,7 +14,7 @@ module.exports = {
     descriptions: {
       '--verbose': 'Show verbose',
       '--id': 'Set event id'
-    },
+    }
   },
 
   links: {
@@ -45,7 +44,6 @@ module.exports = {
       fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
-
 
     if (!fn) {
       console.error('no command found')
@@ -91,20 +89,20 @@ module.exports = {
       }
     )
 
-    const paramsNames = target._.match(/(\<\S+\>)|(\[\S+\])/g)
+    const paramsNames = target._.match(/(<\S+>)|(\[\S+\])/g)
     if (paramsNames) {
       const targetCommandRegex = new RegExp('^' + target._
-        .replace(/\<\S+\>/g, '\(\\S+\)')
-        .replace(/ \[\S+\]/g, '\(?: \(\\S+\)\)?'))
+        .replace(/<\S+>/g, '(\\S+)')
+        .replace(/ \[\S+\]/g, '(?: (\\S+))?'))
 
-      const matchedParams = args._.join(" ").match(targetCommandRegex)
+      const matchedParams = args._.join(' ').match(targetCommandRegex)
       if (matchedParams) {
         paramsNames.forEach((paramName, i) => {
           result.params[i] = result.params[paramName.substr(1, paramName.length - 2)] = matchedParams[i + 1]
         })
         matched = true
       }
-    } else if (args._.join(" ").startsWith(target._)) {
+    } else if (args._.join(' ').startsWith(target._)) {
       matched = true
     }
 

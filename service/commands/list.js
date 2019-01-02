@@ -20,18 +20,17 @@ module.exports = {
 
     console.log(table.toString())
   },
-  events: {
-    command: {
-      _: 'list',
-      args: {
-        '--type': String,
-        '--all': Boolean
-      },
-      descriptions: {
-        _: 'List functions',
-        '--type': 'List with type',
-        '--all': 'List all commands'
-      }
+
+  configCommand: {
+    _: 'list',
+    args: {
+      '--type': String,
+      '--all': Boolean
+    },
+    descriptions: {
+      _: 'List functions',
+      '--type': 'List with type',
+      '--all': 'List all commands'
     }
   }
 }

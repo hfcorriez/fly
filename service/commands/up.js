@@ -41,25 +41,25 @@ module.exports = {
       case 'list':
       case 'status':
         await pm.status(names)
-        break;
+        break
       case 'log':
         await pm.log(names)
-        break;
+        break
       case 'end':
       case 'stop':
         await pm.stop(names)
         await pm.status(names)
-        break;
+        break
       case 'again':
       case 'restart':
         await pm.restart(names)
         await pm.status(names)
-        break;
+        break
       case 'hot':
       case 'reload':
         await pm.reload(names)
         await pm.status(names)
-        break;
+        break
       case 'start':
       case undefined:
         await pm.start({
@@ -71,7 +71,7 @@ module.exports = {
           }
         })
         await pm.status(name)
-        break;
+        break
     }
   },
 
@@ -87,13 +87,13 @@ module.exports = {
         '--foreground': Boolean,
         '--api': Boolean,
         '--instance': Number,
-        '--all': Boolean,
+        '--all': Boolean
       },
       alias: {
         '--port': '-p',
         '--foreground': '-f',
         '--instance': '-i',
-        '--all': '-a',
+        '--all': '-a'
       },
       descriptions: {
         _: 'Manage http service',
@@ -102,7 +102,7 @@ module.exports = {
         '--api': 'Run api mode only',
         '--foreground': 'Run in foreground',
         '--instance': 'The instance number',
-        '--all': 'All applications',
+        '--all': 'All applications'
       }
     }
   }

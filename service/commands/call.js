@@ -1,5 +1,4 @@
 const querystring = require('querystring')
-const path = require('path')
 const Fly = require('../../lib/fly')
 
 module.exports = {
@@ -45,7 +44,6 @@ module.exports = {
       console.error(`Error${err.code ? `(${err.code})` : ''}:`, err.message)
       if (event.args.verbose) console.error(err)
       process.exit(1)
-      return
     }
   },
 
@@ -69,7 +67,7 @@ module.exports = {
       _: 'call <fn>',
       args: {
         '--type': String,
-        '--data': String,
+        '--data': String
       },
       alias: {
         '--data': '-d'

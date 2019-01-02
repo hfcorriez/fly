@@ -27,17 +27,16 @@ module.exports = {
       return false
     }
   },
-  events: {
-    command: {
-      _: 'new [dir]',
-      args: {
-        '--force': Boolean
-      },
-      descriptions: {
-        _: 'Create new service dir',
-        '[dir]': 'Dir name',
-        '--force': 'Force create when dir exists'
-      }
+
+  configCommand: {
+    _: 'new [dir]',
+    args: {
+      '--force': Boolean
+    },
+    descriptions: {
+      _: 'Create new service dir',
+      '[dir]': 'Dir name',
+      '--force': 'Force create when dir exists'
     }
   }
 }

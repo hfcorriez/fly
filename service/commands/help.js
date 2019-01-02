@@ -66,20 +66,18 @@ module.exports = {
     })
   },
 
-  events: {
-    command: {
-      fallback: true,
-      _: 'help',
-      args: {
-        '--system': Boolean
-      },
-      alias: {
-        '--system': '-s'
-      },
-      descriptions: {
-        _: 'Show help',
-        '--system': 'Show system commands'
-      }
+  configCommand: {
+    fallback: true,
+    _: 'help',
+    args: {
+      '--system': Boolean
+    },
+    alias: {
+      '--system': '-s'
+    },
+    descriptions: {
+      _: 'Show help',
+      '--system': 'Show system commands'
     }
   }
 }

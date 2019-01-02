@@ -5,7 +5,7 @@ const debug = require('debug')('fly/evt/api')
 
 module.exports = {
   config: {
-    port: parseInt(process.env.PORT || 5000, 10),
+    port: parseInt(process.env.PORT || 5000, 10)
   },
 
   main: async function (event) {
@@ -57,5 +57,3 @@ module.exports = {
     })
   }
 }
-
-

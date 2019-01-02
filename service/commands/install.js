@@ -1,5 +1,6 @@
 const depcheck = require('depcheck2')
 const path = require('path')
+const childProcess = require('child_process')
 const dir = process.env.DIR ? path.resolve(process.env.DIR) : process.cwd()
 
 module.exports = {
@@ -36,19 +37,17 @@ module.exports = {
       console.error(err)
     }
   },
-  events: {
-    command: {
-      _: 'install',
-      args: {
-        '--list': Boolean,
-      },
-      alias: {
-        '--list': '-l',
-      },
-      descriptions: {
-        _: 'Install deps',
-        '--list': 'List packages to install',
-      }
+  configCommand: {
+    _: 'install',
+    args: {
+      '--list': Boolean
+    },
+    alias: {
+      '--list': '-l'
+    },
+    descriptions: {
+      _: 'Install deps',
+      '--list': 'List packages to install'
     }
   }
 }
