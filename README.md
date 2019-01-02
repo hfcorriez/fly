@@ -1,4 +1,4 @@
-# node-fly
+# fly
 
 - 独立性：每个函数具有独立性，尽量不依赖于其他函数，注册名字即为全局名字，全局唯一
 - 配置性：函数内的配置和被外部配置覆盖，包含一个 `fly.yml` 的配置文件，可以配置
@@ -18,13 +18,38 @@ $ yarn link
 fly help
 ```
 
-## 接口定义
+### Function 函数定义
+
+```javascript
+{
+  name: String,                                 // 名字
+  main: Function (event, ctx),                  // 主函数
+  validate: Function (event, ctx),              // 验证
+  before: Function (event, ctx),                // 前置拦截
+  after: Function (event, ctx),                 // 后置拦截
+  catch: Function (event, ctx),                 // 错误拦截
+  config: Object {String: Any},                 // 默认配置信息
+  links: Object {String: String},               // 引用模块
+  configHttp: Object || Boolean,                // HTTP 配置
+  beforeHttp: Function (event, ctx),            // HTTP 前置拦截
+  afterHttp: Function (event, ctx),             // HTTP 后置拦截
+  validateHttp: Function (event, ctx),          // HTTP 验证
+  catchHttp: Function (event, ctx),             // HTTP 错误拦截
+  configCommand: Object || Boolean,             // Command 配置
+  beforeCommand: Function (event, ctx),         // Command 前置拦截
+  afterCommand: Function (event, ctx),          // Command 后置拦截
+  validateCommand: Function (event, ctx),       // Command 验证
+  catchCommand: Function (event, ctx),          // Command 错误拦截
+  configStartup: Object || Boolean,             // 配置启动
+  configShutdown: Object || Boolean,            // 配置关闭
+}
+```
 
 ### Event 事件定义
 
 > Event 可以是任何值，没有严格的限制，并且要保持干净
 
-### Context 上下文定义
+### Ctx 上下文定义
 
 ```javascript
 {
@@ -46,33 +71,6 @@ fly help
     endTime: Number,                // 结束时间
     spendTime: Number,              // 结束时间
   }
-}
-```
-
-### Function 函数定义
-
-```javascript
-{
-  name: String,                     // 名字
-  main: Function,                   // 主函数
-  validate: Function,               // 验证事件是否合法
-  before: Function,                 // 前置拦截器
-  after: Function,                  // 后置拦截器
-  catch: Function,                  // 错误拦截器
-  config: Object,                   // 默认配置信息
-  links: Object {String: String},
-  configHttp: Object || Boolean,
-  beforeHttp: Function,
-  afterHttp: Function,
-  validateHttp: Function,
-  catchHttp: Function,
-  configCommand: Object || Boolean,
-  beforeCommand: Function,
-  afterCommand: Function,
-  validateCommand: Function,
-  catchCommand: Function,
-  configStartup: Object || Boolean,
-  configShutdown: Object || Boolean,
 }
 ```
 
