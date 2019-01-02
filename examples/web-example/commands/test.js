@@ -1,11 +1,10 @@
 module.exports = {
-  main: function() {
+  main: function () {
     console.log('test')
   },
 
-  events: {
-    command: {
-      _: 'test'
-    }
+  configCommand: {
+    _: 'test',
+    test: true
   }
 }

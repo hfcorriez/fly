@@ -1,6 +1,5 @@
 const arg = require('arg')
 const utils = require('../../lib/utils')
-const Fly = require('../../lib/fly')
 const debug = require('debug')('fly/evt/cmd')
 
 module.exports = {
@@ -21,6 +20,7 @@ module.exports = {
 
   links: {
     'commands': '../commands',
+    '_': process.cwd()
   },
 
   main: async function (event, ctx) {
@@ -45,6 +45,7 @@ module.exports = {
       fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
+
 
     if (!fn) {
       console.error('no command found')

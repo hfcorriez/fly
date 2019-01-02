@@ -53,39 +53,26 @@ fly help
 
 ```javascript
 {
-  name: String,             // 名字
-  main: Function,           // 主函数
-  validate: Function,       // 验证事件是否合法
-  before: Function,         // 前置拦截器
-  after: Function,          // 后置拦截器
-  error: Function,          // 错误拦截器
-
-  // 1. 可以通过 fly.yml 中的 config.db 进行覆盖
-  // 2. 可以通过 fly_[FLY_ENV].yml 中的 config.db 进行覆盖
-  // 3. 可以通过 fly.yml 中的 config['@userCreate'].db 进行覆盖
-  config: Object,           // 默认配置信息
-
-  // 1. 可以通过 fly.yml 中的 links.module 进行覆盖
-  // 2. 可以通过 fly_[FLY_ENV].yml 中的 links.module 进行覆盖
-  // 3. 可以通过 fly.yml 中的 links['[userCreate]'].module 进行覆盖
-  // 4. 可以通过 fly_[FLY_ENV].yml 中的 links['[userCreate]'].module 进行覆盖
-  links: {
-    String: String          // 需要 Link 的项目
-  }
-
-  events: {                 // 事件声明
-    http: {                 // Http 事件声明
-      method: String,       // 方法
-      path: String,         // 路径
-      domain: String,       // 域名
-      validate: Function,   // 验证事件是否合法
-      before: Function,     // 前置拦截器
-      after: Function,      // 后置拦截器
-    },
-
-    stratup: Boolean,       // 系统启动事件
-    shutdown: Boolean,      // 系统关闭事件
-  }
+  name: String,                     // 名字
+  main: Function,                   // 主函数
+  validate: Function,               // 验证事件是否合法
+  before: Function,                 // 前置拦截器
+  after: Function,                  // 后置拦截器
+  catch: Function,                  // 错误拦截器
+  config: Object,                   // 默认配置信息
+  links: Object {String: String},
+  configHttp: Object || Boolean,
+  beforeHttp: Function,
+  afterHttp: Function,
+  validateHttp: Function,
+  catchHttp: Function,
+  configCommand: Object || Boolean,
+  beforeCommand: Function,
+  afterCommand: Function,
+  validateCommand: Function,
+  catchCommand: Function,
+  configStartup: Object || Boolean,
+  configShutdown: Object || Boolean,
 }
 ```
 
@@ -130,7 +117,7 @@ module.exports = {
     }
   },
 
-  error: (error, ctx) => {
+  catch: (error, ctx) => {
     return {
       status: 500,
       body: {
@@ -138,28 +125,28 @@ module.exports = {
         message: error.message
       }
     }
-  }
+  },
 
-  events: {
-    http: {
+  configHttp: {
       method: 'post',
       path: '/api/users/create',
-      before: function (event) {
-        return {
-          username: event.body.username,
-          password: event.body.password
-        }
-      },
-      after: function (result) {
-        return {
-          status: 200,
-          body: result
-        }
-      }
-    },
+  },
 
-    startup: true,
-  }
+  beforeHttp: function (event) {
+    return {
+      username: event.body.username,
+      password: event.body.password
+    }
+  },
+
+  afterHttp: function (result) {
+    return {
+      status: 200,
+      body: result
+    }
+  },
+
+  configStartup: true
 }
 ```
 
@@ -175,16 +162,15 @@ module.exports = {
     return await request.get('https://google.com')
   },
 
-  events: {
-    http: {
-      method: 'get',
-      path: '/google',
-      after: (result) => {
-        return {
-          status: 200,
-          body: result.body
-        }
-      }
+  configHttp: {
+    method: 'get',
+    path: '/google'
+  },
+
+  afterHttp: (result) => {
+    return {
+      status: 200,
+      body: result.body
     }
   }
 }
@@ -193,7 +179,7 @@ module.exports = {
 ### 2. 启动
 
 ```bash
-fly fly-proxy-google.js
+fly up -f
 ```
 
 ### 3. 访问
@@ -209,17 +195,6 @@ $ curl https://localhost:5000/google
 
 ```bash
 $fly call fly-proxy-google.js
-{
-  ...: ...,
-  body: "<!doctype html>..."
-}
-```
-
-**通过HTTP API**
-
-```bash
-$ curl -X POST https://localhost:5000/api/proxyGoogle
-
 {
   ...: ...,
   body: "<!doctype html>..."
@@ -253,7 +228,7 @@ System Commands:
   show <fn>                      Show function info
     <fn>                         Function name
   up [command]                   Manage http service
-    [command]                    start | stop | reload | restart | status | log
+    [command]                    start | stop/end | reload/hot | restart/again | status/list | log
     --port,-p number             Bind port
     --foreground,-f              Run in foreground
     --api                        Run api mode only

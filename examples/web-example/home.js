@@ -6,11 +6,8 @@ const Fn = {
     return { file: path.join(__dirname, '/index.html') }
   },
 
-  events: {
-    http: {
-      method: 'get',
-      path: '/'
-    }
+  configHttp: {
+    path: '/'
   }
 }
 
