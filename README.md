@@ -1,205 +1,120 @@
-# fly
+```
 
-- 独立性：每个函数具有独立性，尽量不依赖于其他函数，注册名字即为全局名字，全局唯一
-- 配置性：函数内的配置和被外部配置覆盖，包含一个 `fly.yml` 的配置文件，可以配置
 
-## 安装
+    _/_/_/_/  _/    _/      _/
+   _/        _/      _/  _/
+  _/_/_/    _/        _/
+ _/        _/        _/
+_/        _/_/_/_/  _/
 
-> 需要 `node >= 8`，需要安装 `yarn`
+
+```
+
+*FLY* is *f*unctional*ly*, A library for backend.
+
+- **Independence**: one file to handle service
+- **Configurability**: config anything overwrite
+
+
+## Installation
+
+> Require `node >= 8`
 
 ```bash
-$ yarn
-$ yarn link
+## Yarn
+$ yarn global add fly
+
+## NPM
+$ npm install -g fly
 ```
 
-## 帮助
+## Example
 
-```bash
-fly help
-```
+### Write function
 
-### Function 函数定义
+> `proxy.js`
 
 ```javascript
-{
-  name: String,                                 // 名字
-  main: Function (event, ctx),                  // 主函数
-  validate: Function (event, ctx),              // 验证
-  before: Function (event, ctx),                // 前置拦截
-  after: Function (event, ctx),                 // 后置拦截
-  catch: Function (event, ctx),                 // 错误拦截
-  config: Object {String: Any},                 // 默认配置信息
-  links: Object {String: String},               // 引用模块
-  configHttp: Object || Boolean,                // HTTP 配置
-  beforeHttp: Function (event, ctx),            // HTTP 前置拦截
-  afterHttp: Function (event, ctx),             // HTTP 后置拦截
-  validateHttp: Function (event, ctx),          // HTTP 验证
-  catchHttp: Function (event, ctx),             // HTTP 错误拦截
-  configCommand: Object || Boolean,             // Command 配置
-  beforeCommand: Function (event, ctx),         // Command 前置拦截
-  afterCommand: Function (event, ctx),          // Command 后置拦截
-  validateCommand: Function (event, ctx),       // Command 验证
-  catchCommand: Function (event, ctx),          // Command 错误拦截
-  configStartup: Object || Boolean,             // 配置启动
-  configShutdown: Object || Boolean,            // 配置关闭
-}
-```
+const axios = require('axios')
 
-### Event 事件定义
+const Fn = {
+  main: async function (event) {
+    let res = { status: 200, body: '', headers: {} }
 
-> Event 可以是任何值，没有严格的限制，并且要保持干净
-
-### Ctx 上下文定义
-
-```javascript
-{
-  '<Fn prop>': '<Fn prop value>',   // All function props
-  eventId: String,                  // 事件 ID
-  eventType: String,                // 事件类型：http, command, null is internal
-  originalEvent: Event,             // 原始事件
-  parentEvent: Event,               // 上一级的事件
-  call: Function,                   // 调用方法 call([Function Name])
-  list: Function,                   // List functions
-  get: Function,                    // Get function
-  trace: {                          // 调用链路信息
-    name: String,                   // 函数名称
-    type: String,                   // 调用类型
-    eventType: String,              // Event Type
-    eventId: String,                // Event ID
-    error: String,                  // 错误信息
-    startTime: Number,              // 开始时间
-    endTime: Number,                // 结束时间
-    spendTime: Number,              // 结束时间
-  }
-}
-```
-
-## 程序示例
-
-=== userCreate.js
-
-```javascript
-const db = require('./db')
-
-module.exports = {
-  name: 'userCreate',
-
-  config: {
-    db: 'localhost:27017'
-  }
-
-  links: {
-    module: '/dir',
-    url: 'http://url'
-  }
-
-  main: async function (event, ctx) {
-    await ctx.call('module@log', {event})
-    return await db.insertOne(event)
-  },
-
-  validate: async (event, ctx) => {
-    return !!event.id
-  },
-
-  before: (event, ctx) => {
-    await db.bootstrap()
-    return event
-  },
-
-  after: (event, ctx) => {
-    return {
-      body: {
-        data: event
-      }
-    }
-  },
-
-  catch: (error, ctx) => {
-    return {
-      status: 500,
-      body: {
-        code: 1,
-        message: error.message
-      }
-    }
+    const ret = await axios({
+      method: 'GET',
+      url: event.query.url,
+      responseType: 'txt'
+    })
+    res.headers = ret.headers
+    res.status = ret.status
+    res.body = ret.data
+    return res
   },
 
   configHttp: {
-      method: 'post',
-      path: '/api/users/create',
-  },
-
-  beforeHttp: function (event) {
-    return {
-      username: event.body.username,
-      password: event.body.password
-    }
-  },
-
-  afterHttp: function (result) {
-    return {
-      status: 200,
-      body: result
-    }
-  },
-
-  configStartup: true
-}
-```
-
-## 使用示例
-
-### 1. `fly-proxy-google.js`
-
-```javascript
-module.exports = {
-  name: 'proxyGoogle',
-
-  main: async () => {
-    return await request.get('https://google.com')
-  },
-
-  configHttp: {
-    method: 'get',
-    path: '/google'
-  },
-
-  afterHttp: (result) => {
-    return {
-      status: 200,
-      body: result.body
-    }
+    method: 'GET',
+    path: '/proxy'
   }
 }
+
+module.exports = Fn
 ```
 
-### 2. 启动
+### Run in foreground
 
 ```bash
 fly up -f
 ```
 
-### 3. 访问
+## Defintions
 
-**通过网页提供服务**
+### Function Defintion
 
-```
-$ curl https://localhost:5000/google
-<!doctype html>...
-```
-
-**通过命令行API**
-
-```bash
-$fly call fly-proxy-google.js
+```javascript
 {
-  ...: ...,
-  body: "<!doctype html>..."
+  name: String,                                 // Name
+  main: Function (event, ctx),                  // Main
+  validate: Function (event, ctx),              // Validate
+  before: Function (event, ctx),                // Before filter
+  after: Function (event, ctx),                 // After filter
+  catch: Function (event, ctx),                 // Error catch
+  config: Object {String: Any},                 // Config object
+  links: Object {String: String},               // Links config
+  configHttp: Object || Boolean,                // HTTP event
+  beforeHttp: Function (event, ctx),            // HTTP before filter
+  afterHttp: Function (event, ctx),             // HTTP after filter
+  validateHttp: Function (event, ctx),          // HTTP validate
+  catchHttp: Function (event, ctx),             // HTTP error catch
+  configCommand: Object || Boolean,             // Command Config
+  beforeCommand: Function (event, ctx),         // Command before filter
+  afterCommand: Function (event, ctx),          // Command after filter
+  validateCommand: Function (event, ctx),       // Command validate
+  catchCommand: Function (event, ctx),          // Command error catch
+  configStartup: Object || Boolean,             // Startup event
+  configShutdown: Object || Boolean,            // Shutdown event
 }
 ```
 
-## 命令行
+### Event Defintion
+
+> Event can be anything, but must can be JSONify
+
+### Context Defintion
+
+```javascript
+{
+  eventId: String,                  // Event ID
+  eventType: String,                // Event Type：http, command, null is internal
+  originalEvent: Event,             // OriginalEvent
+  parentEvent: Event,               // Parent Event
+  call: Function,                   // Invoke function
+  list: Function,                   // List functions
+  get: Function,                    // Get function
+}
+```
+
+### Command
 
 ```bash
 Usage:
@@ -234,36 +149,29 @@ System Commands:
     --all,-a                     All applications
 ```
 
-## Fly 作为库来使用
+## Fly As Library
 
 ```javascript
 const Fly = require('node-fly')
-const flyDir = new Fly('/dir')
-await flyDir.call('test', {host: 'api.com'})
-
-const flyUrl = new Fly('test.com:3333')
-await flyUrl.call('test', {host: 'api.com'})
-
-const flyModule = new Fly('fly-node')
-await flyModule.call('abc')
+const fly = new Fly('/dir')
+await fly.call('test', {host: 'api.com'})
 ```
 
-## 配置示例
+## Configration
 
-> 常规情况下简单的东西不需要配置，但是也可以通过配置来声明约束，方斌啊管理
+> You can place fly.yml in directory to overwrite funciton's config
 
 `fly.yml`
 
 ```yaml
-# HTTP 服务的一些配置，默认值，函数可以强制声明来覆盖
+# Events config overwrite
 events:
   http:
     domain:
       - api.com
       - localhost
 
-# 程序可以通过 fly.config.db 来获取下级的节点
-# @开头的为 link 的配置覆盖
+# Config overwrite
 config:
   db:
     host: localhost
@@ -272,9 +180,7 @@ config:
   url@:
     url: hello
 
-# Link 主要作用是为了减少重写
-#   1、使用函数
-#   2、继承服务
+# Link overwrite
 links:
   module: module-name
   dir: /dirname
