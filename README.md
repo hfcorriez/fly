@@ -155,7 +155,7 @@ System Commands:
 
 `http`
 
-```json
+```javascript
 {
   "method": "String",             # GET, POST, PUT, DELETE, OPTIONS and *
   "path": "String",               # Path start with /
@@ -165,7 +165,7 @@ System Commands:
 
 `command`
 
-```json
+```javascript
 {
   "_": "command <subCommand>",
   "args": {
