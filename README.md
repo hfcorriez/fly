@@ -15,7 +15,6 @@ _/        _/_/_/_/  _/
 - **Independence**: one file to handle service
 - **Configurability**: config anything overwrite
 
-
 ## Installation
 
 > Require `node >= 8`
@@ -212,7 +211,9 @@ links:
   github: hfcorriez/test.git
 ```
 
-## Use Fly As Library
+## API
+
+### Usage
 
 ```javascript
 const Fly = require('node-fly')
