@@ -81,12 +81,12 @@ fly up -f
   catch: Function (event, ctx),                 // Error catch
   config: Object {String: Any},                 // Config object
   links: Object {String: String},               // Links config
-  configHttp: Object || Boolean,                // HTTP event
+  configHttp: Object,                           // HTTP event
   beforeHttp: Function (event, ctx),            // HTTP before filter
   afterHttp: Function (event, ctx),             // HTTP after filter
   validateHttp: Function (event, ctx),          // HTTP validate
   catchHttp: Function (event, ctx),             // HTTP error catch
-  configCommand: Object || Boolean,             // Command Config
+  configCommand: Object,                        // Command Config
   beforeCommand: Function (event, ctx),         // Command before filter
   afterCommand: Function (event, ctx),          // Command after filter
   validateCommand: Function (event, ctx),       // Command validate
@@ -149,17 +149,39 @@ System Commands:
     --all,-a                     All applications
 ```
 
-## Fly As Library
-
-```javascript
-const Fly = require('node-fly')
-const fly = new Fly('/dir')
-await fly.call('test', {host: 'api.com'})
-```
-
 ## Configration
 
-> You can place fly.yml in directory to overwrite funciton's config
+### Internal events config
+
+`http`
+
+```json
+{
+  "method": "String",             # GET, POST, PUT, DELETE, OPTIONS and *
+  "path": "String",               # Path start with /
+  "domain": "String | Array"      # domain string or list
+}
+```
+
+`command`
+
+```json
+{
+  "_": "command <subCommand>",
+  "args": {
+    "--option": String
+  },
+  "alias": {
+    "--option": "-o"
+  },
+  "descriptions": {
+    "--option": "Option desc"
+  }
+```
+
+### fly.yml
+
+> You can place `fly.yml` in directory to overwrite funciton's config
 
 `fly.yml`
 
@@ -189,3 +211,21 @@ links:
   git: git@gitlab.com:hfcorriez/test.git
   github: hfcorriez/test.git
 ```
+
+## Use Fly As Library
+
+```javascript
+const Fly = require('node-fly')
+const fly = new Fly('/dir')
+await fly.call('test', {host: 'api.com'})
+```
+
+## LICENSE
+
+Copyright 2019 hfcorriez@gmail.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
