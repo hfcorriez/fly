@@ -1,6 +1,7 @@
+const path = require('path')
+const fs = require('fs')
 const utils = require('../../lib/utils')
 const Fly = require('../../lib/fly')
-const path = require('path')
 const ROOT_DIR = path.join(__dirname, '../..')
 
 module.exports = {
@@ -8,9 +9,15 @@ module.exports = {
   },
 
   main: async function (event, ctx) {
+    const currentDir = process.cwd()
     console.log('Usage:\n')
     console.log('  fly <command> [--options]\n')
-    if (event.args.system) {
+
+    if (ROOT_DIR !== currentDir && !event.args.system && fs.existsSync(path.join(currentDir, 'fly.yml'))) {
+      const fly = new Fly()
+      console.log('Commands:\n')
+      this.outputCommands(fly.list('command'))
+    } else {
       console.log('System Commands:\n')
       this.outputCommands(ctx.list('command'))
 
@@ -19,12 +26,6 @@ module.exports = {
         this.outputCommand(event.config)
         console.log('')
       }
-    }
-
-    if (ROOT_DIR !== process.cwd() && !event.args.system) {
-      const fly = new Fly()
-      console.log('Commands:\n')
-      this.outputCommands(fly.list('command'))
     }
   },
 

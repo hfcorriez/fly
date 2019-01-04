@@ -10,7 +10,7 @@ _/        _/_/_/_/  _/
 
 ```
 
-*FLY* is *f*unctional*ly*, A library for backend.
+*FLY* is *f*unctional*ly*, A library for develop backend easy.
 
 - **Independence**: one file to handle service
 - **Configurability**: config anything overwrite
