@@ -261,7 +261,7 @@ module.exports = {
       '--all': '-a'
     },
     descriptions: {
-      _: 'Manage http service',
+      _: 'Http service',
       '[command]': 'start | stop | reload | restart | status | log',
       '--port': 'Bind port',
       '--foreground': 'Run in foreground',
