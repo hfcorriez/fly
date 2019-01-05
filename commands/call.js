@@ -1,5 +1,5 @@
 const querystring = require('querystring')
-const Fly = require('../../lib/fly')
+const Fly = require('../lib/fly')
 
 module.exports = {
   main: async function (event, ctx) {
@@ -20,9 +20,7 @@ module.exports = {
       }
     }
 
-    if (event.args.type) {
-      ctx.eventType = event.args.type
-    }
+    if (event.args.type) ctx.eventType = event.args.type
 
     let result
     let fn
@@ -62,22 +60,20 @@ module.exports = {
     })
   },
 
-  events: {
-    command: {
-      _: 'call <fn>',
-      args: {
-        '--type': String,
-        '--data': String
-      },
-      alias: {
-        '--data': '-d'
-      },
-      descriptions: {
-        '_': 'Call function',
-        '<fn>': 'Function name',
-        '--type': 'Set event type',
-        '--data': 'Set event data'
-      }
+  configCommand: {
+    _: 'call <fn>',
+    args: {
+      '--type': String,
+      '--data': String
+    },
+    alias: {
+      '--data': '-d'
+    },
+    descriptions: {
+      '_': 'Call function',
+      '<fn>': 'Function name',
+      '--type': 'Set event type',
+      '--data': 'Set event data'
     }
   }
 }

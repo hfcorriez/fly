@@ -18,7 +18,7 @@ module.exports = {
   },
 
   links: {
-    'commands': '../commands'
+    'commands': '../../commands'
   },
 
   main: async function (event, ctx) {

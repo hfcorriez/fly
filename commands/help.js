@@ -1,13 +1,10 @@
 const path = require('path')
 const fs = require('fs')
-const utils = require('../../lib/utils')
-const Fly = require('../../lib/fly')
+const utils = require('../lib/utils')
+const Fly = require('../lib/fly')
 const ROOT_DIR = path.join(__dirname, '../..')
 
 module.exports = {
-  config: {
-  },
-
   main: async function (event, ctx) {
     const currentDir = process.cwd()
     console.log('Usage:\n')

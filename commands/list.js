@@ -1,5 +1,5 @@
 const Table = require('cli-table2')
-const Fly = require('../../lib/fly')
+const Fly = require('../lib/fly')
 
 module.exports = {
   main: async function (event, ctx) {

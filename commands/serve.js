@@ -65,20 +65,18 @@ module.exports = {
     !event && process.exit(0)
   },
 
-  events: {
-    command: {
-      _: 'at [dir]',
-      args: {
-        '--port': Number
-      },
-      alias: {
-        '--port': '-p'
-      },
-      descriptions: {
-        _: 'Serve dir as http service',
-        '[dir]': 'optional dir',
-        '--port': 'Bind port'
-      }
+  configCommand: {
+    _: 'serve [dir]',
+    args: {
+      '--port': Number
+    },
+    alias: {
+      '--port': '-p'
+    },
+    descriptions: {
+      _: 'Serve dir as http service',
+      '[dir]': 'optional dir',
+      '--port': 'Bind port'
     }
   }
 }
