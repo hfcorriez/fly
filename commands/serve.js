@@ -4,12 +4,18 @@ const path = require('path')
 const { URL } = require('url')
 const fastify = require('fastify')()
 
-module.exports = {
-  config: {
-    port: 8000
+module.exports = Object.assign({}, require('../lib/server'), {
+  server: {
+    command: 'serve',
+    name: 'Serve'
   },
 
-  main: async function (event, ctx) {
+  config: {
+    port: 8000,
+    address: '127.0.0.1'
+  },
+
+  run: function (event, ctx) {
     const root = path.resolve(event.params.dir || '.')
     fastify.route({
       method: ['GET'],
@@ -53,30 +59,12 @@ module.exports = {
 
     return new Promise((resolve, reject) => {
       const port = event.port || this.config.port
-      fastify.listen(port, (err, address) => {
+      const address = event.address || this.config.address
+      fastify.listen(port, address, (err, address) => {
         if (err) return reject(err)
         console.log('Serve at: ' + address)
         resolve({ address })
       })
     })
-  },
-
-  after: function (event) {
-    !event && process.exit(0)
-  },
-
-  configCommand: {
-    _: 'serve [dir]',
-    args: {
-      '--port': Number
-    },
-    alias: {
-      '--port': '-p'
-    },
-    descriptions: {
-      _: 'Serve dir as http service',
-      '[dir]': 'optional dir',
-      '--port': 'Bind port'
-    }
   }
-}
+})

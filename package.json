@@ -2,7 +2,7 @@
   "name": "fly",
   "version": "3.0.2",
   "description": "A library for develop backend easy",
-  "main": "index.js",
+  "main": "lib/index.js",
   "bin": {
     "fly": "bin/fly.js"
   },

@@ -89,8 +89,10 @@ module.exports = {
     )
 
     const paramsNames = target._.match(/(<\S+>)|(\[\S+\])/g)
+
     if (paramsNames) {
       const targetCommandRegex = new RegExp('^' + target._
+        .replace(/([a-zA-Z]) /g, '$1\\b ')
         .replace(/<\S+>/g, '(\\S+)')
         .replace(/ \[\S+\]/g, '(?: (\\S+))?'))
 
