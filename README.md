@@ -183,6 +183,9 @@ System Commands:
 `fly.yml`
 
 ```yaml
+files:
+  - "**/*.fly.js"
+
 # Events config overwrite
 events:
   http:

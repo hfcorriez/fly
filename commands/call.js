@@ -1,4 +1,5 @@
 const querystring = require('querystring')
+const colors = require('colors/safe')
 const Fly = require('../lib/fly')
 
 module.exports = {
@@ -13,9 +14,10 @@ module.exports = {
       try {
         evt = JSON.parse(eventData)
       } catch (err) {
-        evt = querystring.parse(eventData)
+        if (eventData.includes('=')) evt = querystring.parse(eventData)
         if (!evt) {
-          console.error(`Event data parse failed: ${err.message}`)
+          console.warn(colors.bgRed('ERROR_DATA'), colors.red.underline('Event data parse failed'))
+          return
         }
       }
     }
@@ -35,11 +37,11 @@ module.exports = {
       if (!fn) throw new Error('no function found')
 
       result = await obj.call(fn, evt, ctx)
-      console.log(`# CALL ${fn.name} <- ${JSON.stringify(evt)}`, ':')
+      console.warn(colors.green(['SUCCESS', fn.name, '<=', JSON.stringify(evt || null)].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
       process.exit(0)
     } catch (err) {
-      console.error(`Error${err.code ? `(${err.code})` : ''}:`, err.message)
+      console.warn(colors.bgRed('CALL_ERROR'), colors.red(err.message))
       if (event.args.verbose) console.error(err)
       process.exit(1)
     }
