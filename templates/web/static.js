@@ -1,7 +1,7 @@
 const path = require('path')
 
-const Fn = {
-  main: function (event) {
+const Func = {
+  main (event) {
     return { file: path.join(__dirname, 'static', event.params.path) }
   },
 
@@ -11,4 +11,4 @@ const Fn = {
   }
 }
 
-module.exports = Fn
+module.exports = Func
