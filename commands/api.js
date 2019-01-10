@@ -1,4 +1,5 @@
 const fastify = require('fastify')()
+const path = require('path')
 const debug = require('debug')('fly/evt/htt')
 
 module.exports = Object.assign({}, require('../lib/server'), {
@@ -9,18 +10,16 @@ module.exports = Object.assign({}, require('../lib/server'), {
 
   config: {
     address: '127.0.0.1',
-    port: parseInt(process.env.PORT || 5000, 10)
+    port: parseInt(process.env.PORT || 5000, 10),
+    endpoint: ''
   },
 
-  run: function (event, ctx) {
+  run (event, ctx) {
     /**
      * Rpc server
      */
-    fastify.options('/*', async (request, reply) => {
-      reply.send('')
-    })
-
-    fastify.post('/:fn', async (request, reply) => {
+    fastify.options(path.join('/', this.config.endpoint, '*'), async (_, reply) => reply.send(''))
+    fastify.post(path.join('/', this.config.endpoint, ':fn'), async (request, reply) => {
       try {
         let context = { eventType: 'api' }
         if (request.headers['x-fly-id']) context.id = request.headers['x-fly-id']
@@ -47,7 +46,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
     return new Promise((resolve, reject) => {
       const port = event.port || this.config.port
       const address = event.address || this.config.address
-      fastify.listen(port, address, function (err, address) {
+      fastify.listen(port, address, (err, address) => {
         if (err) return reject(err)
         resolve({ address })
       })

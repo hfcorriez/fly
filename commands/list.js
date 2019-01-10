@@ -2,7 +2,7 @@ const Table = require('cli-table2')
 const Fly = require('../lib/fly')
 
 module.exports = {
-  main: async function (event, ctx) {
+  main (event, ctx) {
     let fly = new Fly()
     let functions = fly.list(event.args.type)
     if (event.args.all) {

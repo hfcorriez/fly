@@ -22,7 +22,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
     }
   },
 
-  run: function (event) {
+  run (event) {
     const functions = this.fly.list('http').sort((a, b) => (b.events.http.priority || 0) - (a.events.http.priority || 0))
 
     fastify.route({
@@ -126,8 +126,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
         this.buildRoutes(functions).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, (route.domain || []).join(', '), route.fn]))
         console.log(table.toString())
-        console.log(`fly http: ${address}`)
-        resolve(true)
+        resolve({ address })
       })
     })
   },

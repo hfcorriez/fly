@@ -5,7 +5,7 @@ const Fly = require('../lib/fly')
 const ROOT_DIR = path.join(__dirname, '../..')
 
 module.exports = {
-  main: async function (event, ctx) {
+  async main (event, ctx) {
     const currentDir = process.cwd()
     console.log('Usage:\n')
     console.log('  fly <command> [--options]\n')
@@ -13,28 +13,28 @@ module.exports = {
     if (ROOT_DIR !== currentDir && !event.args.system && fs.existsSync(path.join(currentDir, 'fly.yml'))) {
       const fly = new Fly()
       console.log('Commands:\n')
-      this.outputCommands(fly.list('command'))
+      this.OutputCommands(fly.list('command'))
     } else {
       console.log('System Commands:\n')
-      this.outputCommands(ctx.list('command'))
+      this.OutputCommands(ctx.list('command'))
 
       if (event.config && event.config.args) {
         console.log('Global options:\n')
-        this.outputCommand(event.config)
+        this.OutputCommand(event.config)
         console.log('')
       }
     }
   },
 
-  outputCommands: function (functions) {
-    functions.map(fn => this.outputCommand(fn.events.command))
+  OutputCommands (functions) {
+    functions.map(fn => this.OutputCommand(fn.events.command))
     if (!functions.length) {
       console.log('  <NO COMMANDS>')
     }
     console.log('')
   },
 
-  outputCommand: function (command) {
+  OutputCommand (command) {
     let descriptions = command.descriptions || {}
     let alias = command.alias || {}
     let args = command.args || {}

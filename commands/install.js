@@ -4,7 +4,7 @@ const childProcess = require('child_process')
 const dir = process.env.DIR ? path.resolve(process.env.DIR) : process.cwd()
 
 module.exports = {
-  main: async function (event, ctx) {
+  async main (event, ctx) {
     try {
       let result = await new Promise((resolve, reject) => depcheck(dir, {}, unused => resolve(unused)))
       let missingPackages = Object.keys(result.missing)
@@ -37,6 +37,7 @@ module.exports = {
       console.error(err)
     }
   },
+
   configCommand: {
     _: 'install',
     args: {

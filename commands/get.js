@@ -2,7 +2,7 @@
 const Fly = require('../lib/fly')
 
 module.exports = {
-  main: async function (event, ctx) {
+  async main (event, ctx) {
     const fly = new Fly()
     let fn = fly.get(event.params[0])
     if (!fn) fn = ctx.get(event.params[0])

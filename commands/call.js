@@ -3,7 +3,7 @@ const colors = require('colors/safe')
 const Fly = require('../lib/fly')
 
 module.exports = {
-  main: async function (event, ctx) {
+  async main (event, ctx) {
     const fly = new Fly()
 
     let name = event.params[0]
@@ -47,7 +47,7 @@ module.exports = {
     }
   },
 
-  getStdin: function () {
+  getStdin () {
     const stdin = process.stdin
     let ret = ''
 

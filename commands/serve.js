@@ -62,7 +62,6 @@ module.exports = Object.assign({}, require('../lib/server'), {
       const address = event.address || this.config.address
       fastify.listen(port, address, (err, address) => {
         if (err) return reject(err)
-        console.log('Serve at: ' + address)
         resolve({ address })
       })
     })
