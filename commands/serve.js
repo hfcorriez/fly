@@ -5,18 +5,15 @@ const { URL } = require('url')
 const fastify = require('fastify')()
 
 module.exports = Object.assign({}, require('../lib/server'), {
-  server: {
-    command: 'serve',
-    name: 'Serve'
-  },
-
   config: {
+    command: 'serve',
+    name: 'Serve',
     port: 8000,
     address: '127.0.0.1'
   },
 
   run: function (event, ctx) {
-    const root = path.resolve(event.params.dir || '.')
+    const root = path.resolve(event.dir || '.')
     fastify.route({
       method: ['GET'],
       url: '/*',
@@ -58,8 +55,8 @@ module.exports = Object.assign({}, require('../lib/server'), {
     })
 
     return new Promise((resolve, reject) => {
-      const port = event.port || this.config.port
-      const address = event.address || this.config.address
+      const port = this.config.port
+      const address = this.config.address
       fastify.listen(port, address, (err, address) => {
         if (err) return reject(err)
         resolve({ address })

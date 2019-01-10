@@ -3,12 +3,9 @@ const path = require('path')
 const debug = require('debug')('fly/evt/htt')
 
 module.exports = Object.assign({}, require('../lib/server'), {
-  server: {
-    command: 'api',
-    name: 'API'
-  },
-
   config: {
+    command: 'api',
+    name: 'API',
     address: '127.0.0.1',
     port: parseInt(process.env.PORT || 5000, 10),
     endpoint: ''
@@ -44,8 +41,8 @@ module.exports = Object.assign({}, require('../lib/server'), {
     })
 
     return new Promise((resolve, reject) => {
-      const port = event.port || this.config.port
-      const address = event.address || this.config.address
+      const port = this.config.port
+      const address = this.config.address
       fastify.listen(port, address, (err, address) => {
         if (err) return reject(err)
         resolve({ address })
