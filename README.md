@@ -78,18 +78,11 @@ fly up -f
   catch: Function (event, ctx),                 // Error catch
   config: Object {String: Any},                 // Config object
   links: Object {String: String},               // Links config
-  configHttp: Object,                           // HTTP event
-  beforeHttp: Function (event, ctx),            // HTTP before filter
-  afterHttp: Function (event, ctx),             // HTTP after filter
-  validateHttp: Function (event, ctx),          // HTTP validate
-  catchHttp: Function (event, ctx),             // HTTP error catch
-  configCommand: Object,                        // Command Config
-  beforeCommand: Function (event, ctx),         // Command before filter
-  afterCommand: Function (event, ctx),          // Command after filter
-  validateCommand: Function (event, ctx),       // Command validate
-  catchCommand: Function (event, ctx),          // Command error catch
-  configStartup: Object || Boolean,             // Startup event
-  configShutdown: Object || Boolean,            // Shutdown event
+  config<Event>: Object || Boolean,             // Startup event
+  before<Event>: Function (event, ctx),         // Before filter
+  after<Event>: Function (event, ctx),          // After filter
+  validate<Event>: Function (event, ctx),       // Validate event
+  catch<Event>: Function (event, ctx),          // Error catch
 }
 ```
 
