@@ -54,12 +54,25 @@ module.exports = Object.assign({}, require('../lib/server'), {
 
         let result
         let eventId = req.headers['x-fly-id'] || null
+        let headers = {}
 
         try {
-          let matched
-          let fn = functions.find(f => !!(matched = this.match(evt, f.events.http))) || functions.find(f => f.events.http.fallback)
+          let { fn, matched, mode } = this.Find(functions, evt)
 
-          if (fn) {
+          // Match function but target has cors
+          if (matched.target.cors ||
+            // Match prefligth
+            mode === 'cors') {
+            headers['access-control-allow-origin'] = '*'
+            headers['access-control-allow-methods'] = req.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE'
+            headers['access-control-allow-credentials'] = 'true'
+            headers['access-control-allow-headers'] = req.headers['access-control-request-headers'] || '*'
+          }
+
+          if (mode === 'cors') {
+            // Preflight
+            result = { status: 204, headers }
+          } else if (fn) {
             result = await this.fly.call(fn, Object.assign(evt, matched || {}), { eventId, eventType: 'http' })
           }
         } catch (err) {
@@ -83,12 +96,24 @@ module.exports = Object.assign({}, require('../lib/server'), {
           return
         }
 
-        if (result.headers) Object.keys(result.headers).forEach(key => res.header(key, result.headers[key]))
+        // set headers
+        if (result.headers) Object.assign(headers, result.headers)
+        Object.keys(headers).forEach(key => res.header(key, headers[key]))
+
+        // set redirect
         if (result.redirect) return res.redirect(result.status || 302, result.redirect)
-        if (result.file) return res.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
-        if (result.headers && !result.body) return res.send('')
+
+        // set status
         if (result.status) res.code(result.status)
+
+        // set type
         if (result.type) res.type(result.type)
+
+        // return file
+        if (result.file) return res.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
+
+        // empty body
+        if (result.headers && !result.body) return res.send('')
 
         // send body
         if (result.hasOwnProperty('body')) {
@@ -120,7 +145,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
-        this.buildRoutes(functions).forEach(route =>
+        this.BuildRoutes(functions).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, (route.domain || []).join(', '), route.fn]))
         console.log(table.toString())
         resolve({ address })
@@ -128,18 +153,35 @@ module.exports = Object.assign({}, require('../lib/server'), {
     })
   },
 
-  buildRoutes: function (functions) {
+  BuildRoutes (functions) {
     return functions.map(fn => {
       let e = fn.events.http
       return { method: e.method || 'get', path: e.path, domain: e.domain, fn: fn.name }
     })
   },
 
-  match: (source, target) => {
+  Find (functions, event) {
+    let matched
+    let mode = 'normal'
+    let fn = functions.find(f => !!(matched = this.Match(event, f.events.http)))
+
+    if (!fn) {
+      fn = functions.find(f => !!(matched = this.Match(event, f.events.http, 'cors')))
+      mode = 'cors'
+    }
+
+    if (!fn) {
+      functions.find(f => f.events.http.fallback)
+      mode = 'fallback'
+    }
+
+    return { fn, matched, mode }
+  },
+
+  Match (source, target, mode) {
     if (!target.path && target.default) target.path = target.default
     if (!target.method) target.method = 'get'
     if (!target.path) return false
-    if (source.method !== target.method && target.method !== '*') return false
     if (target.domain) {
       if (typeof target.domain === 'string') target.domain = [target.domain]
       let domainValid = target.domain.some(domain => {
@@ -159,11 +201,12 @@ module.exports = Object.assign({}, require('../lib/server'), {
 
     if (!matched) return false
 
+    if ((mode !== 'cors' || source.method !== 'options') && source.method !== target.method && target.method !== '*') return false
+
     let params = {}
     keys.forEach((key, i) => {
       params[key.name] = matched[i + 1]
     })
-
-    return { params: params }
+    return { params: params, target, source }
   }
 })
