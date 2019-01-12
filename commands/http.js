@@ -113,7 +113,10 @@ module.exports = Object.assign({}, require('../lib/server'), {
         if (result.file) return res.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
 
         // empty body
-        if (result.headers && !result.body) return res.send('')
+        if (!result.body) {
+          if (!result.status) res.code(204)
+          return res.send('')
+        }
 
         // send body
         if (result.hasOwnProperty('body')) {
