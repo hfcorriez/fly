@@ -73,26 +73,32 @@ module.exports = Object.assign({}, require('../lib/server'), {
             // Preflight
             result = { status: 204, headers }
           } else if (fn) {
+            // Normal and fallback
             result = await this.fly.call(fn, Object.assign(evt, matched || {}), { eventId, eventType: 'http' })
+          } else {
+            // Non-exists
+            if (this.config.errors['404']) {
+              res.code(404).type('text/html').send(this.config.errors['404'])
+            } else {
+              res.code(404).type('application/json').send({
+                code: 404,
+                message: `function not found`
+              })
+            }
+            return
+          }
+
+          if (!result) {
+            result = {}
+          } else if (result.constructor !== Object) {
+            result = { body: String(result) }
           }
         } catch (err) {
-          res.code(502).type('application/json').send({
-            code: err.code || 10,
+          res.code(500).type('application/json').send({
+            code: err.code || 500,
             message: err.message
           })
           debug(`backend failed: ${err.message}`, err.stack)
-          return
-        }
-
-        if (!result) {
-          if (this.config.errors['404']) {
-            res.code(404).type('text/html').send(this.config.errors['404'])
-          } else {
-            res.code(404).type('application/json').send({
-              code: 404,
-              message: `function not found`
-            })
-          }
           return
         }
 
