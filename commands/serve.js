@@ -4,7 +4,9 @@ const path = require('path')
 const { URL } = require('url')
 const fastify = require('fastify')()
 
-module.exports = Object.assign({}, require('../lib/server'), {
+module.exports = {
+  extends: '../lib/server',
+
   config: {
     command: 'serve',
     name: 'Serve',
@@ -12,7 +14,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
     address: '127.0.0.1'
   },
 
-  run: function (event, ctx) {
+  run: function (event) {
     const root = path.resolve(event.dir || '.')
     fastify.route({
       method: ['GET'],
@@ -63,4 +65,4 @@ module.exports = Object.assign({}, require('../lib/server'), {
       })
     })
   }
-})
+}

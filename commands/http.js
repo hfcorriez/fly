@@ -6,9 +6,12 @@ const { URL } = require('url')
 const path = require('path')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
+const Fly = require('../lib/fly')
 const debug = require('debug')('fly/evt/htt')
 
-module.exports = Object.assign({}, require('../lib/server'), {
+module.exports = {
+  extends: '../lib/server',
+
   config: {
     command: 'http',
     name: 'HTTP',
@@ -20,7 +23,11 @@ module.exports = Object.assign({}, require('../lib/server'), {
     }
   },
 
-  run (event) {
+  init () {
+    this.fly = new Fly()
+  },
+
+  run () {
     const functions = this.fly.list('http').sort((a, b) => (b.events.http.priority || 0) - (a.events.http.priority || 0))
 
     fastify.route({
@@ -255,4 +262,4 @@ module.exports = Object.assign({}, require('../lib/server'), {
 
     return { match, mode, path: !!pathMatched, params, target, source }
   }
-})
+}

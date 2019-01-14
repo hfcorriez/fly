@@ -1,8 +1,11 @@
 const fastify = require('fastify')()
 const path = require('path')
+const Fly = require('../lib/fly')
 const debug = require('debug')('fly/evt/htt')
 
-module.exports = Object.assign({}, require('../lib/server'), {
+module.exports = {
+  extends: '../lib/server',
+
   config: {
     command: 'api',
     name: 'API',
@@ -11,7 +14,11 @@ module.exports = Object.assign({}, require('../lib/server'), {
     endpoint: ''
   },
 
-  run (event, ctx) {
+  init () {
+    this.fly = new Fly()
+  },
+
+  run () {
     /**
      * Rpc server
      */
@@ -49,4 +56,4 @@ module.exports = Object.assign({}, require('../lib/server'), {
       })
     })
   }
-})
+}
