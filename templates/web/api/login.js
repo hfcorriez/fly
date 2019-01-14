@@ -1,6 +1,8 @@
 module.exports = {
+  // Extends from other function
   extends: './index',
 
+  // Declare functions you will used from file, package, github, url
   functions: {
     userLogin: '../common/userLogin'
   },

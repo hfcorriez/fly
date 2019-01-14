@@ -4,7 +4,7 @@ module.exports = {
   },
 
   after (event) {
-    return {
+    return (event && event.redirect) ? event : {
       body: { code: 0, data: event }
     }
   },
@@ -17,6 +17,7 @@ module.exports = {
 
   configHttp: {
     method: 'get',
-    path: '/api'
+    path: '/api',
+    cors: true
   }
 }

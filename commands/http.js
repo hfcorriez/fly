@@ -5,6 +5,7 @@ const pathToRegexp = require('path-to-regexp')
 const { URL } = require('url')
 const path = require('path')
 const fastify = require('fastify')()
+const colors = require('colors/safe')
 const debug = require('debug')('fly/evt/htt')
 
 module.exports = Object.assign({}, require('../lib/server'), {
@@ -25,11 +26,11 @@ module.exports = Object.assign({}, require('../lib/server'), {
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
       url: '/*',
-      handler: async (req, res) => {
-        const urlObj = new URL('http://' + req.headers.host + req.raw.url)
+      handler: async (request, reply) => {
+        const urlObj = new URL('http://' + request.headers.host + request.raw.url)
 
         let evt = {
-          method: req.raw.method.toLowerCase(),
+          method: request.raw.method.toLowerCase(),
           path: urlObj.pathname,
           origin: urlObj.origin,
           host: urlObj.host,
@@ -37,10 +38,10 @@ module.exports = Object.assign({}, require('../lib/server'), {
           url: urlObj.href,
           protocol: urlObj.protocol,
           port: urlObj.port,
-          ip: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.raw.socket.remoteAddress,
-          headers: req.headers || {},
-          body: req.body || {},
-          query: req.query || {},
+          ip: request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || request.raw.socket.remoteAddress,
+          headers: request.headers || {},
+          body: request.body || {},
+          query: request.query || {},
           search: urlObj.search,
           cookies: {}
         }
@@ -53,20 +54,19 @@ module.exports = Object.assign({}, require('../lib/server'), {
         }
 
         let result
-        let eventId = req.headers['x-fly-id'] || null
+        let eventId = request.headers['x-fly-id'] || null
         let headers = {}
+        let { fn, matched, mode } = this.Find(functions, evt)
 
         try {
-          let { fn, matched, mode } = this.Find(functions, evt)
-
           // Match function but target has cors
           if ((matched && matched.target.cors) ||
             // Match prefligth
             mode === 'cors') {
             headers['access-control-allow-origin'] = '*'
-            headers['access-control-allow-methods'] = req.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE'
+            headers['access-control-allow-methods'] = request.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE'
             headers['access-control-allow-credentials'] = 'true'
-            headers['access-control-allow-headers'] = req.headers['access-control-request-headers'] || '*'
+            headers['access-control-allow-headers'] = request.headers['access-control-request-headers'] || '*'
           }
 
           if (mode === 'cors') {
@@ -78,9 +78,9 @@ module.exports = Object.assign({}, require('../lib/server'), {
           } else {
             // Non-exists
             if (this.config.errors['404']) {
-              res.code(404).type('text/html').send(this.config.errors['404'])
+              reply.code(404).type('text/html').send(this.config.errors['404'])
             } else {
-              res.code(404).type('application/json').send({
+              reply.code(404).type('application/json').send({
                 code: 404,
                 message: `function not found`
               })
@@ -94,7 +94,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
             result = { body: String(result) }
           }
         } catch (err) {
-          res.code(500).type('application/json').send({
+          reply.code(500).type('application/json').send({
             code: err.code || 500,
             message: err.message
           })
@@ -104,42 +104,37 @@ module.exports = Object.assign({}, require('../lib/server'), {
 
         // set headers
         if (result.headers) Object.assign(headers, result.headers)
-        Object.keys(headers).forEach(key => res.header(key, headers[key]))
-
-        // set redirect
-        if (result.redirect) return res.redirect(result.status || 302, result.redirect)
+        Object.keys(headers).forEach(key => reply.header(key, headers[key]))
 
         // set status
-        if (result.status) res.code(result.status)
-
+        if (result.status) reply.code(result.status)
         // set type
-        if (result.type) res.type(result.type)
+        if (result.type) reply.type(result.type)
 
-        // return file
-        if (result.file) return res.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
-
-        // empty body
-        if (!result.body) {
-          if (!result.status) res.code(204)
-          return res.send('')
-        }
-
-        // send body
-        if (result.hasOwnProperty('body')) {
-          if (!result.type && typeof result.body === 'string') res.type('text/html')
-          res.send(result.body)
-          return
-        }
-
-        // no body and other options response 500
-        if (this.config.errors['500']) {
-          res.code(500).type('text/html').send(this.config.errors['500'])
+        if (result.redirect) {
+          // set redirect
+          reply.redirect(result.status || 302, result.redirect)
+        } else if (result.file) {
+          // return file
+          reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
+        } else if (!result.body) {
+          // empty body
+          if (!result.status) reply.code(204)
+          reply.send('')
+        } else if (result.hasOwnProperty('body')) {
+          // send body
+          if (!result.type && typeof result.body === 'string') reply.type('text/html')
+          reply.send(result.body)
+        } else if (this.config.errors['500']) {
+          // no body and other options response 500
+          reply.code(500).type('text/html').send(this.config.errors['500'])
         } else {
-          res.code(500).type('application/json').send({
+          reply.code(500).type('application/json').send({
             code: 500,
             message: 'no body return'
           })
         }
+        this.Log(evt, reply, fn)
       }
     })
 
@@ -160,6 +155,16 @@ module.exports = Object.assign({}, require('../lib/server'), {
         resolve({ address })
       })
     })
+  },
+
+  Log (event, reply, fn) {
+    let res = reply.res
+    console.log([
+      res.statusCode < 300 ? colors.green(res.statusCode) : (res.statusCode < 400 ? colors.yellow(res.statusCode) : colors.red(res.statusCode)),
+      event.method.toUpperCase(),
+      event.path,
+      colors.grey(fn ? fn.path : '-')
+    ].join(' '))
   },
 
   BuildRoutes (functions) {
@@ -207,10 +212,19 @@ module.exports = Object.assign({}, require('../lib/server'), {
     let keys = []
     let regex = pathToRegexp(target.path, keys)
     let matched = regex.exec(source.path)
+    let ok = false
 
+    // path match
     if (!matched) return false
 
-    if ((mode !== 'cors' || source.method !== 'options') && source.method !== target.method && target.method !== '*') return false
+    // cors match
+    if ((mode === 'cors' || source.method === 'options') && target.cors) ok = true
+
+    // head match
+    if (!ok && source.method === 'head' && (target.method === 'get' || target.method === '*')) ok = true
+
+    // method match
+    if (!ok && source.method !== target.method && target.method !== '*') return false
 
     let params = {}
     keys.forEach((key, i) => {
