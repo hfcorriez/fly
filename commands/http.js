@@ -91,6 +91,7 @@ module.exports = {
                 message: `path not found`
               })
             }
+            this.Log(evt, reply, fn)
             return
           }
 
@@ -157,7 +158,7 @@ module.exports = {
         })
 
         this.BuildRoutes(functions).forEach(route =>
-          table.push([route.method.toUpperCase(), route.path, (route.domain || []).join(', '), route.fn]))
+          table.push([route.method.toUpperCase(), route.path, route.domain, route.fn]))
         console.log(table.toString())
         resolve({ address })
       })
@@ -216,7 +217,7 @@ module.exports = {
     if (!target.path && target.default) target.path = target.default
     if (!target.method) target.method = 'get'
     if (!target.path) return false
-    if (target.domain) {
+    if (source.domain.split('.').length !== 4 && target.domain) {
       if (typeof target.domain === 'string') target.domain = [target.domain]
       let domainValid = target.domain.some(domain => new RegExp('^' + domain.replace(/\./g, '\\.').replace(/\*/g, '.*?') + '$').test(source.domain))
       if (!domainValid) return false
