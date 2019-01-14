@@ -14,6 +14,7 @@ module.exports = {
 
   configHttp: {
     method: 'get',
-    path: '/api/userLogin'
+    path: '/api/userLogin',
+    cors: true
   }
 }

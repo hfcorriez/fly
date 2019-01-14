@@ -56,25 +56,24 @@ module.exports = Object.assign({}, require('../lib/server'), {
         let result
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        let { fn, matched, mode } = this.Find(functions, evt)
+        const { fn, mode, params, target } = this.Find(functions, evt) || {}
 
         try {
-          // Match function but target has cors
-          if ((matched && matched.target.cors) ||
-            // Match prefligth
-            mode === 'cors') {
-            headers['access-control-allow-origin'] = '*'
-            headers['access-control-allow-methods'] = request.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE'
-            headers['access-control-allow-credentials'] = 'true'
-            headers['access-control-allow-headers'] = request.headers['access-control-request-headers'] || '*'
+          if (mode === 'cors' || (target && target.cors)) {
+            headers = {
+              'access-control-allow-origin': '*',
+              'access-control-allow-methods': request.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE',
+              'access-control-allow-credentials': 'true',
+              'access-control-allow-headers': request.headers['access-control-request-headers'] || '*'
+            }
           }
 
           if (mode === 'cors') {
             // Preflight
-            result = { status: 204, headers }
+            result = { status: 204 }
           } else if (fn) {
             // Normal and fallback
-            result = await this.fly.call(fn, Object.assign(evt, matched || {}), { eventId, eventType: 'http' })
+            result = await this.fly.call(fn, Object.assign(evt, { params }), { eventId, eventType: 'http' })
           } else {
             // Non-exists
             if (this.config.errors['404']) {
@@ -82,7 +81,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
             } else {
               reply.code(404).type('application/json').send({
                 code: 404,
-                message: `function not found`
+                message: `path not found`
               })
             }
             return
@@ -99,6 +98,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
             message: err.message
           })
           debug(`backend failed: ${err.message}`, err.stack)
+          this.Log(evt, reply, fn)
           return
         }
 
@@ -175,32 +175,43 @@ module.exports = Object.assign({}, require('../lib/server'), {
   },
 
   Find (functions, event) {
-    let matched
-    let mode = 'normal'
-    let fn = functions.find(f => !!(matched = this.Match(event, f.events.http)))
+    let matchedInfo
+    let secondaryMatchedInfo
+    let fallbackMatchInfo
 
-    if (!fn) {
-      fn = functions.find(f => !!(matched = this.Match(event, f.events.http, 'cors')))
-      mode = 'cors'
-    }
+    let matchedFn = functions.some(func => {
+      // get matched info
+      matchedInfo = this.Match(event, func.events.http)
+      // no match
+      if (matchedInfo.match) {
+        // save fn
+        matchedInfo.fn = func
+        // match fully
+        if (!matchedInfo.mode) return true
+        // fallback match
+        if (matchedInfo.mode === 'fallback') fallbackMatchInfo = matchedInfo
+        // secondary matched
+        else if (matchedInfo.mode) secondaryMatchedInfo = matchedInfo
+      }
+      return false
+    })
 
-    if (!fn) {
-      functions.find(f => f.events.http.fallback)
-      mode = 'fallback'
-    }
-
-    return { fn, matched, mode }
+    return (matchedFn && matchedInfo) || secondaryMatchedInfo || fallbackMatchInfo
   },
 
-  Match (source, target, mode) {
+  /**
+   * Match
+   *
+   * @param {Object} source
+   * @param {Object} target
+   */
+  Match (source, target) {
     if (!target.path && target.default) target.path = target.default
     if (!target.method) target.method = 'get'
     if (!target.path) return false
     if (target.domain) {
       if (typeof target.domain === 'string') target.domain = [target.domain]
-      let domainValid = target.domain.some(domain => {
-        return new RegExp('^' + domain.replace(/\./g, '\\.').replace(/\*/g, '.*?') + '$').test(source.domain)
-      })
+      let domainValid = target.domain.some(domain => new RegExp('^' + domain.replace(/\./g, '\\.').replace(/\*/g, '.*?') + '$').test(source.domain))
       if (!domainValid) return false
     }
 
@@ -211,25 +222,37 @@ module.exports = Object.assign({}, require('../lib/server'), {
 
     let keys = []
     let regex = pathToRegexp(target.path, keys)
-    let matched = regex.exec(source.path)
-    let ok = false
-
-    // path match
-    if (!matched) return false
-
-    // cors match
-    if ((mode === 'cors' || source.method === 'options') && target.cors) ok = true
-
-    // head match
-    if (!ok && source.method === 'head' && (target.method === 'get' || target.method === '*')) ok = true
-
-    // method match
-    if (!ok && source.method !== target.method && target.method !== '*') return false
-
+    let pathMatched = regex.exec(source.path)
+    let mode = null
+    let match = false
     let params = {}
-    keys.forEach((key, i) => {
-      params[key.name] = matched[i + 1]
-    })
-    return { params: params, target, source }
+
+    if (pathMatched) {
+      keys.forEach((key, i) => (params[key.name] = pathMatched[i + 1]))
+
+      // method match
+      if (!match && (source.method === target.method || target.method === '*')) {
+        match = true
+      }
+
+      // cors match
+      if (!match && source.method === 'options' && target.cors) {
+        match = true
+        mode = 'cors'
+      }
+
+      // head match
+      if (!match && source.method === 'head' && (target.method === 'get' || target.method === '*')) {
+        match = true
+        mode = 'head'
+      }
+
+      if (!match && target.fallback) {
+        match = true
+        mode = 'fallback'
+      }
+    }
+
+    return { match, mode, path: !!pathMatched, params, target, source }
   }
 })
