@@ -60,7 +60,7 @@ module.exports = Object.assign({}, require('../lib/server'), {
           let { fn, matched, mode } = this.Find(functions, evt)
 
           // Match function but target has cors
-          if (matched.target.cors ||
+          if ((matched && matched.target.cors) ||
             // Match prefligth
             mode === 'cors') {
             headers['access-control-allow-origin'] = '*'
