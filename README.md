@@ -80,7 +80,7 @@ fly http
   before: Function (event, ctx),                // Before filter
   after: Function (event, ctx),                 // After filter
   catch: Function (event, ctx),                 // Error catch
-  config<Event>: Object || Boolean,             // Startup event
+  config<Event>: Object || Boolean || Function, // Startup event
   before<Event>: Function (event, ctx),         // Before filter
   after<Event>: Function (event, ctx),          // After filter
   validate<Event>: Function (event, ctx),       // Validate event
