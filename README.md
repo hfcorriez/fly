@@ -58,10 +58,10 @@ const Fn = {
 module.exports = Fn
 ```
 
-### Run in foreground
+### Run
 
 ```bash
-fly up -f
+fly http
 ```
 
 ## Defintions
@@ -113,30 +113,45 @@ Usage:
 
 System Commands:
 
+  api [command]                  API service
+    [command]                    start | stop | reload | restart | status | log
+    --port,-p number             Bind port
+    --instance,-i number         The instance number
+    --all,-a                     All applications
+    --bind,-b string
   call <fn>                      Call function
     <fn>                         Function name
     --type string                Set event type
     --data,-d string             Set event data
+  show <fn>                      Show function info
+    <fn>                         Function name
   help                           Show help
-    --all                        Show all commands
+    --system,-s                  Show system commands
+  http [command]                 HTTP service
+    [command]                    start | stop | reload | restart | status | log
+    --port,-p number             Bind port
+    --instance,-i number         The instance number
+    --all,-a                     All applications
+    --bind,-b string
   install                        Install deps
-    --list                       List packages to install
-    --list-all                   List all packages
+    --list,-l                    List packages to install
   list                           List functions
     --type string                List with type
     --all                        List all commands
   new [dir]                      Create new service dir
     [dir]                        Dir name
     --force                      Force create when dir exists
-  show <fn>                      Show function info
-    <fn>                         Function name
-  up [command]                   Manage http service
-    [command]                    start | stop/end | reload/hot | restart/again | status/list | log
+  serve [command]                Serve service
+    [command]                    start | stop | reload | restart | status | log
     --port,-p number             Bind port
-    --foreground,-f              Run in foreground
-    --api                        Run api mode only
     --instance,-i number         The instance number
     --all,-a                     All applications
+    --bind,-b string
+
+Global options:
+
+    --id,-i string               Set event id
+    --verbose,-V                 Show verbose
 ```
 
 ## Configration
