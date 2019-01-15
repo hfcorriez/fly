@@ -96,13 +96,23 @@ fly http
 
 ```javascript
 {
-  eventId: String,                  // Event ID
-  eventType: String,                // Event Type：http, command, null is internal
-  originalEvent: Event,             // OriginalEvent
-  parentEvent: Event,               // Parent Event
-  call: Function,                   // Invoke function
-  list: Function,                   // List functions
-  get: Function,                    // Get function
+  // Event
+  eventId: String,                      // Event ID
+  eventType: String,                    // Event Type：http, command, null is internal
+  originalEvent: Event,                 // OriginalEvent
+  parentEvent: Event,                   // Parent Event
+
+  // Core
+  call: Function,                       // Invoke function
+  list: Function,                       // List functions
+  get: Function,                        // Get function
+
+  // Function info
+  name: String,                         // Name
+  extends: String,                      // Extends from function, support file, package
+  functions: Object {String: String}    // Inject function to context
+  config: Object {String: Any},         // Config object
+  links: Object {String: String},       // Links config
 }
 ```
 
