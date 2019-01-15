@@ -71,13 +71,15 @@ fly http
 ```javascript
 {
   name: String,                                 // Name
+  extends: String,                              // Extends from function, support file, package
+  functions: Object {String: String}            // Inject function to context
+  config: Object {String: Any},                 // Config object
+  links: Object {String: String},               // Links config
   main: Function (event, ctx),                  // Main
   validate: Function (event, ctx),              // Validate
   before: Function (event, ctx),                // Before filter
   after: Function (event, ctx),                 // After filter
   catch: Function (event, ctx),                 // Error catch
-  config: Object {String: Any},                 // Config object
-  links: Object {String: String},               // Links config
   config<Event>: Object || Boolean,             // Startup event
   before<Event>: Function (event, ctx),         // Before filter
   after<Event>: Function (event, ctx),          // After filter
