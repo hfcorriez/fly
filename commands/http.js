@@ -80,7 +80,7 @@ module.exports = {
             result = { status: 204 }
           } else if (fn) {
             // Normal and fallback
-            result = await this.fly.call(fn, Object.assign(evt, { params }), { eventId, eventType: 'http' })
+            result = await this.fly.call(fn.name, Object.assign(evt, { params }), { eventId, eventType: 'http' })
           } else {
             // Non-exists
             if (this.config.errors['404']) {
