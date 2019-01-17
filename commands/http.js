@@ -45,7 +45,7 @@ module.exports = {
           url: urlObj.href,
           protocol: urlObj.protocol,
           port: urlObj.port,
-          ip: request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || request.raw.socket.remoteAddress,
+          ip: String(request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || request.raw.socket.remoteAddress).split(',').shift(),
           headers: request.headers || {},
           body: request.body || {},
           query: request.query || {},

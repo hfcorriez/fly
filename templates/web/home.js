@@ -2,6 +2,7 @@ const path = require('path')
 
 const Func = {
   main (event) {
+    console.log('event', event)
     return { file: path.join(__dirname, '/index.html') }
   },
 

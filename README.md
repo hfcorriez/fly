@@ -92,6 +92,53 @@ fly http
 
 > Event can be anything, but must can be JSONify
 
+#### HTTP
+
+**Input Event**
+
+```yaml
+method: String
+path: String
+origin: String
+host: String
+domain: String
+url: String
+protocol: String
+port: Number
+ip: String
+headers: Object
+body: Object
+query: Object
+search: String
+cookies: Object
+```
+
+**Config Event**
+
+```yaml
+method: String
+path: String
+domain: String | Array
+cors: Boolean
+```
+
+#### Command
+
+**Input Event**
+
+```yaml
+args: Object
+params: Object
+```
+
+**Config Event**
+
+```yaml
+_: String
+alias: Object
+descriptions: Object
+```
+
 ### Context Defintion
 
 ```javascript
@@ -110,7 +157,7 @@ fly http
   // Function info
   name: String,                         // Name
   extends: String,                      // Extends from function, support file, package
-  functions: Object {String: String}    // Inject function to context
+  imports: Object {String: String}      // Inject function to context
   config: Object {String: Any},         // Config object
   links: Object {String: String},       // Links config
 }
