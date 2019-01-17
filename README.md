@@ -8,10 +8,11 @@ _/        _/_/_/_/  _/
 
 ```
 
-*FLY* is *f*unctional*ly*, A library for develop backend easy.
+__FLY__ is __f__unctional__ly__, A library for develop backend easy.
 
-- **Isolation**: one file to handle service
-- **Configurability**: config anything overwrite
+- **Isolation**: one file, one function, one service
+- **Configurability**: config anything with overwrite
+- **Modularization**: One dir, one module
 
 ## Installation
 

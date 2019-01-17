@@ -3,7 +3,7 @@ module.exports = {
   extends: './index',
 
   // Declare functions you will used from file, package, github, url
-  functions: {
+  imports: {
     userLogin: '../common/userLogin'
   },
 
