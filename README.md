@@ -8,7 +8,7 @@ _/        _/_/_/_/  _/
 
 ```
 
-__FLY__ is `f`unctional`ly`, A library for develop backend easy.
+`FLY` is `f`unctional`ly`: A library for develop backend easy.
 
 - **Isolation**: one file, one function, one service
 - **Configurability**: config anything with overwrite
