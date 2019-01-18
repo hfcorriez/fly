@@ -68,7 +68,7 @@ module.exports = {
         try {
           if (mode === 'cors' || (target && target.cors)) {
             headers = {
-              'access-control-allow-origin': '*',
+              'access-control-allow-origin': request.headers['origin'] || '*',
               'access-control-allow-methods': request.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE',
               'access-control-allow-credentials': 'true',
               'access-control-allow-headers': request.headers['access-control-request-headers'] || '*'
