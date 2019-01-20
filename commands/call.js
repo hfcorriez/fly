@@ -34,7 +34,7 @@ module.exports = {
         fn = ctx.get(name)
         obj = ctx
       }
-      if (!fn) throw new Error('no function found')
+      if (!fn) throw new Error(`no function found: ${name}`)
 
       result = await obj.call(fn, evt, ctx)
       console.warn(colors.green(['SUCCESS', fn.name, '<=', JSON.stringify(evt || null)].join(' ')))

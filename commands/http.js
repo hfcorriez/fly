@@ -79,6 +79,18 @@ module.exports = {
             // Preflight
             result = { status: 204 }
           } else if (fn) {
+            /**
+             * Cache define
+             */
+            if (target.hasOwnProperty('cache') && ['get', 'head', undefined].includes(target.method)) {
+              if (['string', 'number'].includes(typeof target.cache) || target.cache === true) {
+                if (target.cache === true) target.cache = 600
+                headers['cache-control'] = `public, max-age=${target.cache}`
+              } else if (!target.cache) {
+                headers['cache-control'] = `no-cache, no-store`
+              }
+            }
+
             // Normal and fallback
             result = await this.fly.call(fn.name, Object.assign(evt, { params }), { eventId, eventType: 'http' })
           } else {
