@@ -93,7 +93,9 @@ module.exports = {
 
             // Normal and fallback
             result = await this.fly.call(fn.name, Object.assign(evt, { params }), { eventId, eventType: 'http' })
-          } else {
+          }
+
+          if (!fn || !result) {
             // Non-exists
             if (this.config.errors['404']) {
               reply.code(404).type('text/html').send(this.config.errors['404'])
@@ -105,12 +107,8 @@ module.exports = {
             }
             this.Log(evt, reply, fn)
             return
-          }
-
-          if (!result) {
-            result = {}
           } else if (result.constructor !== Object) {
-            result = { body: String(result) }
+            throw new Error('function return illegal')
           }
         } catch (err) {
           reply.code(500).type('application/json').send({
