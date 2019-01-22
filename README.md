@@ -73,8 +73,9 @@ fly http
 {
   name: String,                                 // Name
   extends: String,                              // Extends from function, support file, package
-  imports: Object {String: String}            // Inject function to context
+  imports: Object {String: String}              // Inject function to context
   config: Object {String: Any},                 // Config object
+  retry: Number || Boolean,                     // Retry count, true is 3
   links: Object {String: String},               // Links config
   main: Function (event, ctx),                  // Main
   validate: Function (event, ctx),              // Validate
