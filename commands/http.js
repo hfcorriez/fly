@@ -197,15 +197,15 @@ module.exports = {
     let secondaryMatched
     let fallbackMatched
 
-    functions.some(func => {
-      // get matched info
-      let matchedInfo = this.Match(event, func.events.http)
+    functions.some(fnConfig => {
+      const fn = this.fly.get(fnConfig.file)
+      const matchedInfo = this.Match(event, fn.events.http)
 
       // No match
       if (!matchedInfo.match) return false
 
       // Set fn
-      matchedInfo.fn = func
+      matchedInfo.fn = fn
 
       // Match not found and matched length less than current
       if (!matchedInfo.mode && (!matched || matched.length > matchedInfo.length)) {
