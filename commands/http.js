@@ -193,28 +193,33 @@ module.exports = {
   },
 
   Find (functions, event) {
-    let matchedInfo
-    let secondaryMatchedInfo
-    let fallbackMatchInfo
+    let matched
+    let secondaryMatched
+    let fallbackMatched
 
-    let matchedFn = functions.some(func => {
+    functions.some(func => {
       // get matched info
-      matchedInfo = this.Match(event, func.events.http)
-      // no match
-      if (matchedInfo.match) {
-        // save fn
-        matchedInfo.fn = func
-        // match fully
-        if (!matchedInfo.mode) return true
-        // fallback match
-        if (matchedInfo.mode === 'fallback') fallbackMatchInfo = matchedInfo
-        // secondary matched
-        else if (matchedInfo.mode) secondaryMatchedInfo = matchedInfo
+      let matchedInfo = this.Match(event, func.events.http)
+
+      // No match
+      if (!matchedInfo.match) return false
+
+      // Set fn
+      matchedInfo.fn = func
+
+      // Match not found and matched length less than current
+      if (!matchedInfo.mode && (!matched || matched.length > matchedInfo.length)) {
+        matched = matchedInfo
+        if (matchedInfo.length === 0) return true
+      } else if (matchedInfo.mode === 'fallback' && !fallbackMatched) {
+        fallbackMatched = matchedInfo
+      } else if (matchedInfo.mode) {
+        secondaryMatched = matchedInfo
       }
       return false
     })
 
-    return (matchedFn && matchedInfo) || secondaryMatchedInfo || fallbackMatchInfo
+    return matched || secondaryMatched || fallbackMatched
   },
 
   /**
@@ -243,9 +248,11 @@ module.exports = {
     let pathMatched = regex.exec(source.path)
     let mode = null
     let match = false
+    let matchLength = 0
     let params = {}
 
     if (pathMatched) {
+      matchLength = (pathMatched[1] || '').length
       keys.forEach((key, i) => (params[key.name] = pathMatched[i + 1]))
 
       // method match
@@ -271,6 +278,6 @@ module.exports = {
       }
     }
 
-    return { match, mode, path: !!pathMatched, params, target, source }
+    return { match, length: matchLength, mode, path: !!pathMatched, params, target, source }
   }
 }
