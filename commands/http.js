@@ -28,8 +28,6 @@ module.exports = {
   },
 
   run () {
-    const functions = this.fly.list('http').sort((a, b) => (b.events.http.priority || 0) - (a.events.http.priority || 0))
-
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
       url: '/*',
@@ -63,7 +61,7 @@ module.exports = {
         let result
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        const { fn, mode, params, target } = this.Find(functions, evt) || {}
+        const { fn, mode, params, target } = this.Find(evt) || {}
 
         try {
           if (mode === 'cors' || (target && target.cors)) {
@@ -167,7 +165,7 @@ module.exports = {
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
-        this.BuildRoutes(functions).forEach(route =>
+        this.BuildRoutes(this.fly.list('http')).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, route.domain, route.fn]))
         console.log(table.toString())
         resolve({ address })
@@ -192,13 +190,12 @@ module.exports = {
     })
   },
 
-  Find (functions, event) {
+  Find (event) {
     let matched
     let secondaryMatched
     let fallbackMatched
 
-    functions.some(fnConfig => {
-      const fn = this.fly.get(fnConfig.file)
+    this.fly.list('http').some(fn => {
       const matchedInfo = this.Match(event, fn.events.http)
 
       // No match

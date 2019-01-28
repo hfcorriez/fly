@@ -76,7 +76,6 @@ fly http
   imports: Object {String: String}              // Inject function to context
   config: Object {String: Any},                 // Config object
   retry: Number || Boolean,                     // Retry count, true is 3
-  links: Object {String: String},               // Links config
   main: Function (event, ctx),                  // Main
   validate: Function (event, ctx),              // Validate
   before: Function (event, ctx),                // Before filter
@@ -161,7 +160,6 @@ descriptions: Object
   extends: String,                      // Extends from function, support file, package
   imports: Object {String: String}      // Inject function to context
   config: Object {String: Any},         // Config object
-  links: Object {String: String},       // Links config
 }
 ```
 
@@ -270,15 +268,6 @@ config:
     db: 'test:3333'
   url@:
     url: hello
-
-# Link overwrite
-links:
-  module: module-name
-  dir: /dirname
-  file: /filename
-  url: http://localhost:3333
-  git: git@gitlab.com:hfcorriez/test.git
-  github: hfcorriez/test.git
 ```
 
 ## API

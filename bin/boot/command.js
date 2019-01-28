@@ -1,4 +1,6 @@
 const arg = require('arg')
+const path = require('path')
+const Fly = require('../../lib/fly')
 const utils = require('../../lib/utils')
 
 module.exports = {
@@ -17,12 +19,9 @@ module.exports = {
     }
   },
 
-  links: {
-    'commands': '../../commands'
-  },
-
   main: async function (event, ctx) {
-    let functions = ctx.list('command')
+    const fly = new Fly(path.join(__dirname, '../../commands'))
+    let functions = fly.list('command')
     let evt = {
       argv: event.argv,
       args: {},
@@ -51,8 +50,8 @@ module.exports = {
 
     let result
     try {
-      result = await ctx.call(
-        fn, evt,
+      result = await fly.call(
+        fn.name, evt,
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
       )
     } catch (err) {
