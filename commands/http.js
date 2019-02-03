@@ -135,6 +135,7 @@ module.exports = {
           // return file
           reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
         } else if (result.url) {
+          // return url as proxy
           axios.get(result.url, { responseType: 'stream' })
             .then(res => {
               Object.keys(res.headers).forEach(key => reply.header(key, res.headers[key]))
