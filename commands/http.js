@@ -139,7 +139,7 @@ module.exports = {
           axios.get(result.url, { responseType: 'stream' })
             .then(res => {
               Object.keys(res.headers).forEach(key => reply.header(key, res.headers[key]))
-              reply.send(res.data)
+              reply.code(res.status).send(res.data)
             })
         } else if (!result.body) {
           // empty body
