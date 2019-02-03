@@ -4,6 +4,7 @@ const mime = require('mime')
 const pathToRegexp = require('path-to-regexp')
 const { URL } = require('url')
 const path = require('path')
+const axios = require('axios')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
 const Fly = require('../lib/fly')
@@ -133,6 +134,12 @@ module.exports = {
         } else if (result.file) {
           // return file
           reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
+        } else if (result.url) {
+          axios.get(result.url, { responseType: 'stream' })
+            .then(res => {
+              Object.keys(res.headers).forEach(key => reply.header(key, res.headers[key]))
+              reply.send(res.data)
+            })
         } else if (!result.body) {
           // empty body
           if (!result.status) reply.code(204)
