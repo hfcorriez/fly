@@ -63,6 +63,7 @@ module.exports = {
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
         const { fn, mode, params, target } = this.Find(evt) || {}
+        evt.params = params
 
         try {
           if (mode === 'cors' || (target && target.cors)) {
@@ -91,7 +92,14 @@ module.exports = {
             }
 
             // Normal and fallback
-            result = await this.fly.call(fn.name, Object.assign(evt, { params }), { eventId, eventType: 'http' })
+            result = await this.fly.call(fn.name, evt, { eventId, eventType: 'http' })
+
+            // Handle url
+            if (result.url) {
+              const res = await axios.get(result.url, { responseType: 'stream' })
+              Object.assign(headers, res.headers)
+              Object.assign(result, { status: res.status, body: res.data, url: undefined })
+            }
           }
 
           if (!fn || !result) {
@@ -134,13 +142,6 @@ module.exports = {
         } else if (result.file) {
           // return file
           reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
-        } else if (result.url) {
-          // return url as proxy
-          axios.get(result.url, { responseType: 'stream' })
-            .then(res => {
-              Object.keys(res.headers).forEach(key => reply.header(key, res.headers[key]))
-              reply.code(res.status).send(res.data)
-            })
         } else if (!result.body) {
           // empty body
           if (!result.status) reply.code(204)
