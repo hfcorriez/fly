@@ -31,12 +31,14 @@ module.exports = {
     }
 
     let code = 0
+    let wait = false
     if (typeof result === 'object') {
       result.stdout && console.log(result.stdout)
       result.stderr && console.error(result.stderr)
       if (typeof result.code === 'number') code = result.code
+      wait = result.wait
     }
-    process.exit(code)
+    !wait && process.exit(code)
   },
 
   async callCommand (dir, event, ctx) {
@@ -67,7 +69,7 @@ module.exports = {
 
     let result
     try {
-      await flySystem.call(
+      result = await flySystem.call(
         fn.name, evt,
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
       )
