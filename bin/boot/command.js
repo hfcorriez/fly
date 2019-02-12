@@ -63,10 +63,7 @@ module.exports = {
       if (fn) evt.fallback = true
     }
 
-    if (!fn) {
-      console.error('no command found')
-      throw new Error('function not found')
-    }
+    if (!fn) throw new Error('function not found')
 
     let result
     try {
