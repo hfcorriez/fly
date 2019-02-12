@@ -20,8 +20,28 @@ module.exports = {
   },
 
   main: async function (event, ctx) {
-    const fly = new Fly(path.join(__dirname, '../../commands'))
-    let functions = fly.list('command')
+    const dirs = ['.', path.join(__dirname, '../../commands')]
+    let result
+    for (let dir of dirs) {
+      try {
+        result = await this.callCommand(dir, event, ctx)
+        break
+      } catch (err) {
+      }
+    }
+
+    let code = 0
+    if (typeof result === 'object') {
+      result.stdout && console.log(result.stdout)
+      result.stderr && console.error(result.stderr)
+      if (typeof result.code === 'number') code = result.code
+    }
+    process.exit(code)
+  },
+
+  async callCommand (dir, event, ctx) {
+    const flySystem = new Fly(dir)
+    let functions = flySystem.list('command')
     let evt = {
       argv: event.argv,
       args: {},
@@ -45,30 +65,22 @@ module.exports = {
 
     if (!fn) {
       console.error('no command found')
-      return
+      throw new Error('function not found')
     }
 
     let result
     try {
-      result = await fly.call(
+      await flySystem.call(
         fn.name, evt,
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
       )
     } catch (err) {
       console.error(err)
-      return
     }
-
-    if (typeof result === 'string') {
-      console.log(result)
-    } else if (typeof result === 'object') {
-      result.stdout && console.log(result.stdout)
-      result.stderr && console.log(result.stderr)
-      if (typeof result.code === 'number') process.exit(result.code)
-    }
+    return result
   },
 
-  match: function (source, target) {
+  match (source, target) {
     if (!target._ && target.default) target._ = target.default
     if (!target._) return false
 
