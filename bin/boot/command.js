@@ -1,7 +1,10 @@
 const arg = require('arg')
 const path = require('path')
+const fs = require('fs')
 const Fly = require('../../lib/fly')
 const utils = require('../../lib/utils')
+
+const COMMAND_DIR = path.join(__dirname, '../../commands')
 
 module.exports = {
   config: {
@@ -19,17 +22,11 @@ module.exports = {
     }
   },
 
-  main: async function (event, ctx) {
-    const dirs = ['.', path.join(__dirname, '../../commands')]
-    let result
-    for (let dir of dirs) {
-      try {
-        result = await this.callCommand(dir, event, ctx)
-        break
-      } catch (err) {
-      }
-    }
-
+  async main (event, ctx) {
+    const systemCommands = fs.readdirSync(COMMAND_DIR).filter(file => file.endsWith('.js')).map(file => file.split('.').shift())
+    let dir = '.'
+    if (systemCommands.includes(event.argv[0]) || !event.argv[0]) dir = COMMAND_DIR
+    let result = await this.callCommand(dir, event, ctx)
     let code = 0
     let wait = false
     if (typeof result === 'object') {
@@ -41,7 +38,7 @@ module.exports = {
     !wait && process.exit(code)
   },
 
-  async callCommand (dir, event, ctx) {
+  callCommand (dir, event, ctx) {
     const flySystem = new Fly(dir)
     let functions = flySystem.list('command')
     let evt = {
@@ -67,16 +64,14 @@ module.exports = {
 
     if (!fn) throw new Error('function not found')
 
-    let result
     try {
-      result = await flySystem.call(
+      return flySystem.call(
         fn.name, evt,
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
       )
     } catch (err) {
       console.error(err)
     }
-    return result
   },
 
   match (source, target) {
