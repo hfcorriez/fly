@@ -114,7 +114,7 @@ module.exports = {
 
     console.log(colors.bgGreen(`SERVER READY`))
     console.log(utils.padding('  NAME:', 12), colors.bold(this.config.name))
-    console.log(utils.padding('  ADDRESS:', 12), colors.bold(event.result.address))
+    event.result && event.result.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(event.result.address))
     console.log(utils.padding('  PID:', 12), colors.bold(process.pid))
     console.log(utils.padding('  WORK DIR:', 12), colors.bold(process.cwd()))
     console.log(utils.padding('  HOT RELOAD:', 12), colors.bold(event.args.hotreload || 'false'))
