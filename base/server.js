@@ -1,7 +1,7 @@
 const debug = require('debug')('fly/server')
 const fs = require('fs')
 const path = require('path')
-const PM = require('./pm')
+const PM = require('../lib/pm')
 const colors = require('colors/safe')
 const utils = require('../lib/utils')
 

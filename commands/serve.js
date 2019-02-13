@@ -5,7 +5,7 @@ const { URL } = require('url')
 const fastify = require('fastify')()
 
 module.exports = {
-  extends: '../lib/server',
+  extends: '../base/server',
 
   config: {
     command: 'serve',
