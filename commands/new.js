@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 module.exports = {
   main: async function (event, ctx) {
     let dst = path.resolve(event.params[0] || '.')
-    let src = path.join(__dirname, '../../templates/web')
+    let src = path.join(__dirname, '../templates/web')
 
     if (fs.existsSync(dst) && !event.args.force) {
       console.log('dir exists.')
