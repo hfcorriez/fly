@@ -7,8 +7,13 @@ const path = require('path')
 const axios = require('axios')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
+const concat = require('concat-stream')
 const Fly = require('../lib/fly')
 const debug = require('debug')('fly/evt/htt')
+
+fastify.register(require('fastify-multipart'))
+
+const multipartReg = /^multipart\/form-data/i
 
 module.exports = {
   extends: '../base/server',
@@ -50,6 +55,14 @@ module.exports = {
           query: request.query || {},
           search: urlObj.search,
           cookies: {}
+        }
+
+        if (evt.method === 'post' &&
+            typeof evt.headers['content-type'] === 'string' &&
+            multipartReg.test(evt.headers['content-type'])) {
+          const { body, files } = await this.parseFormData(request)
+          evt.body = body
+          evt.files = files   // 仅 multipart-form 有files字段
         }
 
         if (evt.headers.cookie) {
@@ -285,5 +298,29 @@ module.exports = {
     }
 
     return { match, length: matchLength, mode, path: !!pathMatched, params, target, source }
+  },
+
+  async parseFormData (request) {
+    return new Promise((resolve, reject) => {
+      const files = []
+      const body = {}
+      function handler (field, file, filename, encoding, mimetype) {
+        //  @todo ⚠️ 将所有文件都放在了内存中! 注意！
+        //  后续考虑先将临时文件写入硬盘，再从文件系统读取，再清除临时文件
+        file.pipe(concat(fileBuffer => {
+          files.push({ field, fileBuffer, filename, encoding, mimetype })
+        }))
+      }
+      const mp = request.multipart(handler, err => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve({ files, body })
+        }
+      })
+      mp.on('field', (key, value) => {
+        body[key] = value
+      })
+    })
   }
 }
