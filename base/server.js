@@ -10,6 +10,13 @@ const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT
 module.exports = {
   watched: {},
 
+  config: {
+    command: '_',
+    name: '_',
+    port: 0,
+    address: '127.0.0.1'
+  },
+
   async before (event) {
     this.init && this.init(event)
 
@@ -104,7 +111,7 @@ module.exports = {
   },
 
   catch (error) {
-    console.log(colors.bgRed(`SERVER ERROR`))
+    console.log(colors.red(`SERVER ERROR`))
     console.log(utils.padding('  MESSAGE:', 12), colors.bold(error.message))
     console.log(utils.padding('  STACK:', 12), colors.bold(error.stack))
   },
@@ -112,7 +119,7 @@ module.exports = {
   after (event) {
     if (!event) return
 
-    console.log(colors.bgGreen(`SERVER READY`))
+    console.log(colors.green(`SERVER READY`))
     console.log(utils.padding('  NAME:', 12), colors.bold(this.config.name))
     event.result && event.result.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(event.result.address))
     console.log(utils.padding('  PID:', 12), colors.bold(process.pid))

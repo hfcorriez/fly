@@ -1,5 +1,6 @@
 const querystring = require('querystring')
 const colors = require('colors/safe')
+const path = require('path')
 const Fly = require('../lib/fly')
 
 module.exports = {
@@ -30,6 +31,13 @@ module.exports = {
 
     try {
       let obj = fly
+
+      // 处理文件路径的调用
+      if (name.includes('.js')) {
+        name = name[0] !== '/' ? path.join(process.cwd(), name) : name
+        fly.load(name)
+      }
+
       fn = fly.get(name)
       if (!fn) {
         fn = ctx.get(name)
