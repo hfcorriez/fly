@@ -37,7 +37,10 @@ module.exports = {
           if (stop) return
           stop = true
           await this.fly.broadcast('shutdown')
-          debug('SHUTDOWN')
+          debug('SHUTDOWN', status)
+          const msg = `| SHUTDOWN at file '${__filename}' with status '${status}' |` 
+          const divider = [...Array(msg.length).keys()].reduce(aac => aac += '-', '')
+          console.log(`${divider}\n${msg}\n${divider}`)
           process.exit(0)
         } catch (err) {
           console.error(`shutdown with error: ${err.message} `)
