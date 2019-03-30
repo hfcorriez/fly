@@ -36,6 +36,7 @@ module.exports = {
             console.log('CRON EXEC', fn.file)
             const subprocess = childProcess.spawn(process.argv[0], [process.argv[1], 'call', fn.file], {
               env: process.env,
+              cwd: process.cwd(),
               detached: true,
               stdio: 'ignore'
             })
