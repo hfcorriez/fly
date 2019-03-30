@@ -88,7 +88,7 @@ describe('post multipart/form-data', function () {
     await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
         assert.strictEqual(err.response.data.code, 500)
-        assert(err.response.data.message.indexOf('limit'), 'file size reached top limit: 5242880 KB')
+        assert.strictEqual(err.response.data.message, 'file size reached top limit: 5242880 KB')
         catchErr = 1
       })
     assert.strictEqual(catchErr, 1)
