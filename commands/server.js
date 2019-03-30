@@ -11,8 +11,8 @@ module.exports = {
   watched: {},
 
   config: {
-    command: '_',
-    name: '_',
+    command: 'server',
+    name: 'server',
     port: 0,
     address: '127.0.0.1'
   },
@@ -56,8 +56,13 @@ module.exports = {
     return event
   },
 
-  run () {
-    throw new Error('need to implements')
+  async run () {
+    const pm = new PM({
+      name: `fly`,
+      path: process.argv[1]
+    })
+    await pm.status('all')
+    return false
   },
 
   async main (event, ctx) {
@@ -65,36 +70,37 @@ module.exports = {
       if (event.args.port) this.config.port = event.args.port
       if (event.args.bind) this.config.address = event.args.bind
       let result = await this.run(event.params, ctx)
+      if (result === false) return
       return { args: event.args, result }
     }
 
-    let name = process.cwd().split('/').pop()
+    const name = process.cwd().split('/').pop()
+    const app = !event.args.all && name
     const pm = new PM({
       name: `fly:${this.config.name.toLowerCase()}`,
       path: process.argv[1]
     })
 
-    let names = !event.args.all && name
     switch (event.params.command) {
       case 'list':
       case 'status':
-        await pm.status(names)
+        await pm.status(app)
         break
       case 'log':
-        await pm.log(names)
+        await pm.log(app)
         break
       case 'end':
       case 'stop':
-        await pm.stop(names)
-        await pm.status(names)
+        await pm.stop(app)
+        await pm.status(app)
         break
       case 'restart':
-        await pm.restart(names)
-        await pm.status(names)
+        await pm.restart(app)
+        await pm.status(app)
         break
       case 'reload':
-        await pm.reload(names)
-        await pm.status(names)
+        await pm.reload(app)
+        await pm.status(app)
         break
       case 'start':
         await pm.start({
@@ -105,7 +111,7 @@ module.exports = {
             PORT: event.args.port || this.config.port
           }
         })
-        await pm.status(names)
+        await pm.status(app)
         break
     }
   },
@@ -131,6 +137,15 @@ module.exports = {
 
   configCommand () {
     if (!this.config || !this.config.command) return false
+
+    if (this.config.command === 'server') {
+      return {
+        _: 'server',
+        descriptions: {
+          _: 'Show servers'
+        }
+      }
+    }
 
     return {
       _: `${this.config.command} [command]`,
