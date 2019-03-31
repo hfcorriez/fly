@@ -18,7 +18,7 @@ const multipartReg = /^multipart\/form-data/i
 const malusDir = path.join(os.tmpdir(), 'com.getmalus')
 
 module.exports = {
-  extends: '../base/server',
+  extends: './server',
 
   config: {
     command: 'http',
