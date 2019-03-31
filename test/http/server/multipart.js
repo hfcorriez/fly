@@ -26,8 +26,8 @@ module.exports = {
     if (files) {
       await Promise.all(
         files.map(file =>
-          stat(file).then(data => {
-            assert(data.size > 0)
+          stat(file.path).then(data => {
+            assert.strictEqual(data.size, file.size)
             assert(Date.now() - +new Date(data.birthtime) < 10000)
           })
         )
