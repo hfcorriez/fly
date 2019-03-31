@@ -14,8 +14,8 @@ const debug = require('debug')('fly/evt/htt')
 
 fastify.register(require('fastify-multipart'))
 
-const multipartReg = /^multipart\/form-data/i
-const malusDir = path.join(os.tmpdir(), 'com.getmalus')
+const MULTIPART_REGEXP = /^multipart\/form-data/i
+const MALUS_TMP_DIR = path.join(os.tmpdir(), 'com.getmalus')
 
 module.exports = {
   extends: './server',
@@ -34,17 +34,17 @@ module.exports = {
   init () {
     this.fly = new Fly()
     try {
-      if (!fs.existsSync(malusDir)) {
-        fs.mkdirSync(malusDir)
+      if (!fs.existsSync(MALUS_TMP_DIR)) {
+        fs.mkdirSync(MALUS_TMP_DIR)
       }
     } catch (err) {
       if (err) {
-        const msg = `Failed to create temp dir ${malusDir} for malus, err: ${err.message}`
+        const msg = `Failed to create temp dir ${MALUS_TMP_DIR} for malus, err: ${err.message}`
         console.log(msg)
         debug(msg)
         process.exit(1)
       }
-      console.log('malus temp dir is ', malusDir)
+      console.log('malus temp dir is ', MALUS_TMP_DIR)
     }
   },
 
@@ -115,10 +115,11 @@ module.exports = {
              */
             const isUpload = target.upload && evt.method === 'post' &&
               typeof evt.headers['content-type'] === 'string' &&
-              multipartReg.test(evt.headers['content-type'])
-            let files
+              MULTIPART_REGEXP.test(evt.headers['content-type'])
+
+            let files = []
             if (isUpload) {
-              const formBody = await parseFormData(request, target.upload, malusDir)
+              const formBody = await parseFormData(request, target.upload, MALUS_TMP_DIR)
               evt.body = formBody.fieldPairs
               evt.files = formBody.files
               files = formBody.files
