@@ -1,3 +1,4 @@
+const Table = require('cli-table2')
 const cronParser = require('cron-parser')
 const childProcess = require('child_process')
 const Fly = require('../lib/fly')
@@ -17,6 +18,14 @@ module.exports = {
 
   run () {
     this.schedule()
+
+    const table = new Table({
+      head: ['Time', 'Path'],
+      chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
+    })
+
+    this.fly.list('cron').forEach(fn => table.push([fn.events.cron.time, fn.path]))
+    console.log(table.toString())
   },
 
   schedule () {
