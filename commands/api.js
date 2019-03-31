@@ -4,7 +4,7 @@ const Fly = require('../lib/fly')
 const debug = require('debug')('fly/evt/htt')
 
 module.exports = {
-  extends: '../base/server',
+  extends: './server',
 
   config: {
     command: 'api',
