@@ -1,6 +1,8 @@
 const Table = require('cli-table2')
 const cronParser = require('cron-parser')
 const childProcess = require('child_process')
+const path = require('path')
+
 const Fly = require('../lib/fly')
 const debug = require('debug')('fly/evt/cro')
 
@@ -9,7 +11,8 @@ module.exports = {
 
   config: {
     command: 'cron',
-    name: 'CRON'
+    name: 'CRON',
+    cluster: false
   },
 
   init () {
@@ -43,7 +46,11 @@ module.exports = {
           const fns = this.find(event)
           for (let fn of fns) {
             console.log('CRON EXEC', fn.file)
-            const subprocess = childProcess.spawn(process.argv[0], [process.argv[1], 'call', fn.file], {
+            const subprocess = childProcess.spawn(process.argv[0], [
+              path.join(__dirname, '../bin/fly.js'),
+              'call',
+              fn.file
+            ], {
               env: process.env,
               cwd: process.cwd(),
               detached: true,

@@ -14,7 +14,8 @@ module.exports = {
     command: 'server',
     name: 'server',
     port: 0,
-    address: '127.0.0.1'
+    address: '127.0.0.1',
+    cluster: true
   },
 
   async before (event) {
@@ -106,7 +107,7 @@ module.exports = {
         await pm.start({
           name,
           args: [this.config.command],
-          instance: event.args.instance,
+          instance: this.config.cluster ? event.args.instance : 1,
           env: {
             PORT: event.args.port || this.config.port
           }
@@ -147,31 +148,43 @@ module.exports = {
       }
     }
 
+    const args = {
+      '--all': Boolean,
+      '--hotreload': Boolean
+    }
+
+    const alias = {
+      '--all': '-a',
+      '--hotreload': '-r'
+    }
+
+    const descriptions = {
+      _: `${this.config.name || this.config.command} service`,
+      '[command]': 'start | stop | reload | restart | status | log',
+      '--all': 'All applications',
+      '--hotreload': 'Run with hot reload mode'
+    }
+
+    if (this.config.cluster) {
+      args['--instance'] = Number
+      alias['--instance'] = '-i'
+      descriptions['--instance'] = 'The instance number'
+    }
+
+    if (this.config.port) {
+      args['--bind'] = String
+      args['--port'] = Number
+      alias['--bind'] = '-b'
+      alias['--port'] = '-p'
+      descriptions['--bind'] = 'Bind address'
+      descriptions['--port'] = 'Bind port'
+    }
+
     return {
       _: `${this.config.command} [command]`,
-      args: {
-        '--port': Number,
-        '--instance': Number,
-        '--all': Boolean,
-        '--bind': String,
-        '--hotreload': Boolean
-      },
-      alias: {
-        '--port': '-p',
-        '--bind': '-b',
-        '--instance': '-i',
-        '--all': '-a',
-        '--hotreload': '-r'
-      },
-      descriptions: {
-        _: `${this.config.name || this.config.command} service`,
-        '[command]': 'start | stop | reload | restart | status | log',
-        '--port': 'Bind port',
-        '--host': 'Bind host',
-        '--instance': 'The instance number',
-        '--all': 'All applications',
-        '--hotreload': 'Run with hot reload mode'
-      }
+      args,
+      alias,
+      descriptions
     }
   }
 }
