@@ -44,8 +44,8 @@ module.exports = {
         debug(msg)
         process.exit(1)
       }
-      console.log('malus temp dir is ', MALUS_TMP_DIR)
     }
+    debug('malus temp dir is ', MALUS_TMP_DIR)
   },
 
   run () {
