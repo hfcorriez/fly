@@ -8,7 +8,14 @@ const axios = require('axios')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
 const Fly = require('../lib/fly')
+const os = require('os')
+const { parseFormData, deleteTempFiles, Files } = require('../lib/multipartParser')
 const debug = require('debug')('fly/evt/htt')
+
+fastify.register(require('fastify-multipart'))
+
+const MULTIPART_REGEXP = /^multipart\/form-data/i
+const MALUS_TMP_DIR = path.join(os.tmpdir(), 'com.getmalus')
 
 module.exports = {
   extends: './server',
@@ -26,6 +33,19 @@ module.exports = {
 
   init () {
     this.fly = new Fly()
+    try {
+      if (!fs.existsSync(MALUS_TMP_DIR)) {
+        fs.mkdirSync(MALUS_TMP_DIR)
+      }
+    } catch (err) {
+      if (err) {
+        const msg = `Failed to create temp dir ${MALUS_TMP_DIR} for malus, err: ${err.message}`
+        console.log(msg)
+        debug(msg)
+        process.exit(1)
+      }
+    }
+    debug('malus temp dir is ', MALUS_TMP_DIR)
   },
 
   run () {
@@ -90,9 +110,28 @@ module.exports = {
                 headers['cache-control'] = `no-cache, no-store`
               }
             }
+            /**
+             * multipart/form-data request, parse body, write temp file to temp dir
+             */
+            const isUpload = target.upload && evt.method === 'post' &&
+              typeof evt.headers['content-type'] === 'string' &&
+              MULTIPART_REGEXP.test(evt.headers['content-type'])
+
+            let files = new Files()
+            if (isUpload) {
+              const formBody = await parseFormData(request, target.upload, MALUS_TMP_DIR)
+              evt.body = formBody.fieldPairs
+              evt.files = formBody.files
+              files = formBody.files
+            }
 
             // Normal and fallback
             result = await this.fly.call(fn.name, evt, { eventId, eventType: 'http' })
+
+            // delete temp files uploaded
+            if (isUpload) {
+              await deleteTempFiles(files)
+            }
 
             // Handle url
             if (result.url) {
@@ -286,4 +325,5 @@ module.exports = {
 
     return { match, length: matchLength, mode, path: !!pathMatched, params, target, source }
   }
+
 }
