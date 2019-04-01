@@ -14,8 +14,7 @@ module.exports = {
     command: 'server',
     name: 'server',
     port: 0,
-    address: '127.0.0.1',
-    cluster: true
+    address: '127.0.0.1'
   },
 
   async before (event) {
@@ -117,7 +116,7 @@ module.exports = {
         await pm.start({
           name,
           args: [this.config.command],
-          instance: this.config.cluster ? event.args.instance : 1,
+          instance: this.config.singleton ? 1 : event.args.instance,
           env: {
             PORT: event.args.port || this.config.port
           }
@@ -175,7 +174,7 @@ module.exports = {
       '--hotreload': 'Run with hot reload mode'
     }
 
-    if (this.config.cluster) {
+    if (!this.config.singleton) {
       args['--instance'] = Number
       alias['--instance'] = '-i'
       descriptions['--instance'] = 'The instance number'

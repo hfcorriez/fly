@@ -12,7 +12,7 @@ module.exports = {
   config: {
     command: 'cron',
     name: 'CRON',
-    cluster: false
+    singleton: true
   },
 
   init () {
