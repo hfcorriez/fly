@@ -117,7 +117,7 @@ module.exports = {
               typeof evt.headers['content-type'] === 'string' &&
               MULTIPART_REGEXP.test(evt.headers['content-type'])
 
-            let files = []
+            let files = {}
             if (isUpload) {
               const formBody = await parseFormData(request, target.upload, MALUS_TMP_DIR)
               evt.body = formBody.fieldPairs

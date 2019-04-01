@@ -10,7 +10,8 @@ const opts = {
   url,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
+  maxContentLength: 50 * 1024 * 1024
 }
 const SMALL_FILE = path.join(__dirname, '../tmp/image_1.9M.png')
 const LARGE_FILE = path.join(__dirname, '../tmp/image_3.3M.png')
@@ -31,7 +32,7 @@ function buildFormData () {
 
 /* eslint-env node, mocha */
 describe('post multipart/form-data', function () {
-  this.timeout(5000)
+  this.timeout(500)
 
   it('1. post json suc', async () => {
     const res = await axios({ ...opts, data: JSON.stringify({ f1: 'v1', f2: 'v2', f3: 'v3' }) })
@@ -39,7 +40,7 @@ describe('post multipart/form-data', function () {
         assert.ifError(err)
       })
     assert.strictEqual(res.data.code, 0)
-    assert.strictEqual(res.data.data.files, undefined)
+    assert.strictEqual(res.data.data.files.length, 0)
     assert.strictEqual(res.status, 200)
   })
 
@@ -56,14 +57,15 @@ describe('post multipart/form-data', function () {
 
   it('3. post files without field suc', async () => {
     const formData = new FormData()
-    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
-    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
+    formData.append('arr[]', fs.createReadStream(SMALL_FILE))
+    formData.append('arr[]', fs.createReadStream(SMALL_FILE))
+    formData.append('small', fs.createReadStream(SMALL_FILE))
     const res = await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
         assert.ifError(err)
       })
     assert.strictEqual(res.data.code, 0)
-    assert.strictEqual(res.data.data.files.length, 2)
+    assert.strictEqual(res.data.data.files.length, 3)
     assert.strictEqual(res.status, 200)
   })
 
@@ -71,12 +73,13 @@ describe('post multipart/form-data', function () {
     const formData = buildFormData()
     formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
     formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
+    formData.append('file', fs.createReadStream(SMALL_FILE))
     const res = await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
         assert.ifError(err)
       })
     assert.strictEqual(res.data.code, 0)
-    assert.strictEqual(res.data.data.files.length, 2)
+    assert.strictEqual(res.data.data.files.length, 3)
     assert.strictEqual(res.status, 200)
   })
 
@@ -84,11 +87,14 @@ describe('post multipart/form-data', function () {
     const formData = buildFormData()
     formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
     formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
     let catchErr = 0
     await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
         assert.strictEqual(err.response.data.code, 500)
-        assert.strictEqual(err.response.data.message, 'file size reached top limit: 5242880 KB')
+        assert.strictEqual(err.response.data.message, 'file size reached top limit: 10485760 KB')
         catchErr = 1
       })
     assert.strictEqual(catchErr, 1)
@@ -96,7 +102,13 @@ describe('post multipart/form-data', function () {
 
   it('6. post file which mime type not allow failed', async () => {
     const formData = buildFormData()
-    formData.append('attachments', fs.createReadStream(ZIP_FILE))
+    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
+    formData.append('zip', fs.createReadStream(ZIP_FILE))
+    formData.append('attachments2[]', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments2[]', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments2[]', fs.createReadStream(SMALL_FILE))
     let catchErr = 0
     await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {

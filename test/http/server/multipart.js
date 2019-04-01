@@ -23,9 +23,18 @@ module.exports = {
     }
 
     debug(files)
+    let fileList = []
     if (files) {
+      fileList = Object.values(files).reduce((acc, v) => {
+        if (Array.isArray(v)) {
+          acc.push(...v)
+        } else {
+          acc.push(v)
+        }
+        return acc
+      }, [])
       await Promise.all(
-        files.map(file =>
+        fileList.map(file =>
           stat(file.path).then(data => {
             assert.strictEqual(data.size, file.size)
             assert(Date.now() - +new Date(data.birthtime) < 10000)
@@ -33,13 +42,13 @@ module.exports = {
         )
       )
     }
-    return { files }
+    return { files: fileList }
   },
   configHttp: {
     method: 'post',
     path: '/api/testMultipart',
     upload: {
-      maxSize: 5242880, // 5MB
+      maxSize: 10 * 1024 * 1024, // 10MB
       allowTypes: ['image/*', 'text/html']
       // allowTypes: ['*/*']
     }
