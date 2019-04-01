@@ -9,7 +9,7 @@ const fastify = require('fastify')()
 const colors = require('colors/safe')
 const Fly = require('../lib/fly')
 const os = require('os')
-const { parseFormData, deleteTempFiles } = require('../lib/multipartParser')
+const { parseFormData, deleteTempFiles, Files } = require('../lib/multipartParser')
 const debug = require('debug')('fly/evt/htt')
 
 fastify.register(require('fastify-multipart'))
@@ -117,7 +117,7 @@ module.exports = {
               typeof evt.headers['content-type'] === 'string' &&
               MULTIPART_REGEXP.test(evt.headers['content-type'])
 
-            let files = {}
+            let files = new Files()
             if (isUpload) {
               const formBody = await parseFormData(request, target.upload, MALUS_TMP_DIR)
               evt.body = formBody.fieldPairs

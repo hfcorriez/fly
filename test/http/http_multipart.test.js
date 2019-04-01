@@ -32,7 +32,7 @@ function buildFormData () {
 
 /* eslint-env node, mocha */
 describe('post multipart/form-data', function () {
-  this.timeout(500)
+  this.timeout(50000)
 
   it('1. post json suc', async () => {
     const res = await axios({ ...opts, data: JSON.stringify({ f1: 'v1', f2: 'v2', f3: 'v3' }) })
