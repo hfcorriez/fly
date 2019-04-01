@@ -57,8 +57,8 @@ describe('post multipart/form-data', function () {
 
   it('3. post files without field suc', async () => {
     const formData = new FormData()
-    formData.append('arr[]', fs.createReadStream(SMALL_FILE))
-    formData.append('arr[]', fs.createReadStream(SMALL_FILE))
+    formData.append('arr', fs.createReadStream(SMALL_FILE))
+    formData.append('arr', fs.createReadStream(SMALL_FILE))
     formData.append('small', fs.createReadStream(SMALL_FILE))
     const res = await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
@@ -71,8 +71,8 @@ describe('post multipart/form-data', function () {
 
   it('4. post field with file suc', async () => {
     const formData = buildFormData()
-    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
-    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments', fs.createReadStream(SMALL_FILE))
     formData.append('file', fs.createReadStream(SMALL_FILE))
     const res = await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
@@ -85,11 +85,11 @@ describe('post multipart/form-data', function () {
 
   it('5. post file too large failed', async () => {
     const formData = buildFormData()
-    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
-    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
-    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
-    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
-    formData.append('attachments[]', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments', fs.createReadStream(LARGE_FILE))
+    formData.append('attachments', fs.createReadStream(LARGE_FILE))
     let catchErr = 0
     await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
@@ -102,13 +102,13 @@ describe('post multipart/form-data', function () {
 
   it('6. post file which mime type not allow failed', async () => {
     const formData = buildFormData()
-    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
-    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
-    formData.append('attachments[]', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments', fs.createReadStream(SMALL_FILE))
     formData.append('zip', fs.createReadStream(ZIP_FILE))
-    formData.append('attachments2[]', fs.createReadStream(SMALL_FILE))
-    formData.append('attachments2[]', fs.createReadStream(SMALL_FILE))
-    formData.append('attachments2[]', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments2', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments2', fs.createReadStream(SMALL_FILE))
+    formData.append('attachments2', fs.createReadStream(SMALL_FILE))
     let catchErr = 0
     await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
