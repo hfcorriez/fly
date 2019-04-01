@@ -37,17 +37,7 @@ const axios = require('axios')
 
 const Fn = {
   main: async function (event) {
-    let res = { status: 200, body: '', headers: {} }
-
-    const ret = await axios({
-      method: 'GET',
-      url: event.query.url,
-      responseType: 'txt'
-    })
-    res.headers = ret.headers
-    res.status = ret.status
-    res.body = ret.data
-    return res
+    return {url : event.query.url}
   },
 
   configHttp: {
@@ -109,6 +99,7 @@ port: Number
 ip: String
 headers: Object
 body: Object
+files: Object
 query: Object
 search: String
 cookies: Object
@@ -138,6 +129,20 @@ params: Object
 _: String
 alias: Object
 descriptions: Object
+```
+
+#### Cron
+
+**Input Event**
+
+```yaml
+time: timestamp
+```
+
+**Config Event**
+
+```yaml
+time: '* * * * *'
 ```
 
 ### Context Defintion
