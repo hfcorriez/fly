@@ -25,7 +25,7 @@ module.exports = {
     debug(files)
     let fileList = []
     if (files) {
-      fileList = files.toArray()
+      fileList = _toFileList(files)
       await Promise.all(
         fileList.map(file =>
           stat(file.path).then(data => {
@@ -47,4 +47,15 @@ module.exports = {
     }
   }
 
+}
+
+function _toFileList (files) {
+  return Object.values(files).reduce((acc, v) => {
+    if (Array.isArray(v)) {
+      acc.push(...v)
+    } else {
+      acc.push(v)
+    }
+    return acc
+  }, [])
 }
