@@ -9,7 +9,7 @@ const fastify = require('fastify')()
 const colors = require('colors/safe')
 const Fly = require('../lib/fly')
 const os = require('os')
-const { parseFormData, deleteTempFiles, Files } = require('../lib/multipartParser')
+const { parseFormData, deleteTempFiles } = require('../lib/multipartParser')
 const debug = require('debug')('fly/evt/htt')
 
 fastify.register(require('fastify-multipart'))
@@ -135,8 +135,17 @@ module.exports = {
 
             // Handle url
             if (result.url) {
-              const res = await axios.get(result.url, { responseType: 'stream' })
-              Object.assign(headers, res.headers)
+              let res
+              try {
+                res = await axios({
+                  url: result.url
+                  // headers: request.headers
+                }, { responseType: 'stream' })
+              } catch (err) {
+                res = err.response
+              }
+              // console.log(res.headers)
+              // Object.assign(headers, res.headers)
               Object.assign(result, { status: res.status, body: res.data, url: undefined })
             }
           }
