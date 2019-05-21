@@ -9,6 +9,9 @@ module.exports = {
 
   async main (event, ctx) {
     let ret = await ctx.userLogin({ username: 'test', password: 'test' })
+    if (Math.random() > 0.5) {
+      ctx.error(new Error('random value is greater than 0.5, will log by sentry'))
+    }
     return ret
   },
 

@@ -5,7 +5,7 @@ const PM = require('../lib/pm')
 const colors = require('colors/safe')
 const utils = require('../lib/utils')
 
-const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'uncaughtException', 'unhandledRejection', 'SIGUSR1', 'SIGUSR2']
+const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'SIGUSR1', 'SIGUSR2']
 
 module.exports = {
   watched: {},
@@ -45,15 +45,6 @@ module.exports = {
           stop = true
           await this.fly.broadcast('shutdown')
           debug('SHUTDOWN', status)
-
-          if (status === 'uncaughtException' || status === 'unhandledRejection') {
-            const msg = `| SHUTDOWN at file '${__filename}' with status '${status}' |`
-            const divider = [...Array(msg.length).keys()].reduce(aac => {
-              aac += '-'
-              return aac
-            }, '')
-            console.log(`${divider}\n${msg}\n${divider}`)
-          }
 
           process.exit(0)
         } catch (err) {
