@@ -70,7 +70,10 @@ module.exports = {
       const target = fn.events.cron
       const cron = target.time || target.default
       if (!cron) return false
-      const interval = cronParser.parseExpression(cron, { currentDate: new Date(event.time * 1000) })
+      const interval = cronParser.parseExpression(cron, {
+        currentDate: new Date(event.time * 1000),
+        tz: process.env.TZ
+      })
       const currentTime = interval.next()._date.startOf('minute').unix() - 60
       return event.time === currentTime
     })
