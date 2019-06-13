@@ -134,7 +134,7 @@ module.exports = {
             }
 
             // Handle url
-            if (result.url) {
+            if (result && result.url) {
               let res
               try {
                 res = await axios({
