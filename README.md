@@ -10,9 +10,9 @@ _/        _/_/_/_/  _/
 
 `FLY` is `f`unctional`ly`: A library for develop backend easy.
 
-- **Isolation**: one file, one function, one service
-- **Configurability**: config anything with overwrite
-- **Modularization**: One dir, one module
+- **Isolation**: one file is one function
+- **Modularization**: one directory is one service
+- **Configurability**: config anything hierarchically
 
 ## Installation
 
@@ -48,7 +48,22 @@ module.exports = {
 ### Run
 
 ```bash
-fly http
+$ fly http -r ↙
+
+┌────────┬────────────────┬────────┬────────┐
+│ Method │ Path           │ Domain │ Fn     │
+│ GET    │ /api           │        │ index  │
+│ GET    │ /api/userLogin │        │ login  │
+│ POST   │ /upload        │        │ upload │
+│ GET    │ /              │        │ home   │
+│ GET    │ /static/:path+ │        │ static │
+└────────┴────────────────┴────────┴────────┘
+SERVER READY
+  NAME:      HTTP
+  ADDRESS:   http://127.0.0.1:5000
+  PID:       20815
+  WORK DIR:  /Users/YourName/Code/fly-example
+  HOT RELOAD: true
 ```
 
 ## Defintions
