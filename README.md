@@ -33,10 +33,8 @@ $ npm install -g fly
 > `proxy.js`
 
 ```javascript
-const axios = require('axios')
-
-const Fn = {
-  main: async function (event) {
+module.exports = {
+  async main (event) {
     return {url : event.query.url}
   },
 
@@ -45,8 +43,6 @@ const Fn = {
     path: '/proxy'
   }
 }
-
-module.exports = Fn
 ```
 
 ### Run
@@ -61,7 +57,6 @@ fly http
 
 ```javascript
 {
-  name: String,                                 // Name
   extends: String,                              // Extends from function, support file, package
   imports: Object {String: String}              // Inject function to context
   config: Object {String: Any},                 // Config object
@@ -85,45 +80,52 @@ fly http
 
 #### HTTP
 
-**Input Event**
+**Http Event**
 
 ```yaml
-method: String
-path: String
-origin: String
-host: String
-domain: String
-url: String
-protocol: String
-port: Number
-ip: String
-headers: Object
-body: Object
-files: Object
+method: String                # request http method, lowercase
+path: String                  # request http path
+origin: String                # request http origin
+host: String                  # request http host
+domain: String                # request domain
+url: String                   # request full url
+protocol: String              # request protocol
+port: Number                  # request port
+ip: String                    # request ip
+headers: Object               # request headers
+body: Object                  # request body
+files: Object                 # request files is
 query: Object
 search: String
 cookies: Object
 ```
 
-**Config Event**
+**Http Config**
 
 ```yaml
-method: String
-path: String
-domain: String | Array
-cors: Boolean
+method: String                    # Set method, eg: get, post, put, delete
+path: String                      # Set path, eg: /api
+domain: String | Array            # Set domain you want supply service
+cache: Boolean | Number           # Set page cache header, `true` is 600 seconds
+cors: Boolean | String            # Set http CORS header, `true` is for all origin, String set origin, object set params
+  origin: String
+  headers: String
+  methods: String
+upload:
+  allowTypes: Array               # mimetypes, eg: ['png', 'image/jpeg']
+  maxSize: Number                 # maxSize, default is 100mb
 ```
 
 #### Command
 
-**Input Event**
+**Command Event**
 
 ```yaml
 args: Object
 params: Object
 ```
 
-**Config Event**
+**Command Config**
 
 ```yaml
 _: String
@@ -133,13 +135,13 @@ descriptions: Object
 
 #### Cron
 
-**Input Event**
+**Cron Event**
 
 ```yaml
 time: timestamp
 ```
 
-**Config Event**
+**Cron Config**
 
 ```yaml
 time: '* * * * *'

@@ -16,7 +16,7 @@ module.exports = {
   },
 
   configHttp: {
-    method: 'get',
+    method: 'GET',
     path: '/api',
     cors: true
   }

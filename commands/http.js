@@ -93,6 +93,32 @@ module.exports = {
               'access-control-allow-credentials': 'true',
               'access-control-allow-headers': request.headers['access-control-request-headers'] || '*'
             }
+
+            if (target && target.cors) {
+              if (typeof target.cors === 'string') {
+                headers['access-control-allow-origin'] = target.cors
+              } else if (typeof target.cors === 'object') {
+                Object.keys(target.cors).forEach(key => {
+                  const value = target.cors[key]
+                  switch (key) {
+                    case 'origin':
+                      headers['access-control-allow-origin'] = value
+                      break
+                    case 'methods':
+                      headers['access-control-allow-methods'] = value
+                      break
+                    case 'headers':
+                      headers['access-control-allow-headers'] = value
+                      break
+                    case 'credentials':
+                      if (value === false) {
+                        delete headers['access-control-allow-credentials']
+                      }
+                      break
+                  }
+                })
+              }
+            }
           }
 
           if (mode === 'cors') {
@@ -291,6 +317,8 @@ module.exports = {
       let domainValid = target.domain.some(domain => new RegExp('^' + domain.replace(/\./g, '\\.').replace(/\*/g, '.*?') + '$').test(source.domain))
       if (!domainValid) return false
     }
+    // change target.method
+    target.method = target.method.toLowerCase()
 
     if (target.path[0] !== '/') {
       console.warn('warn: http path is not start with "/", recommend to add it')
