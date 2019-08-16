@@ -34,7 +34,7 @@ $ npm install -g fly
 
 ```javascript
 module.exports = {
-  async main (event) {
+  async main (event, context) {
     return {url : event.query.url}
   },
 
@@ -74,103 +74,25 @@ fly http
 }
 ```
 
-### Event Defintion
-
-> Event can be anything, but must can be JSONify
-
-#### HTTP
-
-**Http Event**
-
-```yaml
-method: String                # request http method, lowercase
-path: String                  # request http path
-origin: String                # request http origin
-host: String                  # request http host
-domain: String                # request domain
-url: String                   # request full url
-protocol: String              # request protocol
-port: Number                  # request port
-ip: String                    # request ip
-headers: Object               # request headers
-body: Object                  # request body
-files: Object                 # request files is
-query: Object
-search: String
-cookies: Object
-```
-
-**Http Config**
-
-```yaml
-method: String                    # Set method, eg: get, post, put, delete
-path: String                      # Set path, eg: /api
-domain: String | Array            # Set domain you want supply service
-cache: Boolean | Number           # Set page cache header, `true` is 600 seconds
-cors: Boolean | String            # Set http CORS header, `true` is for all origin, String set origin, object set params
-  origin: String
-  headers: String
-  methods: String
-upload:
-  allowTypes: Array               # mimetypes, eg: ['png', 'image/jpeg']
-  maxSize: Number                 # maxSize, default is 100mb
-```
-
-#### Command
-
-**Command Event**
-
-```yaml
-args: Object
-params: Object
-```
-
-**Command Config**
-
-```yaml
-_: String
-alias: Object
-descriptions: Object
-```
-
-#### Cron
-
-**Cron Event**
-
-```yaml
-time: timestamp
-```
-
-**Cron Config**
-
-```yaml
-time: '* * * * *'
-```
-
 ### Context Defintion
 
-```javascript
-{
-  // Event
-  eventId: String,                      // Event ID
-  eventType: String,                    // Event Type：http, command, null is internal
-  originalEvent: Event,                 // OriginalEvent
-  parentEvent: Event,                   // Parent Event
+```yaml
+eventId: String                       # Event ID
+eventType: String                     # Event Type：http, command, null is internal
+originalEvent: Event                  # OriginalEvent
+parentEvent: Event                    # Parent Event
 
-  // Core
-  call: Function,                       // Invoke function
-  list: Function,                       // List functions
-  get: Function,                        // Get function
+call: Function                        # Invoke function
+list: Function                        # List functions
+get: Function                         # Get function
+error: Function                       # Trigger error internal
+<fn>: Function                        # The functions imported
 
-  // Function info
-  name: String,                         // Name
-  extends: String,                      // Extends from function, support file, package
-  imports: Object {String: String}      // Inject function to context
-  config: Object {String: Any},         // Config object
-}
+trace: Object                         # Current trace
+config: Object                        # Config object
 ```
 
-### Command
+### Command Usage
 
 ```bash
 Usage:
@@ -199,6 +121,7 @@ System Commands:
     --instance,-i number         The instance number
     --all,-a                     All applications
     --bind,-b string
+    --hotreload,-r               Run with hot reload mode
   install                        Install deps
     --list,-l                    List packages to install
   list                           List functions
@@ -220,39 +143,130 @@ Global options:
     --verbose,-V                 Show verbose
 ```
 
-## Configration
+## Events
 
-### Internal events config
+> Event can be anything, but must can be JSONify
 
-`http`
+### HTTP
+
+**Http Event**
+
+```yaml
+method: String                # request http method, lowercase
+path: String                  # request http path
+origin: String                # request http origin
+host: String                  # request http host
+domain: String                # request domain
+url: String                   # request full url
+protocol: String              # request protocol
+port: Number                  # request port
+ip: String                    # request ip
+headers: Object               # request headers
+body: Object                  # request body
+files: Object                 # request files
+query: Object                 # request query
+search: String                # request search string without ?
+cookies: Object               # request cookies
+```
+
+**Http Config**
+
+```yaml
+method: String                    # Set method, eg: get, post, put, delete
+path: String                      # Set path, eg: /api
+domain: String | Array            # Set domain you want supply service
+cache: Boolean | Number           # Set page cache header, `true` is 600 seconds
+cors: Boolean | String            # Set http CORS header, `true` is for all origin, String set origin, object set params
+  origin: String
+  headers: String
+  methods: String
+upload:
+  allowTypes: Array               # mimetypes, eg: ['png', 'image/jpeg']
+  maxSize: Number                 # maxSize, default is 100mb
+```
+
+### Command
+
+**Command Event**
+
+```yaml
+args: Object                      # command args, eg: "--help"
+params: Object                    # command params, eg: "call <param>", param will pass as params.param
+```
+
+**Command Config**
+
+```yaml
+_: String                         # command declare, eg: "call <param>"
+args: Object                      # command args declares: `"--help": Boolean`
+alias: Object                     # command alias declares, eg: `"--help": '-h'`
+descriptions: Object              # command descriptions
+  _: String                       # command description
+  <param>: String                 # param description
+  <args>: String                  # arg description
+```
+
+**Command Example**
 
 ```javascript
-{
-  "method": "String",             # GET, POST, PUT, DELETE, OPTIONS and *
-  "path": "String",               # Path start with /
-  "domain": "String | Array"      # domain string or list
+module.exports = {
+  main (event, ctx) {
+    const command = event.params.command
+    const showFull = event.args.full
+
+    // logic
+  },
+
+  configCommand: {
+    _: 'help <command>',
+    args: {
+      '--full': Boolean
+    },
+    alias: {
+      '--full': '-f'
+    },
+    descriptions: {
+      _: 'Show help for commands',
+      '<help>': 'Command name'
+      '--full': 'Show full descriptions'
+    }
+  }
 }
 ```
 
-`command`
+### Cron
 
-```javascript
-{
-  "_": "command <subCommand>",
-  "args": {
-    "--option": String
-  },
-  "alias": {
-    "--option": "-o"
-  },
-  "descriptions": {
-    "--option": "Option desc"
-  }
+**Cron Event**
+
+```yaml
+time: timestamp
 ```
 
-### fly.yml
+**Cron Config**
 
-> You can place `fly.yml` in directory to overwrite funciton's config
+> See cron time format defintion https://en.wikipedia.org/wiki/Cron
+
+```yaml
+time: '* * * * *'
+```
+
+**Cron Example**
+
+```javascript
+module.exports = {
+  main (event, ctx) {
+    // tick on every 30min
+  },
+
+  configCron: {
+    time: '*/30 * * * *'
+  }
+}
+```
+
+## fly.yml
+
+> Optional. You can place `fly.yml` in directory to overwrite funciton's config
 
 `fly.yml`
 
@@ -278,6 +292,8 @@ config:
 ```
 
 ## API
+
+> You can use in Nodejs and call fly function directly
 
 ### Usage
 
