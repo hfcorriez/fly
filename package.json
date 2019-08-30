@@ -1,6 +1,6 @@
 {
   "name": "fly",
-  "version": "3.3.3",
+  "version": "3.3.4",
   "description": "A library for develop backend easy",
   "main": "lib/index.js",
   "bin": {
@@ -35,6 +35,7 @@
     "mime": "^2.2.2",
     "moment": "^2.21.0",
     "pm2": "^2.10.1",
+    "qs": "^6.8.0",
     "req-fast": "^0.2.18",
     "through2": "^3.0.1",
     "uuid": "^3.2.1",
