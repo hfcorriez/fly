@@ -13,6 +13,7 @@ const { parseFormData, deleteTempFiles } = require('../lib/multipartParser')
 const debug = require('debug')('fly/evt/htt')
 
 fastify.register(require('fastify-multipart'))
+fastify.register(require('fastify-xml-body-parser'))
 
 const MULTIPART_REGEXP = /^multipart\/form-data/i
 const MALUS_TMP_DIR = path.join(os.tmpdir(), 'com.getmalus')
