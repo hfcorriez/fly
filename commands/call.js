@@ -6,9 +6,10 @@ const Fly = require('../lib/fly')
 module.exports = {
   async main (event, ctx) {
     const fly = new Fly()
+    const { args, params } = event
 
-    let name = event.params[0]
-    let eventData = event.args.data || (await this.getStdin())
+    let name = params[0]
+    let eventData = args.data || (await this.getStdin())
     let evt
 
     if (eventData) {
@@ -23,8 +24,16 @@ module.exports = {
       }
     }
 
+    if (args.timeout) {
+      // Setup timeout
+      setTimeout(() => {
+        console.error(`call timeout: ${name}`)
+        process.exit(1)
+      }, args.timeout * 1000)
+    }
+
     const context = {}
-    if (event.args.type) context.eventType = event.args.type
+    if (args.type) context.eventType = args.type
 
     let result
     let fn
@@ -51,7 +60,7 @@ module.exports = {
       process.exit(0)
     } catch (err) {
       console.warn(colors.bgRed('CALL_ERROR'), colors.red(err.message))
-      if (event.args.verbose) console.error(err)
+      if (args.verbose) console.error(err)
       process.exit(1)
     }
   },
@@ -75,10 +84,12 @@ module.exports = {
     _: 'call <fn>',
     args: {
       '--type': String,
-      '--data': String
+      '--data': String,
+      '--timeout': Number
     },
     alias: {
-      '--data': '-d'
+      '--data': '-d',
+      '--timeout': '-t'
     },
     descriptions: {
       '_': 'Call function',
