@@ -216,7 +216,13 @@ module.exports = {
           reply.redirect(result.status || 302, result.redirect)
         } else if (result.file) {
           // return file
-          reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
+          fs.exists(result.file, (exists) => {
+            if (exists) {
+              reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
+            } else {
+              reply.type('text/html').code(404).send(this.config.errors['404'])
+            }
+          })
         } else if (!result.body) {
           // empty body
           if (!result.status) reply.code(204)
@@ -229,10 +235,7 @@ module.exports = {
           // no body and other options response 500
           reply.code(500).type('text/html').send(this.config.errors['500'])
         } else {
-          reply.code(500).type('application/json').send({
-            code: 500,
-            message: 'no body return'
-          })
+          reply.code(500).type('application/json').send('no body return')
         }
         this.Log(evt, reply, fn)
       }
