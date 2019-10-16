@@ -216,11 +216,12 @@ module.exports = {
           reply.redirect(result.status || 302, result.redirect)
         } else if (result.file) {
           // return file
-          fs.exists(result.file, (exists) => {
-            if (exists) {
-              reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
-            } else {
+          fs.stat(result.file, (err, stat) => {
+            if (err) {
+              debug(err)
               reply.type('text/html').code(404).send(this.config.errors['404'])
+            } else {
+              reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
             }
           })
         } else if (!result.body) {
