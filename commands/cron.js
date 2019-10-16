@@ -46,10 +46,12 @@ module.exports = {
           const fns = this.find(event)
           for (let fn of fns) {
             console.log('CRON EXEC', fn.file)
+            const cronConfig = fn.events.cron
             const subprocess = childProcess.spawn(process.argv[0], [
               path.join(__dirname, '../bin/fly.js'),
               'call',
-              fn.file
+              fn.file,
+              ...cronConfig.timeout ? ['--timeout', cronConfig.timeout] : []
             ], {
               env: process.env,
               cwd: process.cwd(),
