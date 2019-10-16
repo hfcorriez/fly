@@ -126,6 +126,7 @@ System Commands:
     <fn>                         Function name
     --type string                Set event type
     --data,-d string             Set event data
+    --timeout, -t                Set timeout
   show <fn>                      Show function info
     <fn>                         Function name
   help                           Show help
@@ -259,10 +260,9 @@ time: timestamp
 
 **Cron Config**
 
-> See cron time format defintion https://en.wikipedia.org/wiki/Cron
-
 ```yaml
-time: '* * * * *'
+time: '* * * * *'   # See format defintion https://en.wikipedia.org/wiki/Cron
+timeout: 60         # Maximum time limit
 ```
 
 **Cron Example**
