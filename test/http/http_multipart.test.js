@@ -113,7 +113,7 @@ describe('post multipart/form-data', function () {
     await axios({ ...opts, data: formData, headers: formData.getHeaders() })
       .catch(err => {
         assert.strictEqual(err.response.data.code, 500)
-        assert.strictEqual(err.response.data.message, 'file type application/zip is not allowd upload')
+        assert.strictEqual(err.response.data.message, 'file type application/zip is not allowed upload')
         catchErr = 1
       })
     assert.strictEqual(catchErr, 1)
