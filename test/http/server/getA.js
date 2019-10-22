@@ -1,10 +1,13 @@
+const lib = require('./lib/lib')
+
 module.exports = {
   extends: './apiBase',
   imports: {
-    b: './b'
+    flyFn: './flyFn.js'
   },
   async main (event, ctx) {
-    return ctx.b({ a: true })
+    console.log('main call', lib.c1)
+    return ctx.flyFn({ a: true, lib: await lib.c1(2) })
   },
   configHttp: {
     method: 'get',

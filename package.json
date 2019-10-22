@@ -54,6 +54,11 @@
     "form-data": "^2.3.3",
     "intelli-espower-loader": "^1.0.1",
     "mocha": "^6.0.2",
-    "power-assert": "^1.6.1"
+    "module-alias": "^2.2.2",
+    "power-assert": "^1.6.1",
+    "rewire": "^4.0.1"
+  },
+  "_moduleAliases": {
+    "@server": "test/http/server"
   }
 }

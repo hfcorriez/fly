@@ -1,5 +1,5 @@
 const assert = require('assert')
-const mock = require('../../lib/mock-http')
+const mock = require('../../lib/mock/http')
 const path = require('path')
 const axios = require('axios')
 
@@ -17,13 +17,14 @@ describe('test mock a', async function () {
     })
   })
   it('getA use b.mock.js', async () => {
-    await mock.startMockServer(path.join(__dirname, './b.mock.js'))
+    await mock.startMockServer(path.join(__dirname, '/server/lib/mock.js'))
     const { data } = await axios.get('http://127.0.0.1:5000/api/getA')
     assert.strict.deepEqual(data, {
       code: 0,
       data: {
         email: 'c@c.com',
-        a: true
+        a: true,
+        lib: 8
       }
     })
     await mock.stopMockServer()
