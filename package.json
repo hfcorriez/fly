@@ -7,7 +7,7 @@
     "fly": "bin/fly.js"
   },
   "scripts": {
-    "test": "npx mocha -r intelli-espower-loader "
+    "test": "export NODE_ENV=test && export DEBUG=TEST* && npx mocha -r intelli-espower-loader "
   },
   "repository": {
     "type": "git",

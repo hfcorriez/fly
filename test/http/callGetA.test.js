@@ -6,7 +6,7 @@ describe('test call', function () {
   it('call getA', async () => {
     const result = await flyCall({
       modulePath: require.resolve('./server/getA.js'),
-      mockPath: require.resolve('./server/lib/mock.js'),
+      mockPath: require.resolve('./getA.mock.js'),
       event: { }
     }, {
       cwd: __dirname

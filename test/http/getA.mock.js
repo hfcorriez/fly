@@ -11,7 +11,7 @@ module.exports = {
   lib: {
     '@server/lib/lib.js': {
       async c1 (i) {
-        const lib = rewire('./lib.js')
+        const lib = rewire('./server/lib/lib.js')
         return lib.__get__('v').c * 2 + i * 3
       }
     }
