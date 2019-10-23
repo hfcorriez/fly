@@ -5,7 +5,7 @@ module.exports = {
   file: __filename,
   fly: {
     flyFn: async (event) => {
-      return { email: 'c@c.com', ...event }
+      return { email: 'mock@mock.com', ...event }
     }
   },
   lib: {
