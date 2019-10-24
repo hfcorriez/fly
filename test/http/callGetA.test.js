@@ -1,6 +1,5 @@
 const { flyCall } = require('../../lib/mock/call')
 const assert = require('assert')
-const path = require('path')
 
 describe('test call', function () {
   it('call getA', async () => {
@@ -12,7 +11,7 @@ describe('test call', function () {
       cwd: __dirname
     })
     assert.strict.deepEqual(result, {
-      email: 'mock@mock.com',
+      email: 'mock@mock.com0',
       a: true,
       lib: 8
     })
