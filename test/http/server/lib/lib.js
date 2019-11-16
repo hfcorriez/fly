@@ -1,8 +1,9 @@
-const v = {
-  c: 1
+const store = {
+  value: 'original lib value'
 }
 
-exports.c1 = async function c1 (i) {
-  console.log(v)
-  return v.c + i
+exports.libFn = async function libFn () {
+  return {
+    lib: store.value
+  }
 }

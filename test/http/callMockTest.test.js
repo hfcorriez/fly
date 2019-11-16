@@ -2,18 +2,18 @@ const { flyCall } = require('../../lib/mock/call')
 const assert = require('assert')
 
 describe('test call', function () {
-  it('call getA', async () => {
+  it('call mockTest', async () => {
     const result = await flyCall({
-      modulePath: require.resolve('./server/getA.js'),
-      mockPath: require.resolve('./getA.mock.js'),
+      modulePath: require.resolve('./server/mockTest.js'),
+      mockPath: require.resolve('./mockTest.mock.js'),
       event: { }
     }, {
       cwd: __dirname
     })
     assert.strict.deepEqual(result, {
-      email: 'mock@mock.com0',
-      a: true,
-      lib: 8
+      fly: 'mock fly value',
+      lib: 'mock lib value',
+      rewired: false
     })
   })
 })

@@ -7,10 +7,13 @@ module.exports = {
   },
   async main (event, ctx) {
     console.log('main call', lib.c1)
-    return ctx.flyFn({ a: true, lib: await lib.c1(2) })
+    return {
+      ...await ctx.flyFn(),
+      ...await lib.libFn()
+    }
   },
   configHttp: {
     method: 'get',
-    path: '/api/getA'
+    path: '/api/mockTest'
   }
 }

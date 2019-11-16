@@ -5,20 +5,26 @@ module.exports = {
   file: __filename,
   fly: {
     flyFn: async (event) => {
-      return { email: 'mock@mock.com' + toRewired, ...event }
+      return {
+        fly: 'mock fly value'
+      }
     }
   },
   lib: {
     '@server/lib/lib.js': {
-      async c1 (i) {
+      async libFn (i) {
         const lib = rewire('./server/lib/lib.js')
-        return lib.__get__('v').c * 2 + i * 3 + toRewired
+        lib.__set__('store', { value: 'mock lib value' })
+        return {
+          lib: lib.__get__('store').value,
+          rewired
+        }
       }
     }
   },
   reload: [
-    '@server/getA.js'
+    '@server/mockTest.js'
   ]
 }
 
-var toRewired = 0
+var rewired = false
