@@ -24,12 +24,9 @@ module.exports = {
       }
     }
 
-    if (args.timeout) {
+    if (args.timeout && typeof args.timeout === 'number') {
       // Setup timeout
-      setTimeout(() => {
-        console.error(`call timeout: ${name}`)
-        process.exit(1)
-      }, args.timeout * 1000)
+      _exitIfTimeout(args.timeout, () => console.error(`call timeout ${args.timeout}s`))
     }
 
     const context = {}
@@ -97,5 +94,21 @@ module.exports = {
       '--type': 'Set event type',
       '--data': 'Set event data'
     }
+  }
+}
+
+function _exitIfTimeout (timeout, beforeExit) {
+  let sec = 0
+  tryExitNextSec()
+  function tryExitNextSec () {
+    sec++
+    setTimeout(() => {
+      if (timeout <= sec) {
+        beforeExit()
+        process.exit(1)
+      } else {
+        tryExitNextSec()
+      }
+    }, 1000)
   }
 }
