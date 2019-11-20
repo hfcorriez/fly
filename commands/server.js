@@ -67,6 +67,7 @@ module.exports = {
   },
 
   async main (event, ctx) {
+    console.log('fly server run', event.params)
     if (!event.params.command) {
       if (event.args.port) this.config.port = event.args.port
       if (event.args.bind) this.config.address = event.args.bind

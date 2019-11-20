@@ -55,6 +55,10 @@ describe('test mock a', async function () {
       }
     })
   })
+  it('test error', async () => {
+    var s = { v: 1 }
+    assert.strict.equal(s.v, 2, 's.v is 2')
+  })
 })
 
 //  yarn test test/http/mockTest.test.js
