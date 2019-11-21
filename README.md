@@ -147,7 +147,7 @@ props<Event>: Object                          # Props definetions for event
     },
     bornDate: {
       type: 'Date',
-      format: 'VALUE'    # Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
+      format: 'VALUE'           // Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
     },
     info: {
       type: 'Object',
@@ -401,8 +401,8 @@ timeout: 60         # Maximum time limit
 
 ```javascript
 module.exports = {
-  main             {
-    # tick on every 30min
+  main() {
+    // tick on every 30min
   },
 
   configCron: {
@@ -419,6 +419,7 @@ module.exports = {
 
 ```javascript
 const Sentry = require('@sentry/node')
+
 Sentry.init({
   dsn: 'http://appkey@sentry.io'
 })
@@ -445,7 +446,7 @@ module.exports = {
 module.exports = {
   configStartup: true,
 
-  async main             {
+  async main (){
     ctx.db = await DB.connect()
     console.log('db connected')
   }
