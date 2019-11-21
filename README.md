@@ -101,7 +101,7 @@ SERVER READY
   /**
    * Define event types
    */
-  eventProps: {
+  props: {
     id: Number,
     email: {
       type: 'EMAIL',
