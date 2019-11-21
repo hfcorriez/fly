@@ -77,7 +77,7 @@ SERVER READY
   extends: String,                              // Extends from function, support file, package
   retry: Number || Boolean,                     // Retry count, true is 3
   main: Function (event, ctx),                  // Main
-  eventTypes: Object,                           // Event types
+  props: Object,                                // Props definetions
   validate: Function (event, ctx),              // Validate
   before: Function (event, ctx),                // Before filter
   after: Function (event, ctx),                 // After filter
@@ -87,7 +87,7 @@ SERVER READY
   after<Event>: Function (event, ctx),          // After filter
   validate<Event>: Function (event, ctx),       // Validate event
   catch<Event>: Function (event, ctx),          // Error catch
-  eventTypes<Event>: Object,                    //
+  props<Event>: Object,                         // Props definetions for event
 }
 ```
 
@@ -102,7 +102,7 @@ SERVER READY
   /**
    * Define event types
    */
-  eventTypes: {
+  eventProps: {
     id: Number,
     email: {
       type: 'EMAIL',
@@ -123,7 +123,7 @@ SERVER READY
     },
     info: {
       type: Object,
-      eventTypes: {
+      eventProps: {
         title: String,
       }
     }
@@ -454,6 +454,38 @@ files:
     http:
       method: post
       path: /api/login
+```
+
+## Test
+
+> You can write `<name>.test.js` in same folder then run `fly test` it will test automatically
+
+### Setup a test
+
+**index.test.js**
+```javascript
+const assert = require('assert')
+
+module.exports = {
+  tests: [
+    {
+      title: 'Check result code',
+      event: {},
+      result (result) {
+        assert.strictEqual(result.code, 0)
+        return true
+      }
+    }
+  ]
+}
+```
+
+**Output**
+
+```shell
+$ fly test
+√ index (1/1)           5.5ms
+  √ Check result code   5.5ms
 ```
 
 ## API
