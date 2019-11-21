@@ -97,7 +97,7 @@ props:                                  # Props definetions
     enum: Array[String]                 # Enum options
 
     # Date options
-    format: String                      # Support: date, datetime, unix, value, ios, [Custom]
+    format: String                      # Support: date, datetime, unix, value, ios, [YY-MM-DD]
 
     # After transform options
     after: Function                     # After transform options
@@ -133,23 +133,23 @@ props<Event>: Object                    # Props definetions for event
    * Define event types
    */
   props: {
-    id: 'Number',
+    id: Number,
     email: {
-      type: 'Email',
+      type: 'email',
       lowercase: true,
       message: 'Email invalid'
     },
     name: {
-      type: 'String',
+      type: String,
       default: 'User'
     },
     avatar: {
-      type: 'String',
+      type: String,
       default: 'User'
     },
     bornDate: {
-      type: 'Date',
-      format: 'VALUE'           // Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
+      type: Date,
+      format: 'value'
     },
     info: {
       type: 'Object',
