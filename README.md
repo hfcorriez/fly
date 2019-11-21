@@ -318,26 +318,22 @@ module.exports = {
 > Optional. You can place `fly.yml` in directory to overwrite funciton's config
 
 `fly.yml`
-
 ```yaml
 files:
   - "**/*.fly.js"
 
-# Events config overwrite
-events:
-  http:
-    domain:
-      - api.com
-      - localhost
-
 # Config overwrite
-config:
-  db:
-    host: localhost
-  module@:
-    db: 'test:3333'
-  url@:
-    url: hello
+functions:
+  *:
+    events:
+      http:
+        method: post
+
+  login:
+    events:
+      http:
+        method: post
+        path: /api/login
 ```
 
 ## API
