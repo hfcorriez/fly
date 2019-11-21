@@ -279,6 +279,40 @@ module.exports = {
 }
 ```
 
+### Error
+
+**Error handle Example**
+
+> Example to handle error with `Sentry`
+
+```javascript
+const Sentry = require('@sentry/node')
+const util = require('util')
+const ENV_WHITELIST = ['NODE_ENV', 'HOSTNAME', 'LOGNAME', 'LANGUGE']
+Sentry.init({
+  dsn: 'http://appkey@sentry.io'
+})
+
+Sentry.configureScope(scope => {
+  Object.keys(process.env)
+    .filter(k => ENV_WHITELIST.includes(k))
+    .forEach(k =>  scope.setExtra('ENV:' + k, process.env[k]))
+})
+
+module.exports = {
+  configError: true,
+
+  main (event) {
+    const err = event
+    if (err instanceof Error) {
+      Sentry.captureException(err)
+    } else if (typeof err !== 'undefined') {
+      Sentry.captureMessage(util.inspect(err, { depth: null, breakLength: Infinity }))
+    }
+  }
+}
+```
+
 ## fly.yml
 
 > Optional. You can place `fly.yml` in directory to overwrite funciton's config
