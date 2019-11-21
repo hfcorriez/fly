@@ -322,18 +322,12 @@ module.exports = {
 files:
   - "**/*.fly.js"
 
-# Config overwrite
-functions:
-  *:
-    events:
-      http:
-        method: post
-
-  login:
-    events:
-      http:
-        method: post
-        path: /api/login
+# Function config overwrite
++login:
+  events:
+    http:
+      method: post
+      path: /api/login
 ```
 
 ## API

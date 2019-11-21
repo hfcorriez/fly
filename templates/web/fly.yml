@@ -1,13 +1,12 @@
-functions:
-  index:
-    events:
-      http:
-        method: get
-        path: /api1
++index:
+  events:
+    http:
+      method: get
+      path: /api1
 
-  login:
-    events:
-      http:
-        method: get
-        path: /api/login
++login:
+  events:
+    http:
+      method: get
+      path: /api/login
 
