@@ -37,13 +37,13 @@ module.exports = {
   main (event, ctx) {
     return {
       code: 0,
-      message: 'api is ok'
+      message: 'hello world'
     }
   },
 
   configHttp: {
     method: 'GET',
-    path: '/api'
+    path: '/hello'
   }
 }
 ```
@@ -55,7 +55,7 @@ $ fly http -r ↙
 
 ┌────────┬────────────────┬────────┬────────┐
 │ Method │ Path           │ Domain │ Fn     │
-│ GET    │ /api           │        │ index  │
+│ GET    │ /hello         │        │ hello  │
 └────────┴────────────────┴────────┴────────┘
 SERVER READY
   NAME:      HTTP
