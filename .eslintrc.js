@@ -21,9 +21,6 @@ module.exports = {
   ],
 
   "globals": {
-    "$": "readonly",
-    "document": "readonly",
-    "window": "readonly"
   },
 
   "rules": {
