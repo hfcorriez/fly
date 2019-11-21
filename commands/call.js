@@ -56,7 +56,10 @@ module.exports = {
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
       process.exit(0)
     } catch (err) {
-      console.warn(colors.bgRed('CALL_ERROR'), colors.red(err.message))
+      console.error(colors.bgRed('CALL_ERROR'), colors.red(err.message))
+      if (args.error) {
+        console.error(err)
+      }
       if (args.verbose) console.error(err)
       process.exit(1)
     }
@@ -82,17 +85,20 @@ module.exports = {
     args: {
       '--type': String,
       '--data': String,
-      '--timeout': Number
+      '--timeout': Number,
+      '--error': Boolean
     },
     alias: {
       '--data': '-d',
-      '--timeout': '-t'
+      '--timeout': '-t',
+      '--error': '-e'
     },
     descriptions: {
       '_': 'Call function',
       '<fn>': 'Function name',
       '--type': 'Set event type',
-      '--data': 'Set event data'
+      '--data': 'Set event data',
+      '--error': 'Show full error'
     }
   }
 }
