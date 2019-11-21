@@ -75,8 +75,8 @@ SERVER READY
 extends: String,                        # Extends from file
 retry: Number|Boolean,                  # Retry count, true is 3
 main: Function                          # Main call -> (event, ctx)
-props: Object,                          # Props definetions
-  String:
+props:                                  # Props definetions
+  <key>:
     type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
 
     # Pre transform options
@@ -91,7 +91,7 @@ props: Object,                          # Props definetions
     trim: Boolean                       # Trim
 
     # Hash options
-    algorithm: ENUM                     # Support: md5, sha1, sha256, sha512
+    algorithm: String                   # Support: md5, sha1, sha256, sha512
 
     # Pattern options
     enum: Array[String]                 # Enum options
