@@ -30,17 +30,20 @@ $ npm install -g fly
 
 ### Write function
 
-> `proxy.js`
+> `hello.js`
 
 ```javascript
 module.exports = {
-  async main (event, context) {
-    return {url : event.query.url}
+  main (event, ctx) {
+    return {
+      code: 0,
+      message: 'api is ok'
+    }
   },
 
   configHttp: {
     method: 'GET',
-    path: '/proxy'
+    path: '/api'
   }
 }
 ```
@@ -53,10 +56,6 @@ $ fly http -r ↙
 ┌────────┬────────────────┬────────┬────────┐
 │ Method │ Path           │ Domain │ Fn     │
 │ GET    │ /api           │        │ index  │
-│ GET    │ /api/userLogin │        │ login  │
-│ POST   │ /upload        │        │ upload │
-│ GET    │ /              │        │ home   │
-│ GET    │ /static/:path+ │        │ static │
 └────────┴────────────────┴────────┴────────┘
 SERVER READY
   NAME:      HTTP
