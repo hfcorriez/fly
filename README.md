@@ -78,10 +78,23 @@ main: Function (event, ctx),                  // Main
 props: Object,                                // Props definetions
   String:
     type: STRING,                             // Support: EMAIL, DATE, ALPHA, ALPHANUMERIC, BASE64, BASE32, ENUM, FLOAT, NUMBER, IP, JSON, MD5, PHONENUMBER, PORT, URL, UPPERCASE, LOWERCASE, PATTERN, MACADDRESS, IP-CIDR, HEXCOLOR, LOCALE, HEX, HASH, FADN, ASCII
-    [type]: Object,                           // Config for type
+    // String options
     lowercase: Boolean,                       // Auto convert lowercase, default is false
     uppercase: Boolean,                       // Auto convert uppercase, default is false
+    // Number and float options
+    min: Number,                              //
+    max: Number,                              //
+    // Hash options
+    hash: ENUM,                               // Support: md5, sha1, sha256, sha512
+    // Pattern options
+    pattern: Regex                            // Regex pattern such as: /\d+/
+    // Enum options
+    enum: Array[String]                       // Enum options
+    // Date options
+    format: String                            // Support: DATE, DATETIME, UNIX, VALUE, ISO, [Custom]
+    // Global options
     normalize: Boolean,                       // Auto normalize the right value, default is true
+    default: String,                          // Default value if not exists
     message: String                           // Message will throw as FlyValidateError(message),
     props: Object                             // Nested props definetions
 validate: Function (event, ctx),              // Validate
