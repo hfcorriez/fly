@@ -16,7 +16,7 @@ fastify.register(require('fastify-multipart'))
 fastify.register(require('fastify-xml-body-parser'))
 
 const MULTIPART_REGEXP = /^multipart\/form-data/i
-const MALUS_TMP_DIR = path.join(os.tmpdir(), 'com.getmalus')
+const TMP_DIR = path.join(os.tmpdir(), 'com.getmalus')
 
 module.exports = {
   extends: './server',
@@ -35,18 +35,18 @@ module.exports = {
   init () {
     this.fly = new Fly()
     try {
-      if (!fs.existsSync(MALUS_TMP_DIR)) {
-        fs.mkdirSync(MALUS_TMP_DIR)
+      if (!fs.existsSync(TMP_DIR)) {
+        fs.mkdirSync(TMP_DIR)
       }
     } catch (err) {
       if (err) {
-        const msg = `Failed to create temp dir ${MALUS_TMP_DIR} for malus, err: ${err.message}`
+        const msg = `Failed to create temp dir ${TMP_DIR} for malus, err: ${err.message}`
         console.log(msg)
         debug(msg)
         process.exit(1)
       }
     }
-    debug('malus temp dir is ', MALUS_TMP_DIR)
+    debug('malus temp dir is ', TMP_DIR)
   },
 
   run () {
@@ -146,7 +146,7 @@ module.exports = {
 
             let files = {}
             if (isUpload) {
-              const formBody = await parseFormData(request, target.upload, MALUS_TMP_DIR)
+              const formBody = await parseFormData(request, target.upload, TMP_DIR)
               evt.body = formBody.fieldPairs
               evt.files = formBody.files
               files = formBody.files
