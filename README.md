@@ -65,57 +65,59 @@ SERVER READY
   HOT RELOAD: true
 ```
 
-## Defintions
+## Definitions
 
 ### Function
 
-**Props Defintion**
+**Function Definition**
 
 ```yaml
-extends: String,                              # Extends from function, support extends from function file
-retry: Number || Boolean,                     # Retry count, true is 3
-main: Function                               # Main
-props: Object,                                # Props definetions
+extends: String,                        # Extends from file
+retry: Number|Boolean,                  # Retry count, true is 3
+main: Function                          # Main call -> (event, ctx)
+props: Object,                          # Props definetions
   String:
-    type: String,                             # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, Phonenumber, Port, URL, Uppercase, Lowercase, MAC, Hexcolor, Locale, Hex, Hash, FADN, ASCII
+    type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
 
     # Pre transform options
-    pretrim: Boolean                          # Pre trim
-    before: Function                          # Before filter
+    pretrim: Boolean                    # Pre trim
+    before: Function                    # Before filter
+
+    validate: Function                  # Custom validator with (input, definition)
 
     # String options
-    lowercase: Boolean                        # Auto convert lowercase, default is false
-    uppercase: Boolean                        # Auto convert uppercase, default is false
-    trim: Boolean                             # Trim
+    lowercase: Boolean                  # Auto convert lowercase, default is false
+    uppercase: Boolean                  # Auto convert uppercase, default is false
+    trim: Boolean                       # Trim
 
     # Hash options
-    algorithm: ENUM                           # Support: md5, sha1, sha256, sha512
+    algorithm: ENUM                     # Support: md5, sha1, sha256, sha512
 
     # Pattern options
-    enum: Array[String]                       # Enum options
+    enum: Array[String]                 # Enum options
 
     # Date options
-    format: String                            # Support: DATE, DATETIME, UNIX, VALUE, ISO, [Custom]
+    format: String                      # Support: date, datetime, unix, value, ios, [Custom]
 
     # After transform options
-    after: Function                           # After transform options
+    after: Function                     # After transform options
 
     # Global options
-    default: String                           # Default value if not exists
-    message: String                           # Message will throw as FlyValidateError(message),
+    default: String                     # Default value if not exists
+    message: String                     # Message will throw as FlyValidateError(message),
 
     # Nested options
-    props: Object                             # Nested props definetions
-validate: Function                            # Validate
-before: Function                              # Before filter
-after: Function                               # After filter
-catch: Function                               # Error catch
-config<Event>: Object || Boolean || Function  # Startup event
-before<Event>: Function                       # Before filter
-after<Event>: Function                        # After filter
-validate<Event>: Function                     # Validate event
-catch<Event>: Function                        # Error catch
-props<Event>: Object                          # Props definetions for event
+    props: Object                       # Nested props definetions
+validate: Function                      # Validate
+before: Function                        # Before filter
+after: Function                         # After filter
+catch: Function                         # Error catch
+config<Event>: Object|Boolean|Function  # Startup event
+before<Event>: Function                 # Before filter
+after<Event>: Function                  # After filter
+validate<Event>: Function               # Validate event
+catch<Event>: Function                  # Error catch
+props<Event>: Object                    # Props definetions for event
   # same as props, but only for given event
 ```
 
@@ -222,7 +224,7 @@ props<Event>: Object                          # Props definetions for event
 }
 ```
 
-### Context Defintion
+### Context Definition
 
 ```yaml
 eventId: String                       # Event ID
