@@ -287,16 +287,8 @@ module.exports = {
 
 ```javascript
 const Sentry = require('@sentry/node')
-const util = require('util')
-const ENV_WHITELIST = ['NODE_ENV', 'HOSTNAME', 'LOGNAME', 'LANGUGE']
 Sentry.init({
   dsn: 'http://appkey@sentry.io'
-})
-
-Sentry.configureScope(scope => {
-  Object.keys(process.env)
-    .filter(k => ENV_WHITELIST.includes(k))
-    .forEach(k =>  scope.setExtra('ENV:' + k, process.env[k]))
 })
 
 module.exports = {
@@ -309,6 +301,35 @@ module.exports = {
     } else if (typeof err !== 'undefined') {
       Sentry.captureMessage(util.inspect(err, { depth: null, breakLength: Infinity }))
     }
+  }
+}
+```
+
+### Startup
+
+> Connect db When app startup
+
+```javascript
+module.exports = {
+  configStartup: true,
+
+  async main (event, ctx) {
+    ctx.db = await DB.connect()
+    console.log('db connected')
+  }
+}
+```
+
+### Shutdown
+
+> Delete tmp files when shutdown
+
+```javascript
+module.exports = {
+  configShutdown: true,
+
+  main () {
+    return deleteTempFiles()
   }
 }
 ```
