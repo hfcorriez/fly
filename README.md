@@ -479,12 +479,17 @@ module.exports = {
 }
 ```
 
-**Output**
+**Execute test**
 
 ```shell
 $ fly test
-√ index (1/1)           5.5ms
-  √ Check result code   5.5ms
+√ index (1/1)             5.5ms
+  √ Check result code     5.5ms
+x login (1/2)             121ms
+  √ Check login state     30ms
+  x Login with wrong info 91ms
+
+(1/2) function test failed x
 ```
 
 ## API
