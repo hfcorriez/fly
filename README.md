@@ -68,15 +68,16 @@ SERVER READY
 
 ## Defintions
 
-### Function Defintion
+### Function
+
+**Props Defintion**
 
 ```javascript
 {
   extends: String,                              // Extends from function, support file, package
-  imports: Object {String: String}              // Inject function to context
-  config: Object {String: Any},                 // Config object
   retry: Number || Boolean,                     // Retry count, true is 3
   main: Function (event, ctx),                  // Main
+  eventTypes: Object,                           // Event types
   validate: Function (event, ctx),              // Validate
   before: Function (event, ctx),                // Before filter
   after: Function (event, ctx),                 // After filter
@@ -86,6 +87,103 @@ SERVER READY
   after<Event>: Function (event, ctx),          // After filter
   validate<Event>: Function (event, ctx),       // Validate event
   catch<Event>: Function (event, ctx),          // Error catch
+  eventTypes<Event>: Object,                    //
+}
+```
+
+**Example**
+
+**createUser.js**
+
+> Create user with info
+
+```javascript
+{
+
+  eventTypes: {
+    id: Number,
+    email: {
+      type: 'Email',
+      lowercase: true
+    },
+    name: {
+      type: String,
+      default: 'User'
+    },
+    avatar: {
+      type: String,
+      default: 'User'
+    },
+    info: {
+      type: Object,
+      eventTypes: {
+        title: String,
+      }
+    }
+  },
+
+  // Extends from appbase for initial functions
+  extends: '../appbase',
+
+  /**
+   * Main function
+   */
+  main(event) {
+    const db = this.db()
+    db.collections('user').insertOne(event)
+  },
+
+  /**
+   * Config before http
+   */
+  beforeHttp(event) {
+    // Transform query or body to main
+    return event.query || event.body
+  },
+
+  /**
+   * Config after http
+   */
+  afterHttp(event) {
+    return {
+      code: 0,
+      data: event
+    }
+  },
+
+  /**
+   * Config before command
+   */
+  beforeCommand(event) {
+    return event.args
+  },
+
+  /**
+   * Config after command
+   */
+  afterCommand(event) {
+    Object.keys(event).forEach(name => console.log(`${name}: ${event[name]}`))
+  },
+
+  /**
+   * Config http event
+   */
+  configHttp: {
+    method: 'post',
+    path: '/api/createUser'
+  },
+
+  /**
+   * Config command event
+   */
+  configCommand: {
+    _: 'create',
+    args: {
+      '--name': String,
+      '--email': String,
+      '--id': Number
+    }
+  }
 }
 ```
 
