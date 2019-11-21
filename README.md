@@ -131,29 +131,26 @@ props<Event>: Object,                         // Props definetions for event
    * Define event types
    */
   props: {
-    id: Number,
+    id: 'Number',
     email: {
-      type: 'EMAIL',
+      type: 'Email',
       lowercase: true,
       message: 'Email invalid'
     },
     name: {
-      type: String,
+      type: 'String',
       default: 'User'
     },
     avatar: {
-      type: String,
+      type: 'String',
       default: 'User'
     },
     bornDate: {
-      type: 'DATE',
-      date: {
-        format: 'VALUE'    // Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
-      },
-      normalize: true
+      type: 'Date',
+      format: 'VALUE'    // Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
     },
     info: {
-      type: Object,
+      type: 'Object',
       props: {
         title: String,
       }
