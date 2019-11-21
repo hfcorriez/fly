@@ -16,7 +16,7 @@ fastify.register(require('fastify-multipart'))
 fastify.register(require('fastify-xml-body-parser'))
 
 const MULTIPART_REGEXP = /^multipart\/form-data/i
-const TMP_DIR = path.join(os.tmpdir(), 'com.getmalus')
+const TMP_DIR = path.join(os.tmpdir(), 'flyjs')
 
 module.exports = {
   extends: './server',
