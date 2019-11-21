@@ -34,7 +34,7 @@ $ npm install -g fly
 
 ```javascript
 module.exports = {
-  main (event, ctx) {
+  main             {
     return {
       code: 0,
       message: 'hello world'
@@ -71,51 +71,51 @@ SERVER READY
 
 **Props Defintion**
 
-```javascript
-extends: String,                              // Extends from function, support extends from function file
-retry: Number || Boolean,                     // Retry count, true is 3
-main: Function (event, ctx),                  // Main
-props: Object,                                // Props definetions
+```yaml
+extends: String,                              # Extends from function, support extends from function file
+retry: Number || Boolean,                     # Retry count, true is 3
+main: Function                               # Main
+props: Object,                                # Props definetions
   String:
-    type: STRING,                             // Support: Email, Date, Alpha, AlphaNumeric, Base64, Base32, Enum, Float, Number, IP, JSON, MD5, Phonenumber, Port, URL, Uppercase, Lowercase, MAC, Hexcolor, Locale, Hex, Hash, FADN, ASCII
+    type: String,                             # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, Phonenumber, Port, URL, Uppercase, Lowercase, MAC, Hexcolor, Locale, Hex, Hash, FADN, ASCII
 
-    // Pre transform options
-    pretrim: Boolean                          // Pre trim
-    before: Function                          // Before filter
+    # Pre transform options
+    pretrim: Boolean                          # Pre trim
+    before: Function                          # Before filter
 
-    // String options
-    lowercase: Boolean                        // Auto convert lowercase, default is false
-    uppercase: Boolean                        // Auto convert uppercase, default is false
-    trim: Boolean                             // Trim
+    # String options
+    lowercase: Boolean                        # Auto convert lowercase, default is false
+    uppercase: Boolean                        # Auto convert uppercase, default is false
+    trim: Boolean                             # Trim
 
-    // Hash options
-    algorithm: ENUM                           // Support: md5, sha1, sha256, sha512
+    # Hash options
+    algorithm: ENUM                           # Support: md5, sha1, sha256, sha512
 
-    // Pattern options
-    enum: Array[String]                       // Enum options
+    # Pattern options
+    enum: Array[String]                       # Enum options
 
-    // Date options
-    format: String                            // Support: DATE, DATETIME, UNIX, VALUE, ISO, [Custom]
+    # Date options
+    format: String                            # Support: DATE, DATETIME, UNIX, VALUE, ISO, [Custom]
 
-    // After transform options
-    after: Function                           // After transform options
+    # After transform options
+    after: Function                           # After transform options
 
-    // Global options
-    default: String                           // Default value if not exists
-    message: String                           // Message will throw as FlyValidateError(message),
+    # Global options
+    default: String                           # Default value if not exists
+    message: String                           # Message will throw as FlyValidateError(message),
 
-    // Nested options
-    props: Object                             // Nested props definetions
-validate: Function (event, ctx),              // Validate
-before: Function (event, ctx),                // Before filter
-after: Function (event, ctx),                 // After filter
-catch: Function (event, ctx),                 // Error catch
-config<Event>: Object || Boolean || Function, // Startup event
-before<Event>: Function (event, ctx),         // Before filter
-after<Event>: Function (event, ctx),          // After filter
-validate<Event>: Function (event, ctx),       // Validate event
-catch<Event>: Function (event, ctx),          // Error catch
-props<Event>: Object,                         // Props definetions for event
+    # Nested options
+    props: Object                             # Nested props definetions
+validate: Function                            # Validate
+before: Function                              # Before filter
+after: Function                               # After filter
+catch: Function                               # Error catch
+config<Event>: Object || Boolean || Function  # Startup event
+before<Event>: Function                       # Before filter
+after<Event>: Function                        # After filter
+validate<Event>: Function                     # Validate event
+catch<Event>: Function                        # Error catch
+props<Event>: Object                          # Props definetions for event
   # same as props, but only for given event
 ```
 
@@ -147,7 +147,7 @@ props<Event>: Object,                         // Props definetions for event
     },
     bornDate: {
       type: 'Date',
-      format: 'VALUE'    // Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
+      format: 'VALUE'    # Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
     },
     info: {
       type: 'Object',
@@ -172,7 +172,7 @@ props<Event>: Object,                         // Props definetions for event
    * Config before http
    */
   beforeHttp(event) {
-    // Transform query or body to main
+    # Transform query or body to main
     return event.query || event.body
   },
 
@@ -237,7 +237,6 @@ error: Function                       # Trigger error internal
 <fn>: Function                        # The functions imported
 
 trace: Object                         # Current trace
-config: Object                        # Config object
 ```
 
 ### Command Usage
@@ -359,11 +358,11 @@ descriptions: Object              # command descriptions
 
 ```javascript
 module.exports = {
-  main (event, ctx) {
+  main             {
     const command = event.params.command
     const showFull = event.args.full
 
-    // logic
+    # logic
   },
 
   configCommand: {
@@ -402,8 +401,8 @@ timeout: 60         # Maximum time limit
 
 ```javascript
 module.exports = {
-  main (event, ctx) {
-    // tick on every 30min
+  main             {
+    # tick on every 30min
   },
 
   configCron: {
@@ -446,7 +445,7 @@ module.exports = {
 module.exports = {
   configStartup: true,
 
-  async main (event, ctx) {
+  async main             {
     ctx.db = await DB.connect()
     console.log('db connected')
   }
