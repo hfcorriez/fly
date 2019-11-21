@@ -99,12 +99,15 @@ SERVER READY
 
 ```javascript
 {
-
+  /**
+   * Define event types
+   */
   eventTypes: {
     id: Number,
     email: {
-      type: 'Email',
-      lowercase: true
+      type: 'EMAIL',
+      lowercase: true,
+      message: 'Email is not valid'
     },
     name: {
       type: String,
@@ -113,6 +116,10 @@ SERVER READY
     avatar: {
       type: String,
       default: 'User'
+    },
+    bornDate: {
+      type: 'DATETIME',
+      normalize: true
     },
     info: {
       type: Object,
