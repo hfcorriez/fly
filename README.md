@@ -122,7 +122,7 @@ SERVER READY
     },
     info: {
       type: Object,
-      eventProps: {
+      props: {
         title: String,
       }
     }
