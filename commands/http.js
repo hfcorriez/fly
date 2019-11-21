@@ -249,12 +249,12 @@ module.exports = {
         if (err) return reject(err)
 
         const table = new Table({
-          head: ['Method', 'Path', 'Domain', 'Fn'],
+          head: ['Method', 'Path', 'Fn'],
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
         this.BuildRoutes(this.fly.list('http')).forEach(route =>
-          table.push([route.method.toUpperCase(), route.path, route.domain, route.fn]))
+          table.push([route.method.toUpperCase(), route.path, route.fn]))
         console.log(table.toString())
         resolve({ address })
       })

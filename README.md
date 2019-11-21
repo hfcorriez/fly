@@ -53,10 +53,10 @@ module.exports = {
 ```bash
 $ fly http -r ↙
 
-┌────────┬────────────────┬────────┬────────┐
-│ Method │ Path           │ Domain │ Fn     │
-│ GET    │ /hello         │        │ hello  │
-└────────┴────────────────┴────────┴────────┘
+┌────────┬────────────────┬────────┐
+│ Method │ Path           │ Fn     │
+│ GET    │ /hello         │ hello  │
+└────────┴────────────────┴────────┘
 SERVER READY
   NAME:      HTTP
   ADDRESS:   http://127.0.0.1:5000
