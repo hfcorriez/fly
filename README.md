@@ -77,25 +77,34 @@ retry: Number || Boolean,                     // Retry count, true is 3
 main: Function (event, ctx),                  // Main
 props: Object,                                // Props definetions
   String:
-    type: STRING,                             // Support: EMAIL, DATE, ALPHA, ALPHANUMERIC, BASE64, BASE32, ENUM, FLOAT, NUMBER, IP, JSON, MD5, PHONENUMBER, PORT, URL, UPPERCASE, LOWERCASE, PATTERN, MACADDRESS, IP-CIDR, HEXCOLOR, LOCALE, HEX, HASH, FADN, ASCII
+    type: STRING,                             // Support: Email, Date, Alpha, AlphaNumeric, Base64, Base32, Enum, Float, Number, IP, JSON, MD5, Phonenumber, Port, URL, Uppercase, Lowercase, MAC, Hexcolor, Locale, Hex, Hash, FADN, ASCII
+
+    // Pre transform options
+    pretrim: Boolean                          // Pre trim
+    before: Function                          // Before filter
+
     // String options
-    lowercase: Boolean,                       // Auto convert lowercase, default is false
-    uppercase: Boolean,                       // Auto convert uppercase, default is false
-    // Number and float options
-    min: Number,                              //
-    max: Number,                              //
+    lowercase: Boolean                        // Auto convert lowercase, default is false
+    uppercase: Boolean                        // Auto convert uppercase, default is false
+    trim: Boolean                             // Trim
+
     // Hash options
-    hash: ENUM,                               // Support: md5, sha1, sha256, sha512
+    algorithm: ENUM                           // Support: md5, sha1, sha256, sha512
+
     // Pattern options
-    pattern: Regex                            // Regex pattern such as: /\d+/
-    // Enum options
     enum: Array[String]                       // Enum options
+
     // Date options
     format: String                            // Support: DATE, DATETIME, UNIX, VALUE, ISO, [Custom]
+
+    // After transform options
+    after: Function                           // After transform options
+
     // Global options
-    normalize: Boolean,                       // Auto normalize the right value, default is true
-    default: String,                          // Default value if not exists
+    default: String                           // Default value if not exists
     message: String                           // Message will throw as FlyValidateError(message),
+
+    // Nested options
     props: Object                             // Nested props definetions
 validate: Function (event, ctx),              // Validate
 before: Function (event, ctx),                // Before filter

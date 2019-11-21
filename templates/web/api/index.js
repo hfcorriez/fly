@@ -3,8 +3,8 @@ module.exports = {
     return true
   },
 
-  after (event) {
-    return (event && event.redirect) ? event : {
+  afterHttp (event) {
+    return event.redirect ? event : {
       body: { code: 0, data: event }
     }
   },

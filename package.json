@@ -39,6 +39,7 @@
     "req-fast": "^0.2.18",
     "through2": "^3.0.1",
     "uuid": "^3.2.1",
+    "validator": "^12.1.0",
     "wcwidth": "^1.0.1"
   },
   "devDependencies": {
