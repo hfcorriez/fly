@@ -72,22 +72,29 @@ SERVER READY
 **Props Defintion**
 
 ```javascript
-{
-  extends: String,                              // Extends from function, support file, package
-  retry: Number || Boolean,                     // Retry count, true is 3
-  main: Function (event, ctx),                  // Main
-  props: Object,                                // Props definetions
-  validate: Function (event, ctx),              // Validate
-  before: Function (event, ctx),                // Before filter
-  after: Function (event, ctx),                 // After filter
-  catch: Function (event, ctx),                 // Error catch
-  config<Event>: Object || Boolean || Function, // Startup event
-  before<Event>: Function (event, ctx),         // Before filter
-  after<Event>: Function (event, ctx),          // After filter
-  validate<Event>: Function (event, ctx),       // Validate event
-  catch<Event>: Function (event, ctx),          // Error catch
-  props<Event>: Object,                         // Props definetions for event
-}
+extends: String,                              // Extends from function, support extends from function file
+retry: Number || Boolean,                     // Retry count, true is 3
+main: Function (event, ctx),                  // Main
+props: Object,                                // Props definetions
+  String:
+    type: STRING,                             // Support: EMAIL, DATE, ALPHA, ALPHANUMERIC, BASE64, BASE32, ENUM, FLOAT, NUMBER, IP, JSON, MD5, PHONENUMBER, PORT, URL, UPPERCASE, LOWERCASE, PATTERN, MACADDRESS, IP-CIDR, HEXCOLOR, LOCALE, HEX, HASH, FADN, ASCII
+    [type]: Object,                           // Config for type
+    lowercase: Boolean,                       // Auto convert lowercase, default is false
+    uppercase: Boolean,                       // Auto convert uppercase, default is false
+    normalize: Boolean,                       // Auto normalize the right value, default is true
+    message: String                           // Message will throw as FlyValidateError(message),
+    props: Object                             // Nested props definetions
+validate: Function (event, ctx),              // Validate
+before: Function (event, ctx),                // Before filter
+after: Function (event, ctx),                 // After filter
+catch: Function (event, ctx),                 // Error catch
+config<Event>: Object || Boolean || Function, // Startup event
+before<Event>: Function (event, ctx),         // Before filter
+after<Event>: Function (event, ctx),          // After filter
+validate<Event>: Function (event, ctx),       // Validate event
+catch<Event>: Function (event, ctx),          // Error catch
+props<Event>: Object,                         // Props definetions for event
+  # same as props, but only for given event
 ```
 
 **Example**
@@ -106,7 +113,7 @@ SERVER READY
     email: {
       type: 'EMAIL',
       lowercase: true,
-      message: 'Email is not valid'
+      message: 'Email invalid'
     },
     name: {
       type: String,
@@ -117,7 +124,10 @@ SERVER READY
       default: 'User'
     },
     bornDate: {
-      type: 'DATETIME',
+      type: 'DATE',
+      date: {
+        format: 'VALUE'    // Support: DATE, DATETIME, UNIX, VALUE, YYYY-MM-DD
+      },
       normalize: true
     },
     info: {
