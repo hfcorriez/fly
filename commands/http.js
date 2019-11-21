@@ -40,13 +40,13 @@ module.exports = {
       }
     } catch (err) {
       if (err) {
-        const msg = `Failed to create temp dir ${TMP_DIR} for malus, err: ${err.message}`
+        const msg = `failed to create temp dir ${TMP_DIR}, err: ${err.message}`
         console.log(msg)
         debug(msg)
         process.exit(1)
       }
     }
-    debug('malus temp dir is ', TMP_DIR)
+    debug('temp dir is ', TMP_DIR)
   },
 
   run () {
