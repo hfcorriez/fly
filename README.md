@@ -504,9 +504,8 @@ module.exports = {
     {
       name: 'Check result code',
       event: {},
-      result (result) {
+      check (result) {
         assert.strictEqual(result.code, 0)
-        return true
       }
     }
   ]
