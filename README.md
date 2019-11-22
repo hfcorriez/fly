@@ -516,13 +516,15 @@ module.exports = {
 
 ```shell
 $ fly test
-√ index (1/1)             5.5ms
-  √ Check result code     5.5ms
-x login (1/2)             121ms
-  √ Check login state     30ms
-  x Login with wrong info 91ms
+◼︎ 2 functions to test
 
-(1/2) functions test failed x
+√ [1] +index 1/1 passed
+    √ 1) Check code === 0 (2ms)
+√ [2] +userLogin 2/2 passed
+    √ 1) status === 1 (1ms)
+    √ 2) invalid username trigger validate error (1ms)
+
+√ 2/2 functions passed
 ```
 
 ## API
