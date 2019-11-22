@@ -78,39 +78,7 @@ SERVER READY
 extends: String,                        # Extends from file
 retry: Number|Boolean,                  # Retry count, true is 3
 main: Function                          # Main call -> (event, ctx)
-props:                                  # Props definetions
-  <key>:
-    type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
-
-    # Pre transform options
-    pretrim: Boolean                    # Pre trim
-    before: Function                    # Before filter
-
-    validate: Function                  # Custom validator with (input, definition)
-
-    # String options
-    lowercase: Boolean                  # Auto convert lowercase, default is false
-    uppercase: Boolean                  # Auto convert uppercase, default is false
-    trim: Boolean                       # Trim
-
-    # Hash options
-    algorithm: String                   # Support: md5, sha1, sha256, sha512
-
-    # Pattern options
-    enum: Array[String]                 # Enum options
-
-    # Date options
-    format: String                      # Support: date, datetime, unix, value, ios, [YY-MM-DD]
-
-    # After transform options
-    after: Function                     # After transform options
-
-    # Global options
-    default: String                     # Default value if not exists
-    message: String                     # Message will throw as FlyValidateError(message),
-
-    # Nested options
-    props: Object                       # Nested props definetions
+props:                                  # Props validate definitions
 validate: Function                      # Validate
 before: Function                        # Before filter
 after: Function                         # After filter
@@ -242,6 +210,64 @@ error: Function                       # Trigger error internal
 <fn>: Function                        # The functions imported
 
 trace: Object                         # Current trace
+```
+
+### Validate
+
+Define validate `props` to validate event, throw `FlyValidateError` if validate failed.
+
+**Define**
+
+> Define properties in `props`
+
+```yaml
+type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
+
+# Pre transform options
+pretrim: Boolean                    # Pre trim
+before: Function                    # Before filter
+
+validate: Function                  # Custom validator with (input, definition)
+
+# String options
+lowercase: Boolean                  # Auto convert lowercase, default is false
+uppercase: Boolean                  # Auto convert uppercase, default is false
+trim: Boolean                       # Trim
+
+# Hash options
+algorithm: String                   # Support: md5, sha1, sha256, sha512
+
+# Pattern options
+enum: Array[String]                 # Enum options
+
+# Date options
+format: String                      # Support: date, datetime, unix, value, ios, [YY-MM-DD]
+
+# After transform options
+after: Function                     # After transform options
+
+# Global options
+default: String                     # Default value if not exists
+message: String                     # Message will throw as FlyValidateError(message),
+
+# Nested options
+props: Object                       # Nested props definetions
+```
+
+**FlyValidateError**
+
+```javascript
+{
+  name: "FlyValidateError",
+  message: "validate failed: filed1, filed2",
+  errors: [
+    {
+      name: "filed1",
+      type: "string",
+      message: "filed1 validate error"
+    }
+  ]
+}
 ```
 
 ### Command Usage
