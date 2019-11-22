@@ -91,10 +91,11 @@ module.exports = {
     }
     for (let index in tests) {
       const test = tests[index]
+      const id = parseInt(index) + 1
       if (test.ok) {
-        console.log(colors.green(`    √ [${index}] ${test.name} (${test.spendTime}ms)`))
+        console.log(colors.green(`    √ ${id}) ${test.name} (${test.spendTime}ms)`))
       } else {
-        console.log(colors.red(`    x [${index}] ${test.name} "${test.error.message}" (${test.spendTime}ms)`))
+        console.log(colors.red(`    x ${id}) ${test.name} "${test.error.message}" (${test.spendTime}ms)`))
       }
     }
     return passed
