@@ -5,9 +5,9 @@ module.exports = {
     {
       name: 'Check code === 0',
       event: {},
-      result (result) {
+      check (result) {
+        assert.ok(typeof result === 'object')
         assert.strictEqual(result.code, 0)
-        return true
       }
     }
   ]

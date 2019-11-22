@@ -15,15 +15,17 @@ module.exports = {
       if (!name) {
         const functions = fly.list().filter(fn => fn.test)
         let passCount = 0
-        console.log(`◉ ${functions.length} functions to test`)
+        console.log(`◼︎ ${functions.length} functions to test\n`)
         for (let fn of functions) {
-          const passed = await this.runTest(fly, fn.name)
+          const passed = await this.runTest(fly, fn.name, functions.indexOf(fn) + 1)
           if (passed) passCount++
         }
+
+        console.log()
         if (passCount === functions.length) {
-          console.log(colors.bgGreen(`√ ${passCount}/${functions.length} functions passed`))
+          console.log(colors.green.bold(`√ ${passCount}/${functions.length} functions passed`))
         } else {
-          console.log(colors.bgRed(`x ${passCount}/${functions.length} functions passed`))
+          console.log(colors.red(`x ${passCount}/${functions.length} functions passed`))
         }
       } else {
         await this.runTest(fly, name)
@@ -39,7 +41,8 @@ module.exports = {
     }
   },
 
-  async runTest (fly, name) {
+  async runTest (fly, name, id) {
+    id = id || 1
     const fn = fly.get(name)
 
     if (!fn) {
@@ -56,14 +59,18 @@ module.exports = {
       throw new Error('no tests')
     }
     const tests = testConfig.tests
-    console.log(`▶︎ [${fn.name}] ${tests.length} tests`)
-    for (let index in tests) {
-      const test = tests[index]
+    for (let test of tests) {
       test.startTime = Date.now()
 
       try {
-        const result = await fly.call(fn, test.event, context)
-        await test.result(result)
+        let result
+        try {
+          result = await fly.call(fn, test.event, context)
+        } catch (err) {
+          result = err
+        }
+
+        await test.check(result)
         test.ok = true
       } catch (err) {
         test.ok = false
@@ -72,20 +79,23 @@ module.exports = {
 
       test.endTime = Date.now()
       test.spendTime = test.endTime - test.startTime
-
-      if (test.ok) {
-        console.log(colors.green(`    √ [${index}] ${test.name} (${test.spendTime}ms)`))
-      } else {
-        console.log(colors.red(`    x [${index}] ${test.name}: ${test.error.message} (${test.spendTime}ms)`))
-      }
     }
 
     const passedCount = (tests.filter(test => test.ok) || []).length
     const passed = passedCount === tests.length
+
     if (passed) {
-      console.log(colors.green(`√ [${fn.name}] ${passedCount}/${tests.length} passed`))
+      console.log(colors.green(`√ [${id}] +${fn.name} ${passedCount}/${tests.length} passed`))
     } else {
-      console.log(colors.red(`x [${fn.name}] ${passedCount}/${tests.length} passed`))
+      console.log(colors.red(`x [${id}] +${fn.name} ${passedCount}/${tests.length} passed`))
+    }
+    for (let index in tests) {
+      const test = tests[index]
+      if (test.ok) {
+        console.log(colors.green(`    √ [${index}] ${test.name} (${test.spendTime}ms)`))
+      } else {
+        console.log(colors.red(`    x [${index}] ${test.name} "${test.error.message}" (${test.spendTime}ms)`))
+      }
     }
     return passed
   },
