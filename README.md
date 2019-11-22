@@ -499,7 +499,7 @@ const assert = require('assert')
 module.exports = {
   tests: [
     {
-      title: 'Check result code',
+      name: 'Check result code',
       event: {},
       result (result) {
         assert.strictEqual(result.code, 0)
@@ -520,7 +520,7 @@ x login (1/2)             121ms
   √ Check login state     30ms
   x Login with wrong info 91ms
 
-(1/2) function test failed x
+(1/2) functions test failed x
 ```
 
 ## API
