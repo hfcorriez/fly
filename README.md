@@ -493,6 +493,9 @@ files:
 ### Setup a test
 
 **index.test.js**
+
+> `index`.test.js file name is same like `index.js` or `index.file.js`, keep them in same folder
+
 ```javascript
 const assert = require('assert')
 
