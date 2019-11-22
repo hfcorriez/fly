@@ -34,7 +34,7 @@ $ npm install -g fly
 
 ```javascript
 module.exports = {
-  main             {
+  main () {
     return {
       code: 0,
       message: 'hello world'
@@ -360,7 +360,7 @@ descriptions: Object              # command descriptions
 
 ```javascript
 module.exports = {
-  main             {
+  main () {
     const command = event.params.command
     const showFull = event.args.full
 
