@@ -12,23 +12,28 @@ module.exports = {
     }
 
     try {
+      let passCount = 0
+      let testCount = 0
+
       if (!name) {
         const functions = fly.list().filter(fn => fn.test)
-        let passCount = 0
-        console.log(`◼︎ ${functions.length} functions to test\n`)
+        testCount = functions.length
+        console.log(`◼︎ ${testCount} functions to test\n`)
         for (let fn of functions) {
           const passed = await this.runTest(fly, fn.name, functions.indexOf(fn) + 1)
           if (passed) passCount++
         }
-
-        console.log()
-        if (passCount === functions.length) {
-          console.log(colors.green.bold(`√ ${passCount}/${functions.length} functions passed`))
-        } else {
-          console.log(colors.red(`x ${passCount}/${functions.length} functions passed`))
-        }
       } else {
-        await this.runTest(fly, name)
+        testCount = 1
+        console.log(`◼︎ 1 function to test\n`)
+        passCount = (await this.runTest(fly, name)) ? 1 : 0
+      }
+
+      console.log()
+      if (passCount === testCount) {
+        console.log(colors.green.bold(`√ ${passCount}/${testCount} functions passed`))
+      } else {
+        console.log(colors.red(`x ${passCount}/${testCount} functions passed`))
       }
       process.exit(0)
     } catch (err) {
