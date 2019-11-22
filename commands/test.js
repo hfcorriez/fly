@@ -2,7 +2,7 @@ const colors = require('colors/safe')
 const Fly = require('../lib/fly')
 
 module.exports = {
-  async main (event, ctx) {
+  async main (event) {
     const fly = new Fly()
     const { args, params } = event
     const name = params[0]
