@@ -8,11 +8,11 @@ _/        _/_/_/_/  _/
 
 ```
 
-`FLY` is `f`unctional`ly`: A library for develop backend easy.
+`FLY` is A library for develop backend easy.
 
-- **Isolation**: one file is one function
-- **Modularization**: one directory is one service
-- **Configurability**: config anything hierarchically
+- **Functional**:  Everything is function
+- **Lightweight**: One file can be served
+- **Yare**: Very flexible
 
 ## Installation
 
