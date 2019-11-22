@@ -1,12 +1,10 @@
 module.exports = {
   main (event) {
-    return true
+    return { code: 0 }
   },
 
   afterHttp (event) {
-    return event.redirect ? event : {
-      body: { code: 0, data: event }
-    }
+    return event.redirect ? event : { body: event }
   },
 
   error (err) {

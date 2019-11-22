@@ -3,7 +3,7 @@ const assert = require('assert')
 module.exports = {
   tests: [
     {
-      name: '检测结果正确',
+      name: 'Check code === 0',
       event: {},
       result (result) {
         assert.strictEqual(result.code, 0)
