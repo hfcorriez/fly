@@ -3,7 +3,7 @@ const Fly = require('../lib/fly')
 
 module.exports = {
   async main (event) {
-    const fly = new Fly()
+    const fly = new Fly({ env: 'test' })
     const { args, params } = event
     const name = params[0]
     if (args.timeout && typeof args.timeout === 'number') {
