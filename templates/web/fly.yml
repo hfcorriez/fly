@@ -1,6 +1,9 @@
+ignore:
+  - injectjs/**
+
 components:
   injectjs:
-    dir: '../injectjs'
+    dir: './injectjs'
 
 +index:
   events:

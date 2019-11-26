@@ -1,7 +1,7 @@
 module.exports = {
   main (event, ctx) {
     return {
-      body: 'injectjs16'
+      body: 'injectjs23'
     }
   },
 
