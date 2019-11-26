@@ -1,4 +1,10 @@
 module.exports = {
+  components: {
+    injectjs: {
+      dir: '../injectjs'
+    }
+  },
+
   main (event) {
     return { code: 0 }
   },

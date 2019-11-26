@@ -1,6 +1,5 @@
 const debug = require('debug')('fly/server')
-const fs = require('fs')
-const path = require('path')
+const Fly = require('../lib/fly')
 const PM = require('../lib/pm')
 const colors = require('colors/safe')
 const utils = require('../lib/utils')
@@ -19,40 +18,28 @@ module.exports = {
 
   async before (event) {
     this.init && this.init(event)
+    this.fly = this.fly || new Fly({
+      hotreload: event.args.hotreload
+    })
 
-    if (this.fly) {
-      // Hot reload
-      if (event.args.hotreload) {
-        fs.watch(this.fly.options.dir, { recursive: true }, (_, file, file2) => {
-          const filePath = path.join(this.fly.options.dir, file)
-          let ret
-          if (fs.existsSync(filePath)) {
-            ret = this.fly.reload(filePath)
-          } else {
-            ret = this.fly.delete(filePath)
-          }
-          ret && console.debug(colors.yellow('HOT_RELOAD'), colors.grey(file))
-        })
+    // Hot reload
+    await this.fly.broadcast('startup')
+    debug('STARTUP...')
+
+    let stop = false
+    EXIT_SIGNALS.forEach(status => process.on(status, async () => {
+      try {
+        if (stop) return
+        stop = true
+        await this.fly.broadcast('shutdown')
+        debug('SHUTDOWN', status)
+
+        process.exit(0)
+      } catch (err) {
+        console.error(`shutdown with error: ${err.message} `)
+        process.exit(1)
       }
-
-      await this.fly.broadcast('startup')
-      debug('STARTUP...')
-
-      let stop = false
-      EXIT_SIGNALS.forEach(status => process.on(status, async () => {
-        try {
-          if (stop) return
-          stop = true
-          await this.fly.broadcast('shutdown')
-          debug('SHUTDOWN', status)
-
-          process.exit(0)
-        } catch (err) {
-          console.error(`shutdown with error: ${err.message} `)
-          process.exit(1)
-        }
-      }))
-    }
+    }))
 
     return event
   },

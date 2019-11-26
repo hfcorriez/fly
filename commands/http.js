@@ -7,7 +7,6 @@ const path = require('path')
 const axios = require('axios')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
-const Fly = require('../lib/fly')
 const os = require('os')
 const { parseFormData, deleteTempFiles } = require('../lib/multipartParser')
 const debug = require('debug')('fly/evt/htt')
@@ -16,7 +15,7 @@ fastify.register(require('fastify-multipart'))
 fastify.register(require('fastify-xml-body-parser'))
 
 const MULTIPART_REGEXP = /^multipart\/form-data/i
-const TMP_DIR = path.join(os.tmpdir(), 'flyjs')
+const TMP_DIR = path.join(os.tmpdir(), 'flyhttp')
 
 module.exports = {
   extends: './server',
@@ -33,20 +32,19 @@ module.exports = {
   },
 
   init () {
-    this.fly = new Fly()
     try {
       if (!fs.existsSync(TMP_DIR)) {
         fs.mkdirSync(TMP_DIR)
       }
     } catch (err) {
       if (err) {
-        const msg = `failed to create temp dir ${TMP_DIR}, err: ${err.message}`
+        const msg = `TEMP_DIR_FAILED: ${TMP_DIR} ${err.message}`
         console.log(msg)
         debug(msg)
         process.exit(1)
       }
     }
-    debug('temp dir is ', TMP_DIR)
+    debug('TEMP_DIR', TMP_DIR)
   },
 
   run () {

@@ -2,8 +2,6 @@ const Table = require('cli-table2')
 const cronParser = require('cron-parser')
 const childProcess = require('child_process')
 const path = require('path')
-
-const Fly = require('../lib/fly')
 const debug = require('debug')('fly/evt/cro')
 
 module.exports = {
@@ -13,10 +11,6 @@ module.exports = {
     command: 'cron',
     name: 'CRON',
     singleton: true
-  },
-
-  init () {
-    this.fly = new Fly()
   },
 
   run () {

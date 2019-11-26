@@ -1,6 +1,5 @@
 const fastify = require('fastify')()
 const path = require('path')
-const Fly = require('../lib/fly')
 const debug = require('debug')('fly/evt/htt')
 
 module.exports = {
@@ -12,10 +11,6 @@ module.exports = {
     address: '127.0.0.1',
     port: parseInt(process.env.PORT || 5000, 10),
     endpoint: ''
-  },
-
-  init () {
-    this.fly = new Fly()
   },
 
   run () {
