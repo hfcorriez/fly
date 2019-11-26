@@ -1,7 +1,8 @@
 module.exports = {
-  main (event, ctx) {
+  async main (event, ctx) {
     event.headers = event.headers || {}
-    event.headers['x-powered-by'] = 'injectjs5'
+    const { string } = await ctx.ucfirst({ string: 'injectjs' })
+    event.headers['x-powered-by'] = string
     if (typeof event.body === 'object') {
       event.body.injectjs = true
     }
