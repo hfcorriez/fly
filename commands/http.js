@@ -73,6 +73,8 @@ module.exports = {
           cookies: {}
         }
 
+        debug('HTTP', evt.method, evt.url)
+
         if (evt.headers.cookie) {
           evt.headers.cookie.split(';').forEach(function (item) {
             const crumbs = item.split('=')
