@@ -59,7 +59,7 @@ module.exports = {
       if (event.args.bind) this.config.address = event.args.bind
       let result = await this.run(event.params, ctx)
       if (result === false) return
-      return { args: event.args, result }
+      return { args: event.args, result, wait: true }
     }
 
     const name = process.cwd().split('/').pop()
@@ -111,8 +111,7 @@ module.exports = {
   },
 
   after (event) {
-    if (!event) return
-
+    const { wait } = event
     console.log(colors.green(`SERVER READY`))
     console.log(utils.padding('  NAME:', 12), colors.bold(this.config.name))
     event.result && event.result.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(event.result.address))
@@ -120,7 +119,7 @@ module.exports = {
     console.log(utils.padding('  WORK DIR:', 12), colors.bold(process.cwd()))
     console.log(utils.padding('  HOT RELOAD:', 12), colors.bold(event.args.hotreload || 'false'))
 
-    return { wait: true }
+    return { wait }
   },
 
   configCommand () {
