@@ -2,8 +2,8 @@ const colors = require('colors/safe')
 const Fly = require('../lib/fly')
 
 module.exports = {
-  async main (event) {
-    const fly = new Fly({ env: 'test' })
+  async main (event, ctx) {
+    const fly = new Fly({ env: 'test' }, ctx.fly)
     const { args, params } = event
     const name = params[0]
     if (args.timeout && typeof args.timeout === 'number') {

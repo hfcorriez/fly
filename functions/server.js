@@ -7,8 +7,6 @@ const utils = require('../lib/utils')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'SIGUSR1', 'SIGUSR2']
 
 module.exports = {
-  watched: {},
-
   config: {
     command: 'server',
     name: 'server',
@@ -16,11 +14,11 @@ module.exports = {
     address: '127.0.0.1'
   },
 
-  async before (event) {
+  async before (event, ctx) {
     this.init && this.init(event)
     this.fly = this.fly || new Fly({
       hotreload: event.args.hotreload
-    })
+    }, ctx.fly)
 
     // Hot reload
     await this.fly.broadcast('startup')

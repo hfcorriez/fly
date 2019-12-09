@@ -39,7 +39,7 @@ module.exports = {
   },
 
   callFn (dir, event, ctx) {
-    const flySystem = new Fly(dir)
+    const flySystem = new Fly(dir, ctx.fly)
     let functions = flySystem.list('command')
     let evt = {
       argv: event.argv,

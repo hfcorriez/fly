@@ -11,7 +11,7 @@ module.exports = {
     console.log('  fly <command> [--options]\n')
 
     if (ROOT_DIR !== currentDir && !event.args.system && fs.existsSync(path.join(currentDir, 'fly.yml'))) {
-      const fly = new Fly()
+      const fly = new Fly(ctx.fly)
       console.log('Commands:\n')
       this.OutputCommands(fly.list('command'))
     } else {

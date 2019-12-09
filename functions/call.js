@@ -5,7 +5,7 @@ const Fly = require('../lib/fly')
 
 module.exports = {
   async main (event, ctx) {
-    const fly = new Fly()
+    const fly = new Fly(ctx.fly)
     const { args, params } = event
 
     let name = params[0]
