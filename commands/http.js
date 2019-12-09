@@ -18,7 +18,7 @@ const MULTIPART_REGEXP = /^multipart\/form-data/i
 const TMP_DIR = path.join(os.tmpdir(), 'flyhttp')
 
 module.exports = {
-  extends: './server',
+  extends: 'server',
 
   config: {
     command: 'http',

@@ -5,7 +5,7 @@ const path = require('path')
 const debug = require('debug')('fly/evt/cro')
 
 module.exports = {
-  extends: './server',
+  extends: 'server',
 
   config: {
     command: 'cron',

@@ -3,7 +3,7 @@ const path = require('path')
 const debug = require('debug')('fly/evt/htt')
 
 module.exports = {
-  extends: './server',
+  extends: 'server',
 
   config: {
     command: 'api',
