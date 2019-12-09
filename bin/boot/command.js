@@ -4,7 +4,7 @@ const fs = require('fs')
 const Fly = require('../../lib/fly')
 const utils = require('../../lib/utils')
 
-const COMMAND_DIR = path.join(__dirname, '../../commands')
+const FN_DIR = path.join(__dirname, '../../functions')
 
 module.exports = {
   config: {
@@ -23,10 +23,10 @@ module.exports = {
   },
 
   async main (event, ctx) {
-    const systemCommands = fs.readdirSync(COMMAND_DIR).filter(file => file.endsWith('.js')).map(file => file.split('.').shift())
+    const systemFns = fs.readdirSync(FN_DIR).filter(file => file.endsWith('.js')).map(file => file.split('.').shift())
     let dir = '.'
-    if (systemCommands.includes(event.argv[0]) || !event.argv[0]) dir = COMMAND_DIR
-    let result = await this.callCommand(dir, event, ctx)
+    if (systemFns.includes(event.argv[0]) || !event.argv[0]) dir = FN_DIR
+    let result = await this.callFn(dir, event, ctx)
     let code = 0
     let wait = false
     if (typeof result === 'object') {
@@ -38,7 +38,7 @@ module.exports = {
     !wait && process.exit(code)
   },
 
-  callCommand (dir, event, ctx) {
+  callFn (dir, event, ctx) {
     const flySystem = new Fly(dir)
     let functions = flySystem.list('command')
     let evt = {

@@ -14,4 +14,4 @@ module.exports = {
   }
 }
 
-// ./bin/fly.js call test/commands/cron-timeout.js --timeout 10
+// ./bin/fly.js call test/functions/cron-timeout.js --timeout 10
