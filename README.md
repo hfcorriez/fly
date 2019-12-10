@@ -75,8 +75,8 @@ SERVER READY
 **Function Definition**
 
 ```yaml
-extends: String,                        # Extends from file
-retry: Number|Boolean,                  # Retry count, true is 3
+extends: String                         # Extends from function, start with @ indicate the parent fly
+retry: Number|Boolean                   # Retry count, true is 3
 main: Function                          # Main call -> (event, ctx)
 props:                                  # Props validate definitions
 validate: Function                      # Validate
@@ -131,7 +131,7 @@ props<Event>: Object                    # Props definetions for event
   },
 
   // Extends from appbase for initial functions
-  extends: '../appbase',
+  extends: 'authHttpUser',
 
   /**
    * Main function
