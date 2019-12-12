@@ -1,10 +1,9 @@
 const arg = require('arg')
-const path = require('path')
-const fs = require('fs')
-const Fly = require('../../lib/fly')
-const utils = require('../../lib/utils')
-
-const FN_DIR = path.join(__dirname, '../../functions')
+// const path = require('path')
+// const fs = require('fs')
+const Fly = require('../lib/fly')
+const utils = require('../lib/utils')
+// const FN_DIR = path.join(__dirname, '../../functions')
 
 module.exports = {
   config: {
@@ -23,10 +22,10 @@ module.exports = {
   },
 
   async main (event, ctx) {
-    const systemFns = fs.readdirSync(FN_DIR).filter(file => file.endsWith('.js')).map(file => file.split('.').shift())
-    let dir = '.'
-    if (systemFns.includes(event.argv[0]) || !event.argv[0]) dir = FN_DIR
-    let result = await this.callFn(dir, event, ctx)
+    // const systemFns = fs.readdirSync(FN_DIR).filter(file => file.endsWith('.js')).map(file => file.split('.').shift())
+    // let dir = '.'
+    // if (systemFns.includes(event.argv[0]) || !event.argv[0]) dir = FN_DIR
+    let result = await this.callFn(event, ctx)
     let code = 0
     let wait = false
     if (typeof result === 'object') {
@@ -38,17 +37,18 @@ module.exports = {
     !wait && process.exit(code)
   },
 
-  callFn (dir, event, ctx) {
-    const flySystem = new Fly(dir, ctx.fly)
-    let functions = flySystem.list('command')
-    let evt = {
+  callFn (event, ctx) {
+    const fly = new Fly(ctx.fly)
+    const projectFunctions = fly.list('command')
+    const systemFunctions = ctx.fly.list('command')
+    const evt = {
       argv: event.argv,
       args: {},
-      params: {},
-      config: this.config
+      params: {}
     }
 
-    let fn = functions.find(f => {
+    let caller = ctx.fly
+    let fn = systemFunctions.find(f => {
       let result = this.match(event, f.events.command)
       if (result) {
         Object.assign(evt, result)
@@ -58,15 +58,28 @@ module.exports = {
     })
 
     if (!fn) {
-      fn = functions.find(f => f.events.command.fallback)
+      fn = projectFunctions.find(f => {
+        let result = this.match(event, f.events.command)
+        if (result) {
+          Object.assign(evt, result)
+          return true
+        }
+        return false
+      })
+      if (fn) caller = fly
+    }
+
+    if (!fn) {
+      fn = systemFunctions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
 
     if (!fn) throw new Error('function not found')
 
     try {
-      return flySystem.call(
-        fn.name, evt,
+      return caller.call(
+        fn.name,
+        evt,
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
       )
     } catch (err) {
