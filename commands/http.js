@@ -14,6 +14,7 @@ const debug = require('debug')('fly/evt/htt')
 
 fastify.register(require('fastify-multipart'))
 fastify.register(require('fastify-xml-body-parser'))
+fastify.register(require('fastify-formbody'))
 
 const MULTIPART_REGEXP = /^multipart\/form-data/i
 const MALUS_TMP_DIR = path.join(os.tmpdir(), 'com.getmalus')
