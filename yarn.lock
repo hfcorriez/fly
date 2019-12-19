@@ -1254,10 +1254,10 @@ fast-xml-parser@^3.12.11:
   dependencies:
     nimnjs "^1.3.2"
 
-fastify-formbody@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/fastify-formbody/-/fastify-formbody-3.1.0.tgz#604cdafdb9e3af6068e6d9940985baf692d6e922"
-  integrity sha512-GQQtRmI8w07SMcnXiWrk9H8GAMJwheKAkQS4q0FbJ56Qu8bV39GOffiZ8GLHQmvcJ2B65S+4IAtNjsG6vtMEig==
+fastify-formbody@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/fastify-formbody/-/fastify-formbody-2.1.0.tgz#37d8b413b9527eaa4aa54cf74912cd9f47b60cfb"
+  integrity sha512-x2ExcLCA4k9NBNjoI0tVmoNvEtqu7Ra4fFFUM5RYwybgaledAhuvE9UsI80O7cOncgGMwr17YcsuSeynojp1nA==
   dependencies:
     fastify-plugin "^1.0.0"
     qs "^6.5.1"
