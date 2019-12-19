@@ -1,6 +1,6 @@
 {
   "name": "fly",
-  "version": "3.3.6",
+  "version": "3.3.7",
   "description": "A library for develop backend easy",
   "main": "lib/index.js",
   "bin": {
@@ -27,6 +27,7 @@
     "debug": "^3.1.0",
     "depcheck2": "^0.0.3",
     "fastify": "^1.2.0",
+    "fastify-formbody": "2.1.0",
     "fastify-multipart": "^0.7.0",
     "fastify-xml-body-parser": "^1.0.4",
     "fs-extra": "^5.0.0",
