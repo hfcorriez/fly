@@ -13,6 +13,7 @@ const debug = require('debug')('fly/evt/htt')
 
 fastify.register(require('fastify-multipart'))
 fastify.register(require('fastify-xml-body-parser'))
+fastify.register(require('fastify-formbody'))
 
 const MULTIPART_REGEXP = /^multipart\/form-data/i
 const TMP_DIR = path.join(os.tmpdir(), 'flyhttp')
@@ -70,6 +71,8 @@ module.exports = {
           search: urlObj.search,
           cookies: {}
         }
+
+        debug('HTTP', evt.method, evt.url)
 
         if (evt.headers.cookie) {
           evt.headers.cookie.split(';').forEach(function (item) {
