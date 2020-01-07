@@ -40,12 +40,14 @@
     "qs": "^6.8.0",
     "req-fast": "^0.2.18",
     "through2": "^3.0.1",
+    "ts-morph": "^6.0.2",
     "uuid": "^3.2.1",
     "validator": "^12.1.0",
     "wcwidth": "^1.0.1"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/debug": "^4.1.5",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.12.2",
     "eslint": "^5.11.1",

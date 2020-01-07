@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+      "module": "CommonJS",
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "target": "ES2017",
+      "noImplicitAny": true,
+      "moduleResolution": "Node",
+      "sourceMap": true,
+      "baseUrl": ".",
+      "experimentalDecorators": true,
+      "typeRoots": [  "./node_modules/@types" ]
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "files": [
+      "functions/tsc.ts"
+  ]
+}
