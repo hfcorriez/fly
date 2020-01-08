@@ -74,7 +74,10 @@ export = class FlyProjectMonitor extends EventEmitter {
 
   private updateFn (fileName: string) {
     debug('will update fn: ', fileName)
+    this.project.addSourceFileAtPath(fileName)
     const updatedFile = this.project.getSourceFile(fileName)
+    const result = updatedFile.refreshFromFileSystemSync()
+    debug('result after refresh', result)
     if (!updatedFile) {
       return
     }
@@ -105,12 +108,16 @@ export = class FlyProjectMonitor extends EventEmitter {
     const flyModule = this.getFlyModule()
     const context = flyModule.getInterface('Context')
     flyModule.getImportDeclarations()
-    if (classEntry.eventType.path) {
-      const moduleSpecifier = resolveModule(config.autoGenDef, classEntry.eventType.path)
-      this.addImport(moduleSpecifier, classEntry.eventType.type)
+    if (classEntry.eventType.dependencies.length > 0) {
+      for (let { type, path } of classEntry.eventType.dependencies) {
+        const moduleSpecifier = resolveModule(config.autoGenDef, path)
+        this.addImport(moduleSpecifier, type)
+      }
     }
-    if (classEntry.returnType.path) {
-      this.addImport(resolveModule(config.autoGenDef, classEntry.returnType.path), classEntry.returnType.type)
+    if (classEntry.returnType.dependencies.length > 0) {
+      for (let { type, path } of classEntry.returnType.dependencies) {
+        this.addImport(resolveModule(config.autoGenDef, path), type)
+      }
     }
     const fn = context.getProperty(classEntry.name)
     if (fn) {
@@ -119,7 +126,7 @@ export = class FlyProjectMonitor extends EventEmitter {
     debug('class entry', classEntry)
     context.addProperty({
       name: classEntry.name,
-      type: `Operator<${classEntry.eventType.type}, ${classEntry.returnType.type}>`
+      type: `Operator<${classEntry.eventType.text}, ${classEntry.returnType.text}>`
     })
   }
 
@@ -131,9 +138,15 @@ export = class FlyProjectMonitor extends EventEmitter {
       return
     }
     const eventMethod = klass.getInstanceMethod('before') || klass.getInstanceMethod('main')
-    const eventType = parseTypeString(eventMethod.getParameters()[0].getType().getText())
+    const eventType = {
+      text: eventMethod.getParameters()[0].getChildAtIndex(2).getText(),
+      dependencies: parseTypeStringForImport(eventMethod.getParameters()[0].getType().getText())
+    }
     const returnMethod = klass.getInstanceMethod('after') || klass.getInstanceMethod('main')
-    const returnType = parseTypeString(returnMethod.getReturnType().getText())
+    const returnType = {
+      text: parseReturnTypeString(returnMethod.getReturnType().getText()),
+      dependencies: parseTypeStringForImport(returnMethod.getReturnType().getText())
+    }
     return {
       filePath: file.getFilePath(),
       name: firstLowerCase(klass.getName()),
@@ -147,15 +160,20 @@ export = class FlyProjectMonitor extends EventEmitter {
   }
 }
 
-type Type = {
-  path?: string
+type ImportType = {
+  text: string
+  dependencies: Array<Dep>
+}
+type Dep = {
+  path: string
   type: string
 }
+
 type FlyClassEntry = {
   filePath: string
   name: string
-  eventType: Type
-  returnType: Type
+  eventType: ImportType
+  returnType: ImportType
 }
 
 
@@ -232,13 +250,12 @@ class Operator {
       debug('op', op)
       const method = klass.getInstanceMethod(op.name)
       if (op.idx < OpIdx.main) {
-        const { path, type } = parseTypeString(method.getParameters()[0].getType().getText())
-        prev.push(type)
+        prev.push(method.getParameters()[0].getChildAtIndex(2).getText())
       } else if (op.idx === OpIdx.main) {
-        prev.push(parseTypeString(method.getParameters()[0].getType().getText()).type)
-        prev.push(parseTypeString(method.getReturnType().getTypeArguments()[0].getText()).type)
+        prev.push(method.getParameters()[0].getChildAtIndex(2).getText())
+        prev.push(parseReturnTypeString(method.getReturnType().getTypeArguments()[0].getText())[0])
       } else {
-        prev.push(parseTypeString(method.getReturnType().getTypeArguments()[0].getText()).type)
+        prev.push(parseReturnTypeString(method.getReturnType().getTypeArguments()[0].getText()))
       }
       return prev
     }, new Array<string>())
@@ -420,13 +437,28 @@ function countArray<T>(arr: T[], match: (item: T) => boolean): number {
   return c
 }
 
-const typeRegImport = /import\("(.+)"\)\.(\w+)/
+const typeRegImportGlobal = /import\(\"([0-9a-zA-Z_\-\/]+)+\"\)\.([0-9a-zA-Z_]+)/g
+const typeRegImport = /import\(\"([0-9a-zA-Z_\-\/]+)+\"\)\.([0-9a-zA-Z_]+)/
 const typeRegPromise = /Promise<(.+)>/
-function parseTypeString (typeStr: string) {
+
+function parseTypeStringForImport (typeStr: string) {
   debug('parse type ', typeStr)
-  const ret1 = typeStr.match(typeRegImport)
-  if (ret1)  return { path: ret1[1], type: ret1[2] }
+  let results = [] 
+  const rets = typeStr.match(typeRegImportGlobal)
+  if (rets) {
+    for (let ret of rets) {
+      const [ , path, type ] = ret.match(typeRegImport)
+       results.push({ path, type })
+    }
+  }
+  debug('deps', results)
+  return results
+}
+
+function parseReturnTypeString (typeStr: string) {
   const ret2 = typeStr.match(typeRegPromise)
-  if (ret2) return { type: ret2[1] }
-  return { type: typeStr }
+  if (ret2) {
+    return ret2[1]
+  }
+  return typeStr
 }
