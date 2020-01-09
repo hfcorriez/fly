@@ -12,7 +12,7 @@ const dir = path.resolve(CWD, 'src/**/*')
 const config = {
   root: CWD,
   files: path.resolve(CWD, 'src/**/*'),
-  autoGenDef: path.join(CWD, 'src/types/auto-gen.d.ts'),
+  autoGenDef: path.join(CWD, 'src/typings/auto-gen.d.ts'),
   tsconfig: path.join(CWD, 'tsconfig.json'),
   flyFn: {
     beforeOps: [ 'before' ],
@@ -253,7 +253,7 @@ class Operator {
         prev.push(method.getParameters()[0].getChildAtIndex(2).getText())
       } else if (op.idx === OpIdx.main) {
         prev.push(method.getParameters()[0].getChildAtIndex(2).getText())
-        prev.push(parseReturnTypeString(method.getReturnType().getTypeArguments()[0].getText())[0])
+        prev.push(parseReturnTypeString(method.getReturnType().getTypeArguments()[0].getText()))
       } else {
         prev.push(parseReturnTypeString(method.getReturnType().getTypeArguments()[0].getText()))
       }
@@ -439,7 +439,7 @@ function countArray<T>(arr: T[], match: (item: T) => boolean): number {
 
 const typeRegImportGlobal = /import\(\"([0-9a-zA-Z_\-\/]+)+\"\)\.([0-9a-zA-Z_]+)/g
 const typeRegImport = /import\(\"([0-9a-zA-Z_\-\/]+)+\"\)\.([0-9a-zA-Z_]+)/
-const typeRegPromise = /Promise<(.+)>/
+
 
 function parseTypeStringForImport (typeStr: string) {
   debug('parse type ', typeStr)
@@ -455,10 +455,20 @@ function parseTypeStringForImport (typeStr: string) {
   return results
 }
 
-function parseReturnTypeString (typeStr: string) {
+const typeRegPromise = /Promise<(.+)>/
+function removePromise (typeStr: string) {
   const ret2 = typeStr.match(typeRegPromise)
   if (ret2) {
     return ret2[1]
   }
-  return typeStr
+  return typeStr 
+}
+const typeRegRemoveImport = /import\(\"([0-9a-zA-Z_\-\/]+)+\"\)\./g
+function removeImportPath (typeStr: string) {
+  return typeStr.replace(typeRegRemoveImport, '')
+}
+
+function parseReturnTypeString (typeStr: string) {
+  const typeStr2 = removePromise(typeStr)
+  return removeImportPath(typeStr2)
 }
