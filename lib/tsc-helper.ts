@@ -12,7 +12,7 @@ const dir = path.resolve(CWD, 'src/**/*')
 const config = {
   root: CWD,
   files: path.resolve(CWD, 'src/**/*'),
-  autoGenDef: path.join(CWD, 'src/typings/auto-gen.d.ts'),
+  autoGenDef: path.join(CWD, 'src/@types/auto-gen.d.ts'),
   tsconfig: path.join(CWD, 'tsconfig.json'),
   flyFn: {
     beforeOps: [ 'before' ],
