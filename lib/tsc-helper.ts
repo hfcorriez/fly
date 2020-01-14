@@ -147,7 +147,9 @@ export = class FlyProjectMonitor extends EventEmitter {
 
   private addFlyModuleDeclaration (sourceFile: SourceFile, classEntry: FlyClassEntry, typeAliasName: string, typeAliasType: string){
     let flyModule = sourceFile.getNamespace(n => n.getName()?.replace(/'/g, '') === 'fly')
-    flyModule.remove()
+    if (flyModule) {
+      flyModule.remove()
+    }
     flyModule = sourceFile.addNamespace({ name: "'fly'" })
     flyModule.setDeclarationKind(NamespaceDeclarationKind.Module)
     flyModule.setHasDeclareKeyword(true)
