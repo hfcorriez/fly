@@ -2,7 +2,6 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 const chokidar_1 = __importDefault(require("chokidar"));
 const path_1 = __importDefault(require("path"));
 const debug_1 = __importDefault(require("debug"));
@@ -43,5 +42,5 @@ class Helper {
         return true;
     }
 }
-exports.default = Helper;
+module.exports = Helper;
 //# sourceMappingURL=tsc.js.map
