@@ -93,15 +93,15 @@ export = class FlyProjectMonitor extends EventEmitter {
   private updateMatchedFlyInterface(sourceFile: SourceFile) {
 
     const klass = sourceFile.getClasses().find(cls => cls.isExported())
-    if (!klass) return
+    if (!klass) return {}
     const methods = klass.getInstanceMethods().map(m => m.getName()).filter(name => ['main', 'before', 'after'].includes(name))
     if (!methods.includes('main')) {
-      return
+      return {}
     }
     let interfaceName = Object.entries(FLY_FNS).find(([, flyMethods]) => isArrayEqual(methods, flyMethods))
     if (!interfaceName) {
       console.error(`需要补全 FlyFn { ${methods.join(', ')} }`)
-      return
+      return {}
     }
     if (klass.getImplements().length > 0 ) {
       klass.removeImplements(0)
