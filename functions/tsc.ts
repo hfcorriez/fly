@@ -43,6 +43,7 @@ class Helper {
     this.watcher.on('all', eventHandler)
     return true
   }
+  main() {}
 
 }
 
