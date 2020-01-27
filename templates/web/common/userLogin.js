@@ -1,7 +1,8 @@
 module.exports = {
   props: {
     username: {
-      type: 'alphanumeric'
+      type: 'alphanumeric',
+      required: true
     }
   },
 

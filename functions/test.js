@@ -33,7 +33,7 @@ module.exports = {
       if (passCount === testCount) {
         console.log(colors.green.bold(`√ ${passCount}/${testCount} functions passed`))
       } else {
-        console.log(colors.red(`x ${passCount}/${testCount} functions passed`))
+        console.log(colors.red(`x ${passCount}/${testCount} functions failed`))
       }
       process.exit(0)
     } catch (err) {
@@ -92,15 +92,16 @@ module.exports = {
     if (passed) {
       console.log(colors.green(`√ [${id}] +${fn.name} ${passedCount}/${tests.length} passed`))
     } else {
-      console.log(colors.red(`x [${id}] +${fn.name} ${passedCount}/${tests.length} passed`))
+      console.log(colors.red(`x [${id}] +${fn.name} ${passedCount}/${tests.length} failed`))
     }
     for (let index in tests) {
       const test = tests[index]
       const id = parseInt(index) + 1
       if (test.ok) {
-        console.log(colors.green(`    √ ${id}) ${test.name} (${test.spendTime}ms)`))
+        console.log(colors.green(`  √ ${id}) ${test.name} (${test.spendTime}ms)`))
       } else {
-        console.log(colors.red(`    x ${id}) ${test.name} "${test.error.message}" (${test.spendTime}ms)`))
+        console.log(colors.red(`  x ${id}) ${test.name}`))
+        console.log(colors.yellow(test.error.message.replace(/(^|\n)/g, '\n  ')))
       }
     }
     return passed

@@ -1,7 +1,7 @@
 module.exports = {
   main (event, ctx) {
-    ctx.user = 'xxx'
-    return event.query
+    ctx.user = { name: 'x' }
+    return event.method === 'post' ? event.body : event.query
   },
 
   catch (err) {
