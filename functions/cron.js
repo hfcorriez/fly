@@ -3,29 +3,34 @@ const cronParser = require('cron-parser')
 const childProcess = require('child_process')
 const path = require('path')
 const debug = require('debug')('fly/evt/cro')
+const Fly = require('../lib/fly')
 
 module.exports = {
-  extends: 'server',
-
   config: {
-    command: 'cron',
-    name: 'CRON',
+    name: 'cron',
+    title: 'Cron server',
     singleton: true
   },
 
-  run () {
-    this.schedule()
+  main (event, ctx) {
+    const { hotreload } = event
+
+    const fly = new Fly({
+      hotreload
+    }, ctx.fly)
+
+    this.schedule(fly)
 
     const table = new Table({
       head: ['Time', 'Path'],
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
 
-    this.fly.list('cron').forEach(fn => table.push([fn.events.cron.time, fn.path]))
+    fly.list('cron').forEach(fn => table.push([fn.events.cron.time, fn.path]))
     console.log(table.toString())
   },
 
-  schedule () {
+  schedule (fly) {
     let startSeconds
 
     setInterval(async () => {
@@ -37,7 +42,7 @@ module.exports = {
         const event = { time: currentSeconds }
 
         try {
-          const fns = this.find(event)
+          const fns = this.findFn(event, fly)
           for (let fn of fns) {
             console.log('CRON EXEC', fn.file)
             const cronConfig = fn.events.cron
@@ -61,7 +66,7 @@ module.exports = {
     }, 1000)
   },
 
-  find (event) {
+  findFn (event, fly) {
     return this.fly.list('cron').filter(fn => {
       const target = fn.events.cron
       const cron = target.time || target.default

@@ -8,6 +8,7 @@ const axios = require('axios')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
 const os = require('os')
+const Fly = require('../lib/fly')
 const { parseFormData, deleteTempFiles } = require('../lib/multipartParser')
 const debug = require('debug')('fly/evt/htt')
 
@@ -19,11 +20,15 @@ const MULTIPART_REGEXP = /^multipart\/form-data/i
 const TMP_DIR = path.join(os.tmpdir(), 'flyhttp')
 
 module.exports = {
-  extends: 'server',
+  errors: {
+    '404': fs.readFileSync(path.join(__dirname, './http/404.html')),
+    '500': fs.readFileSync(path.join(__dirname, './http/500.html'))
+  },
 
-  config: {
-    command: 'http',
-    name: 'HTTP',
+  configService: {
+    name: 'http',
+    singleton: false,
+    title: 'HTTP Server',
     port: parseInt(process.env.PORT || 5000, 10),
     address: '127.0.0.1',
     errors: {
@@ -32,7 +37,9 @@ module.exports = {
     }
   },
 
-  init () {
+  main (event, ctx) {
+    const { hotreload, bind, port } = event
+
     try {
       if (!fs.existsSync(TMP_DIR)) {
         fs.mkdirSync(TMP_DIR)
@@ -46,9 +53,11 @@ module.exports = {
       }
     }
     debug('TEMP_DIR', TMP_DIR)
-  },
 
-  run () {
+    const fly = new Fly({
+      hotreload
+    }, ctx.fly)
+
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
       url: '/*',
@@ -84,7 +93,7 @@ module.exports = {
         let result
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        const { fn, mode, params, target } = this.Find(evt) || {}
+        const { fn, mode, params, target } = this.Find(evt, fly) || {}
         evt.params = params
 
         try {
@@ -154,7 +163,7 @@ module.exports = {
             }
 
             // Normal and fallback
-            result = await this.fly.call(fn.name, evt, { eventId, eventType: 'http' })
+            result = await fly.call(fn.name, evt, { eventId, eventType: 'http' })
 
             // delete temp files uploaded
             if (isUpload) {
@@ -180,8 +189,8 @@ module.exports = {
 
           if (!fn || !result) {
             // Non-exists
-            if (this.config.errors['404']) {
-              reply.code(404).type('text/html').send(this.config.errors['404'])
+            if (this.errors['404']) {
+              reply.code(404).type('text/html').send(this.errors['404'])
             } else {
               reply.code(404).type('application/json').send({
                 code: 404,
@@ -220,7 +229,7 @@ module.exports = {
           fs.stat(result.file, (err, stat) => {
             if (err) {
               debug(err)
-              reply.type('text/html').code(404).send(this.config.errors['404'])
+              reply.type('text/html').code(404).send(this.errors['404'])
             } else {
               reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
             }
@@ -233,9 +242,9 @@ module.exports = {
           // send body
           if (!result.type && typeof result.body === 'string') reply.type('text/html')
           reply.send(result.body)
-        } else if (this.config.errors['500']) {
+        } else if (this.errors['500']) {
           // no body and other options response 500
-          reply.code(500).type('text/html').send(this.config.errors['500'])
+          reply.code(500).type('text/html').send(this.errors['500'])
         } else {
           reply.code(500).type('application/json').send('no body return')
         }
@@ -244,9 +253,7 @@ module.exports = {
     })
 
     return new Promise((resolve, reject) => {
-      const port = this.config.port
-      const address = this.config.address
-      fastify.listen(port, address, (err, address) => {
+      fastify.listen(port, bind, (err, address) => {
         if (err) return reject(err)
 
         const table = new Table({
@@ -254,7 +261,7 @@ module.exports = {
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
-        this.BuildRoutes(this.fly.list('http')).forEach(route =>
+        this.BuildRoutes(fly.list('http')).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, route.fn]))
         console.log(table.toString())
         resolve({ address })
@@ -279,12 +286,12 @@ module.exports = {
     })
   },
 
-  Find (event) {
+  Find (event, fly) {
     let matched
     let secondaryMatched
     let fallbackMatched
 
-    this.fly.list('http').some(fn => {
+    fly.list('http').some(fn => {
       const matchedInfo = this.Match(event, fn.events.http)
 
       // No match

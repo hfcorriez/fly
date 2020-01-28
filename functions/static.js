@@ -5,16 +5,13 @@ const { URL } = require('url')
 const fastify = require('fastify')()
 
 module.exports = {
-  extends: 'server',
-
-  config: {
-    command: 'serve',
-    name: 'Serve',
-    port: 8000,
-    address: '127.0.0.1'
+  configService: {
+    name: 'static',
+    title: 'Static server'
   },
 
-  run: function (event) {
+  main (event) {
+    const { bind, port } = event
     const root = path.resolve(event.dir || '.')
     fastify.route({
       method: ['GET'],
@@ -36,14 +33,30 @@ module.exports = {
 <head>
   <meta charset="UTF-8">
   <title>${urlObj.pathname}</title>
+  <style>
+  html {
+    font-size: 14px;
+  }
+  a {
+    text-decoration: none
+  }
+  a:hover {
+    text-decoration: underline
+  }
+  li {
+    width: 250px;
+    float: left;
+    line-height: 2em;
+  }
+  </style>
 </head>
 <body>
-<h3>${filePath}</h3>
+<h3>${urlObj.pathname}</h3>
 <ul>`,
               (urlObj.pathname === '/' ? [] : ['..']).concat(files).map(file => {
                 const icon = (typeof file === 'string' || file.isDirectory()) ? '📔' : '🧾'
                 const name = typeof file === 'string' ? file : file.name
-                return `<li>${icon} <a href="${path.join(urlObj.pathname, name)}">${name}</a></li>`
+                return `<li><a href="${path.join(urlObj.pathname, name)}">${icon} ${name}</a></li>`
               }).join(''),
               `</ul></body></html>`
             ].join(''))
@@ -57,9 +70,7 @@ module.exports = {
     })
 
     return new Promise((resolve, reject) => {
-      const port = this.config.port
-      const address = this.config.address
-      fastify.listen(port, address, (err, address) => {
+      fastify.listen(port, bind, (err, address) => {
         if (err) return reject(err)
         resolve({ address })
       })
