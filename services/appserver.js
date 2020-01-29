@@ -21,20 +21,16 @@ const TMP_DIR = path.join(os.tmpdir(), 'flyhttp')
 
 module.exports = {
   errors: {
-    '404': fs.readFileSync(path.join(__dirname, './http/404.html')),
-    '500': fs.readFileSync(path.join(__dirname, './http/500.html'))
+    '404': fs.readFileSync(path.join(__dirname, './pages/404.html')),
+    '500': fs.readFileSync(path.join(__dirname, './pages/500.html'))
   },
 
   configService: {
-    name: 'app',
+    name: 'appserver',
     singleton: false,
     title: 'App Server',
     port: parseInt(process.env.PORT || 5000, 10),
-    address: '127.0.0.1',
-    errors: {
-      '404': fs.readFileSync(path.join(__dirname, './http/404.html')),
-      '500': fs.readFileSync(path.join(__dirname, './http/500.html'))
-    }
+    address: '127.0.0.1'
   },
 
   main (event, ctx) {

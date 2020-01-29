@@ -7,7 +7,7 @@ const Fly = require('../lib/fly')
 
 module.exports = {
   configService: {
-    name: 'api',
+    name: 'apiserver',
     title: 'Fly API Server',
     endpoint: ''
   },

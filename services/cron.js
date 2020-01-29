@@ -8,7 +8,7 @@ const Fly = require('../lib/fly')
 module.exports = {
   config: {
     name: 'cron',
-    title: 'Cron server',
+    title: 'Cron Deamon',
     singleton: true
   },
 

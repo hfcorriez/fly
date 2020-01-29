@@ -1,4 +1,5 @@
 const debug = require('debug')('fly/server')
+const path = require('path')
 const Fly = require('../lib/fly')
 const PM = require('../lib/pm')
 const colors = require('colors/safe')
@@ -12,6 +13,7 @@ module.exports = {
     const { command, service } = params
 
     const fly = new Fly({
+      dir: path.join(__dirname, '../services'),
       hotreload
     }, ctx.fly)
 

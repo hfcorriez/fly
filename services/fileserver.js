@@ -6,13 +6,14 @@ const fastify = require('fastify')()
 
 module.exports = {
   configService: {
-    name: 'web',
-    title: 'Web server'
+    name: 'fileserver',
+    title: 'File server'
   },
 
   main (event) {
     const { bind, port } = event
     const root = path.resolve(event.dir || '.')
+
     fastify.route({
       method: ['GET'],
       url: '/*',
@@ -32,31 +33,40 @@ module.exports = {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>${urlObj.pathname}</title>
+  <title>Index of ${urlObj.pathname}</title>
   <style>
   html {
-    font-size: 14px;
+    font-size: 15px;
+  }
+  body {
+    padding: 20px;
   }
   a {
-    text-decoration: none
+    text-decoration: none;
+    color: #333;
   }
   a:hover {
-    text-decoration: underline
+    text-decoration: underline;
+  }
+  ul {
+    padding: 10px;
+    margin: 0;
   }
   li {
     width: 250px;
     float: left;
     line-height: 2em;
+    list-style: none;
   }
   </style>
 </head>
 <body>
-<h3>${urlObj.pathname}</h3>
+<h2>Index of ${urlObj.pathname}</h2>
 <ul>`,
               (urlObj.pathname === '/' ? [] : ['..']).concat(files).map(file => {
-                const icon = (typeof file === 'string' || file.isDirectory()) ? '📔' : '🧾'
+                const icon = (typeof file === 'string' || file.isDirectory()) ? '📙' : '📋'
                 const name = typeof file === 'string' ? file : file.name
-                return `<li><a href="${path.join(urlObj.pathname, name)}">${icon} ${name}</a></li>`
+                return `<li>${icon} <a href="${path.join(urlObj.pathname, name)}">${name}</a></li>`
               }).join(''),
               `</ul></body></html>`
             ].join(''))
