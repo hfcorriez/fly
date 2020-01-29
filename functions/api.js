@@ -29,14 +29,16 @@ module.exports = {
         if (request.headers['x-fly-async']) context.async = request.headers['x-fly-async'] === '1'
         if (request.headers['x-fly-type']) context.eventType = request.headers['x-fly-type'] || 'api'
 
-        this.Log(request.params.fn, context)
+        const body = request.body || {}
+        const fn = request.params.fn
+        this.Log(fn, context, body)
 
         // Check if async will async to do, such as background jobs
         if (context.async) {
           reply.send({ code: 0, data: null })
-          fly.call(request.params.fn, request.body || {}, context)
+          fly.call(fn, body || {}, context)
         } else {
-          let data = await fly.call(request.params.fn, request.body || {}, context)
+          let data = await fly.call(fn, body || {}, context)
           reply.send({ code: 0, data })
         }
       } catch (err) {
@@ -63,10 +65,13 @@ module.exports = {
     })
   },
 
-  Log (fn, ctx) {
+  Log (fn, ctx, body) {
     console.log([
-      '->',
+      '+',
       colors.green(fn),
+      '{',
+      Object.keys(body).join(', '),
+      '}',
       ctx.id || '-'
     ].join(' '))
   }
