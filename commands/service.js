@@ -69,10 +69,15 @@ module.exports = {
         await pm.status(name)
         break
       case 'start':
+        const fnService = fly.list('service', true).find(i => i.events.service && i.events.service.name === service)
+        if (!fnService) {
+          throw new Error('service not found')
+        }
+        const fnServiceConfig = fnService.events.service
         await pm.start({
           name,
           args: ['service', 'run', name],
-          instance: instance,
+          instance: fnServiceConfig.singleton ? 1 : instance,
           env: {
             BIND: bind,
             PORT: port
@@ -82,16 +87,19 @@ module.exports = {
         break
       case 'run':
         const fn = fly.list('service', true).find(i => i.events.service && i.events.service.name === service)
+        if (!fn) {
+          throw new Error('service not found')
+        }
+        const fnConfig = fn.events.service
         const ret = await fly.call(fn, {
           hotreload,
           bind,
           port
         }, { eventType: 'service' })
-        const serviceConfig = fn.events.service
 
-        console.log(colors.green(`[SERVICE] ${serviceConfig.title}`))
+        console.log(colors.green(`[SERVICE] ${fnConfig.title}`))
         console.log(utils.padding('  NAME:', 12), colors.bold(name))
-        console.log(utils.padding('  TYPE:', 12), colors.bold(serviceConfig.name))
+        console.log(utils.padding('  TYPE:', 12), colors.bold(fnConfig.name))
         ret.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(ret.address))
         console.log(utils.padding('  PID:', 12), colors.bold(process.pid))
         console.log(utils.padding('  WORK DIR:', 12), colors.bold(process.cwd()))

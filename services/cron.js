@@ -6,7 +6,7 @@ const debug = require('debug')('fly/evt/cro')
 const Fly = require('../lib/fly')
 
 module.exports = {
-  config: {
+  configService: {
     name: 'cron',
     title: 'Cron Deamon',
     singleton: true
@@ -66,7 +66,7 @@ module.exports = {
     }, 1000)
   },
 
-  findFn (event, fly) {
+  findFn (event) {
     return this.fly.list('cron').filter(fn => {
       const target = fn.events.cron
       const cron = target.time || target.default

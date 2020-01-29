@@ -131,6 +131,14 @@ module.exports = {
           result.args[key.substr(2)] = args[key]
         }
       })
+      // Support ENV
+      Object.keys(target.args).forEach(key => {
+        key = key.substr(2)
+        const capKey = key.toUpperCase()
+        if (!args[key] && process.env[capKey]) {
+          args[key] = process.env[capKey]
+        }
+      })
       return result
     }
 

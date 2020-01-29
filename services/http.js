@@ -26,7 +26,7 @@ module.exports = {
   },
 
   configService: {
-    name: 'appserver',
+    name: 'http',
     singleton: false,
     title: 'App Server',
     port: parseInt(process.env.PORT || 5000, 10),
