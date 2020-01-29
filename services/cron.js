@@ -66,8 +66,8 @@ module.exports = {
     }, 1000)
   },
 
-  findFn (event) {
-    return this.fly.list('cron').filter(fn => {
+  findFn (event, fly) {
+    return fly.list('cron').filter(fn => {
       const target = fn.events.cron
       const cron = target.time || target.default
       if (!cron) return false

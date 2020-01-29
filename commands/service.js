@@ -100,7 +100,7 @@ module.exports = {
         console.log(colors.green(`[SERVICE] ${fnConfig.title}`))
         console.log(utils.padding('  NAME:', 12), colors.bold(name))
         console.log(utils.padding('  TYPE:', 12), colors.bold(fnConfig.name))
-        ret.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(ret.address))
+        ret && ret.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(ret.address))
         console.log(utils.padding('  PID:', 12), colors.bold(process.pid))
         console.log(utils.padding('  WORK DIR:', 12), colors.bold(process.cwd()))
         console.log(utils.padding('  HOTRELOAD:', 12), colors.bold(hotreload || 'false'))
