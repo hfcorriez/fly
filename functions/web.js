@@ -6,8 +6,8 @@ const fastify = require('fastify')()
 
 module.exports = {
   configService: {
-    name: 'static',
-    title: 'Static server'
+    name: 'web',
+    title: 'Web server'
   },
 
   main (event) {
