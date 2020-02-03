@@ -32,7 +32,7 @@ class Helper {
             const now = Date.now();
             const key = `${evt}:${filePath}`;
             const lastUpdatedAt = this.fileMap.get(key);
-            if (lastUpdatedAt && (now - lastUpdatedAt < 5000)) {
+            if (lastUpdatedAt && (now - lastUpdatedAt < 20000)) {
                 return;
             }
             this.fileMap.set(key, now);
