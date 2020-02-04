@@ -2,6 +2,7 @@ const Table = require('cli-table2')
 const cronParser = require('cron-parser')
 const childProcess = require('child_process')
 const path = require('path')
+const dayjs = require('dayjs')
 const debug = require('debug')('fly/evt/cro')
 const Fly = require('../lib/fly')
 
@@ -44,7 +45,7 @@ module.exports = {
         try {
           const fns = this.findFn(event, fly)
           for (let fn of fns) {
-            console.log('CRON EXEC', fn.file)
+            console.log(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
             const subprocess = childProcess.spawn(process.argv[0], [
               path.join(__dirname, '../bin/fly.js'),
@@ -60,7 +61,7 @@ module.exports = {
             subprocess.unref()
           }
         } catch (err) {
-          console.error('CRON FAILED', err.stack)
+          console.error(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'FAILED', err.stack)
         }
       }
     }, 1000)
