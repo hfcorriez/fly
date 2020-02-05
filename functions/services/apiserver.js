@@ -3,7 +3,6 @@ const path = require('path')
 const debug = require('debug')('fly/evt/htt')
 const Table = require('cli-table2')
 const colors = require('colors/safe')
-const Fly = require('../../lib/fly')
 
 module.exports = {
   configService: {
@@ -13,7 +12,7 @@ module.exports = {
   },
 
   main (event, ctx) {
-    const { bind, port, hotreload } = event
+    const { bind, port } = event
 
     /**
      * Rpc server
@@ -33,9 +32,9 @@ module.exports = {
         // Check if async will async to do, such as background jobs
         if (context.async) {
           reply.send({ code: 0, data: null })
-          fly.call(fn, body || {}, context)
+          ctx.call(fn, body || {}, context)
         } else {
-          let data = await fly.call(fn, body || {}, context)
+          let data = await ctx.call(fn, body || {}, context)
           reply.send({ code: 0, data })
         }
       } catch (err) {
@@ -55,7 +54,7 @@ module.exports = {
           head: ['Fn', 'Path'],
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
-        fly.list().forEach(fn => table.push([fn.name, fn.path]))
+        ctx.list().forEach(fn => table.push([fn.name, fn.path]))
         console.log(table.toString())
         resolve({ address })
       })

@@ -1,15 +1,9 @@
 const Table = require('cli-table2')
-const Fly = require('../../lib/fly')
 
 module.exports = {
   main (event, ctx) {
-    let fly = new Fly({ mounts: { '@': ctx.fly } })
-    let functions = fly.list(event.args.type)
-    if (event.args.all) {
-      functions = functions.concat(ctx.list(event.args.type))
-    }
-
-    let table = new Table({
+    const functions = ctx.list(event.params.type)
+    const table = new Table({
       head: ['Name', 'Events', 'File'],
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
@@ -22,14 +16,12 @@ module.exports = {
   },
 
   configCommand: {
-    _: 'list',
+    _: 'list [type]',
     args: {
-      '--type': String,
       '--all': Boolean
     },
     descriptions: {
       _: 'List functions',
-      '--type': 'List with type',
       '--all': 'List all commands'
     }
   }

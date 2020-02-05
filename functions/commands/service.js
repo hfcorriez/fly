@@ -12,7 +12,7 @@ module.exports = {
 
     // Hot reload
     const fly = ctx.fly
-    const fn = fly.list('service', true).find(i => i.events.service && i.events.service.name === service)
+    const fn = fly.list('service').find(i => i.events.service && i.events.service.name === service)
     if (!fn) {
       throw new Error(`service "${service}" not found`)
     }

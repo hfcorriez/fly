@@ -1,12 +1,14 @@
 
-const Fly = require('../../lib/fly')
-
 module.exports = {
   async main (event, ctx) {
-    const fly = new Fly({ mounts: { '@': ctx.fly } })
-    let fn = fly.get(event.params[0])
-    if (!fn) fn = ctx.get(event.params[0])
-    console.log(JSON.stringify(fn, null, 4))
+    const fn = ctx.get(event.params.fn)
+    console.log(JSON.stringify({
+      name: fn.name,
+      prefix: fn.prefix,
+      file: fn.file,
+      path: fn.path,
+      events: fn.events
+    }, null, 4))
   },
 
   configCommand: {

@@ -1,9 +1,7 @@
 const colors = require('colors/safe')
-const Fly = require('../../lib/fly')
 
 module.exports = {
   async main (event, ctx) {
-    const fly = new Fly({ env: 'test', mounts: { '@': ctx.fly } })
     const { args, params } = event
     const name = params[0]
     if (args.timeout && typeof args.timeout === 'number') {
@@ -16,17 +14,17 @@ module.exports = {
       let testCount = 0
 
       if (!name) {
-        const functions = fly.list().filter(fn => fn.test)
+        const functions = ctx.list().filter(fn => fn.test)
         testCount = functions.length
         console.log(`◼︎ ${testCount} functions to test\n`)
         for (let fn of functions) {
-          const passed = await this.runTest(fly, fn.name, functions.indexOf(fn) + 1)
+          const passed = await this.runTest(ctx, fn.name, functions.indexOf(fn) + 1)
           if (passed) passCount++
         }
       } else {
         testCount = 1
         console.log(`◼︎ 1 function to test\n`)
-        passCount = (await this.runTest(fly, name)) ? 1 : 0
+        passCount = (await this.runTest(ctx, name)) ? 1 : 0
       }
 
       console.log()
