@@ -20,7 +20,10 @@ module.exports = {
   // Main
   async main (event, ctx) {
     return {
-      body: { event, user: ctx.user }
+      body: {
+        event,
+        user: ctx.user
+      }
     }
   }
 }

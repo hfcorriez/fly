@@ -4,7 +4,7 @@ const childProcess = require('child_process')
 const path = require('path')
 const dayjs = require('dayjs')
 const debug = require('debug')('fly/evt/cro')
-const Fly = require('../lib/fly')
+const Fly = require('../../lib/fly')
 
 module.exports = {
   configService: {
@@ -17,8 +17,9 @@ module.exports = {
     const { hotreload } = event
 
     const fly = new Fly({
-      hotreload
-    }, ctx.fly)
+      hotreload,
+      mounts: { '@': ctx.fly }
+    })
 
     this.schedule(fly)
 

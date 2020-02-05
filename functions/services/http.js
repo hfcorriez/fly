@@ -8,8 +8,8 @@ const axios = require('axios')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
 const os = require('os')
-const Fly = require('../lib/fly')
-const { parseFormData, deleteTempFiles } = require('../lib/multipartParser')
+const Fly = require('../../lib/fly')
+const { parseFormData, deleteTempFiles } = require('../../lib/multipartParser')
 const debug = require('debug')('fly/evt/htt')
 
 fastify.register(require('fastify-multipart'))
@@ -28,13 +28,13 @@ module.exports = {
   configService: {
     name: 'http',
     singleton: false,
-    title: 'App Server',
+    title: 'Http Server',
     port: parseInt(process.env.PORT || 5000, 10),
     address: '127.0.0.1'
   },
 
   main (event, ctx) {
-    const { hotreload, bind, port } = event
+    const { bind, port } = event
 
     try {
       if (!fs.existsSync(TMP_DIR)) {
@@ -50,9 +50,7 @@ module.exports = {
     }
     debug('TEMP_DIR', TMP_DIR)
 
-    const fly = new Fly({
-      hotreload
-    }, ctx.fly)
+    const fly = ctx.fly
 
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],

@@ -3,7 +3,7 @@ const path = require('path')
 const debug = require('debug')('fly/evt/htt')
 const Table = require('cli-table2')
 const colors = require('colors/safe')
-const Fly = require('../lib/fly')
+const Fly = require('../../lib/fly')
 
 module.exports = {
   configService: {
@@ -14,9 +14,6 @@ module.exports = {
 
   main (event, ctx) {
     const { bind, port, hotreload } = event
-    const fly = new Fly({
-      hotreload
-    }, ctx.fly)
 
     /**
      * Rpc server

@@ -1,8 +1,7 @@
 const arg = require('arg')
 // const path = require('path')
 // const fs = require('fs')
-const Fly = require('../lib/fly')
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 // const FN_DIR = path.join(__dirname, '../../functions')
 
 module.exports = {
@@ -38,9 +37,7 @@ module.exports = {
   },
 
   callFn (event, ctx) {
-    const fly = new Fly(ctx.fly)
-    const projectFunctions = fly.list('command')
-    const systemFunctions = ctx.fly.list('command')
+    const functions = ctx.list('command')
     const evt = {
       argv: event.argv,
       args: {},
@@ -48,7 +45,7 @@ module.exports = {
     }
 
     let caller = ctx.fly
-    let fn = systemFunctions.find(f => {
+    let fn = functions.find(f => {
       let result = this.match(event, f.events.command)
       if (result) {
         Object.assign(evt, result)
@@ -58,19 +55,6 @@ module.exports = {
     })
 
     if (!fn) {
-      fn = projectFunctions.find(f => {
-        let result = this.match(event, f.events.command)
-        if (result) {
-          Object.assign(evt, result)
-          return true
-        }
-        return false
-      })
-      if (fn) caller = fly
-    }
-
-    if (!fn) {
-      fn = systemFunctions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
 

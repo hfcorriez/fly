@@ -2,7 +2,9 @@
 
 const Fly = require('../lib/fly')
 const path = require('path')
-const fly = new Fly(path.join(__dirname, '../commands'))
+const fly = new Fly({
+  mounts: { '@': path.join(__dirname, '../functions') }
+})
 
 // console.log(fs.realpathSync(process.env._))
-fly.call('command', { argv: process.argv.slice(2) })
+fly.call('@command', { argv: process.argv.slice(2) })

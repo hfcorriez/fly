@@ -1,15 +1,19 @@
 ignore:
   - injectjs/**
 
-+index:
-  events:
-    http:
-      method: get
-      path: /api1
 
-+login:
-  events:
-    http:
-      method: get
-      path: /api/login
+events:
+  service:
+    '@http':
+      name: http
+      port: 5001
+      cors: true
 
+  http:
+    getTasks:
+      path: /api/getTasks
+      cache: 200
+
+  cron:
+    checkTime:
+      time: "* * * * *"

@@ -1,23 +1,22 @@
 const debug = require('debug')('fly/server')
-const path = require('path')
-const Fly = require('../lib/fly')
-const PM = require('../lib/pm')
+const PM = require('../../lib/pm')
 const colors = require('colors/safe')
-const utils = require('../lib/utils')
+const utils = require('../../lib/utils')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'SIGUSR1', 'SIGUSR2']
 
 module.exports = {
   async main (event, ctx) {
     const { args, params } = event
-    const { hotreload = false, instance = 1, bind = '127.0.0.1', port = 5000 } = args
     const { command, service } = params
-
-    const fly = new Fly({
-      dir: path.join(__dirname, '../services'),
-      hotreload
-    }, ctx.fly)
+    const config = args
 
     // Hot reload
+    const fly = ctx.fly
+    const fn = fly.list('service', true).find(i => i.events.service && i.events.service.name === service)
+    if (!fn) {
+      throw new Error(`service "${service}" not found`)
+    }
+    const serviceConfig = fn.events.service
     await fly.broadcast('startup')
     debug('STARTUP...')
 
@@ -69,41 +68,32 @@ module.exports = {
         await pm.status(name)
         break
       case 'start':
-        const fnService = fly.list('service', true).find(i => i.events.service && i.events.service.name === service)
-        if (!fnService) {
-          throw new Error('service not found')
-        }
-        const fnServiceConfig = fnService.events.service
         await pm.start({
           name,
           args: ['service', 'run', name],
-          instance: fnServiceConfig.singleton ? 1 : instance,
+          instance: serviceConfig.singleton ? 1 : config.instance,
           env: {
-            BIND: bind,
-            PORT: port
+            BIND: config.bind || serviceConfig.bind,
+            PORT: config.port || serviceConfig.port
           }
         })
         await pm.status(name)
         break
       case 'run':
-        const fn = fly.list('service', true).find(i => i.events.service && i.events.service.name === service)
-        if (!fn) {
-          throw new Error('service not found')
-        }
-        const fnConfig = fn.events.service
         const ret = await fly.call(fn, {
-          hotreload,
-          bind,
-          port
+          hotreload: config.hotreload,
+          bind: serviceConfig.bind,
+          port: serviceConfig.port,
+          ...config
         }, { eventType: 'service' })
 
-        console.log(colors.green(`[SERVICE] ${fnConfig.title}`))
+        console.log(colors.green(`[SERVICE] ${serviceConfig.title}`))
         console.log(utils.padding('  NAME:', 12), colors.bold(name))
-        console.log(utils.padding('  TYPE:', 12), colors.bold(fnConfig.name))
+        console.log(utils.padding('  TYPE:', 12), colors.bold(serviceConfig.name))
         ret && ret.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(ret.address))
         console.log(utils.padding('  PID:', 12), colors.bold(process.pid))
         console.log(utils.padding('  WORK DIR:', 12), colors.bold(process.cwd()))
-        console.log(utils.padding('  HOTRELOAD:', 12), colors.bold(hotreload || 'false'))
+        console.log(utils.padding('  HOTRELOAD:', 12), colors.bold(ctx.fly.config.hotreload))
         return { wait: true }
     }
   },

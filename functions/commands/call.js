@@ -1,11 +1,9 @@
 const querystring = require('querystring')
 const colors = require('colors/safe')
 const path = require('path')
-const Fly = require('../lib/fly')
 
 module.exports = {
   async main (event, ctx) {
-    const fly = new Fly(ctx.fly)
     const { args, params } = event
 
     let name = params[0]
@@ -33,26 +31,15 @@ module.exports = {
     if (args.type) context.eventType = args.type
 
     let result
-    let fn
 
     try {
-      let obj = fly
-
       // 处理文件路径的调用
       if (name.includes('.js')) {
         name = name[0] !== '/' ? path.join(process.cwd(), name) : name
-        fly.load(name)
       }
 
-      fn = fly.get(name)
-      if (!fn) {
-        fn = ctx.get(name)
-        obj = ctx
-      }
-      if (!fn) throw new Error(`no function found: ${name}`)
-
-      result = await obj.call(fn, evt, context)
-      console.warn(colors.green(['SUCCESS', fn.name, '<=', JSON.stringify(evt || null)].join(' ')))
+      result = await ctx.call(name, evt, context)
+      console.warn(colors.green(['SUCCESS', name, '<=', JSON.stringify(evt || null)].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
       process.exit(0)
     } catch (err) {
