@@ -31,30 +31,23 @@ $ npm install -g fly
 
 ## Example
 
-### Write function
+### Write Simple function
 
 > `hello.js`
 
 ```javascript
-module.exports = {
-  main () {
-    return {
-      code: 0,
-      message: 'hello world'
-    }
-  },
-
-  configHttp: {
-    method: 'GET',
-    path: '/hello'
+module.exports = (event, ctx) => {
+  return {
+    status: 200,
+    body: 'hello from fly'
   }
 }
 ```
 
-### Run
+### Using fly service run
 
 ```bash
-$ fly http -r ↙
+$ fly service run http ↙
 
 ┌────────┬────────────────┬────────┐
 │ Method │ Path           │ Fn     │
