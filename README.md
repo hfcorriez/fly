@@ -41,8 +41,8 @@ module.exports = {
     return {
       status: 200,
       body: 'hello from fly'
-    },
-  }
+    }
+  },
 
   configHttp: {
     path: '/hello'
