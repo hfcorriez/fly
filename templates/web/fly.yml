@@ -5,7 +5,7 @@ project:
 service:
   '@http':
     name: http
-    port: 5001
+    port: 5000
     cors: true
 
 http:
