@@ -503,15 +503,22 @@ module.exports = {
 
 `fly.yml`
 ```yaml
-files:
-  - "**/*.fly.js"
+project:
+  ignore:
+    - "example/**"
 
-# Function config overwrite
-+login:
-  events:
-    http:
-      method: post
-      path: /api/login
+# config overwrite for service function
+service:
+  '@http':
+    port: 6000
+    title: 'My http server'
+
+# config overwrite for http function
+http:
+  login:
+    method: post
+    path: /api/login
+    cors: true
 ```
 
 ## Test
