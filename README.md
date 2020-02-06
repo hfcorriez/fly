@@ -266,48 +266,32 @@ Usage:
 
   fly <command> [--options]
 
-System Commands:
+Commands:
 
-  api [command]                  API service
-    [command]                    start | stop | reload | restart | status | log
-    --port,-p number             Bind port
-    --instance,-i number         The instance number
-    --all,-a                     All applications
-    --bind,-b string
   call <fn>                      Call function
     <fn>                         Function name
     --type string                Set event type
     --data,-d string             Set event data
-    --timeout, -t                Set timeout
+    --timeout,-t number
+    --error,-e                   Show full error
   show <fn>                      Show function info
     <fn>                         Function name
   help                           Show help
-    --system,-s                  Show system commands
-  http [command]                 HTTP service
-    [command]                    start | stop | reload | restart | status | log
-    --port,-p number             Bind port
-    --instance,-i number         The instance number
-    --all,-a                     All applications
-    --bind,-b string
   install                        Install deps
     --list,-l                    List packages to install
-  list                           List functions
-    --type string                List with type
-    --all                        List all commands
+  list [type]                    List functions
   new [dir]                      Create new service dir
     [dir]                        Dir name
     --force                      Force create when dir exists
-  serve [command]                Serve service
-    [command]                    start | stop | reload | restart | status | log
-    --port,-p number             Bind port
+  service <command> [service]    service
+    [command]                    list | run | start | stop | reload | restart | status | log
     --instance,-i number         The instance number
-    --all,-a                     All applications
-    --bind,-b string
-
-Global options:
-
-    --id,-i string               Set event id
-    --verbose,-V                 Show verbose
+    --bind,-b string             Bind address
+    --port,-p number             Bind port
+  test [fn]                      Call function
+    <fn>                         Function name
+    --timeout number
+    --error,-e                   Show full error
 ```
 
 ## Events
