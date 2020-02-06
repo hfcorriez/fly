@@ -13,28 +13,7 @@ module.exports = {
     // Hot reload
     const fly = ctx.fly
     const fn = fly.list('service').find(i => i.events.service && i.events.service.name === service)
-    if (!fn) {
-      throw new Error(`service "${service}" not found`)
-    }
-    const serviceConfig = fn.events.service
-    await fly.broadcast('startup')
-    debug('STARTUP...', serviceConfig)
-
-    let stop = false
-    EXIT_SIGNALS.forEach(status => process.on(status, async () => {
-      try {
-        if (stop) return
-        stop = true
-        await fly.broadcast('shutdown')
-        debug('SHUTDOWN', status)
-
-        process.exit(0)
-      } catch (err) {
-        console.error(`shutdown with error: ${err.message} `)
-        process.exit(1)
-      }
-    }))
-
+    const serviceConfig = fn ? fn.events.service : null
     const name = process.cwd().split('/').pop()
     const pm = new PM({
       name: `fly:${service}`,
@@ -68,6 +47,7 @@ module.exports = {
         await pm.status(name)
         break
       case 'start':
+        if (!fn) throw new Error(`service "${service}" not found`)
         await pm.start({
           name,
           args: ['service', 'run', name],
@@ -80,6 +60,25 @@ module.exports = {
         await pm.status(name)
         break
       case 'run':
+        if (!fn) throw new Error(`service "${service}" not found`)
+        await fly.broadcast('startup')
+        debug('STARTUP...', serviceConfig)
+
+        let stop = false
+        EXIT_SIGNALS.forEach(status => process.on(status, async () => {
+          try {
+            if (stop) return
+            stop = true
+            await fly.broadcast('shutdown')
+            debug('SHUTDOWN', status)
+
+            process.exit(0)
+          } catch (err) {
+            console.error(`shutdown with error: ${err.message} `)
+            process.exit(1)
+          }
+        }))
+
         const ret = await fly.call(fn, {
           ...serviceConfig,
           ...config
@@ -103,7 +102,7 @@ module.exports = {
   },
 
   configCommand: {
-    _: `service <command> <service>`,
+    _: `service <command> [service]`,
     args: {
       '--instance': Number,
       '--bind': String,
