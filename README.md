@@ -190,14 +190,15 @@ eventId: String                       # Event ID
 eventType: String                     # Event Type：http, command, null is internal
 originalEvent: Event                  # OriginalEvent
 parentEvent: Event                    # Parent Event
+trace: Object                         # Current trace
 
 call: Function                        # Invoke function
 list: Function                        # List functions
 get: Function                         # Get function
 error: Function                       # Trigger error internal
+return: Function                      # Trigger error internal
+super: Function                       # Call parent method when extends other
 <fn>: Function                        # The functions imported
-
-trace: Object                         # Current trace
 ```
 
 ### Validate
