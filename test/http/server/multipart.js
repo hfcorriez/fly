@@ -1,7 +1,7 @@
 const fs = require('fs')
 const { promisify } = require('util')
 const assert = require('assert')
-const debug = require('debug')('fly/evt/htt')
+const debug = require('debug')('fly/srv/htt')
 
 const stat = promisify(fs.stat)
 

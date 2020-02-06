@@ -1,6 +1,6 @@
 const fastify = require('fastify')()
 const path = require('path')
-const debug = require('debug')('fly/evt/htt')
+const debug = require('debug')('fly/srv/htt')
 const Table = require('cli-table2')
 const colors = require('colors/safe')
 

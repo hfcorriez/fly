@@ -3,7 +3,7 @@ const cronParser = require('cron-parser')
 const childProcess = require('child_process')
 const path = require('path')
 const dayjs = require('dayjs')
-const debug = require('debug')('fly/evt/cro')
+const debug = require('debug')('fly/srv/cro')
 
 module.exports = {
   configService: {
