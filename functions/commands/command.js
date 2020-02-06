@@ -44,7 +44,6 @@ module.exports = {
       params: {}
     }
 
-    let caller = ctx.fly
     let fn = functions.find(f => {
       let result = this.match(event, f.events.command)
       if (result) {
@@ -62,7 +61,7 @@ module.exports = {
     if (!fn) throw new Error('function not found')
 
     try {
-      return caller.call(
+      return ctx.fly.call(
         fn.name,
         evt,
         { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
