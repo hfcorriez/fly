@@ -33,7 +33,7 @@ module.exports = {
   },
 
   main (event, ctx) {
-    const { bind, port } = event
+    const { bind, port, cors } = event
 
     try {
       if (!fs.existsSync(TMP_DIR)) {
@@ -90,7 +90,9 @@ module.exports = {
         evt.params = params
 
         try {
-          if (mode === 'cors' || (target && target.cors)) {
+          const isCors = target && target.cors !== false && (target.cors || cors)
+
+          if (mode === 'cors' || isCors) {
             headers = {
               'access-control-allow-origin': request.headers['origin'] || '*',
               'access-control-allow-methods': request.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -98,7 +100,7 @@ module.exports = {
               'access-control-allow-headers': request.headers['access-control-request-headers'] || '*'
             }
 
-            if (target && target.cors) {
+            if (isCors) {
               if (typeof target.cors === 'string') {
                 headers['access-control-allow-origin'] = target.cors
               } else if (typeof target.cors === 'object') {

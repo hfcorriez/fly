@@ -81,8 +81,7 @@ module.exports = {
         break
       case 'run':
         const ret = await fly.call(fn, {
-          bind: serviceConfig.bind,
-          port: serviceConfig.port,
+          ...serviceConfig,
           ...config
         }, { eventType: 'service' })
 
