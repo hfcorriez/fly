@@ -55,6 +55,7 @@ module.exports = {
     })
 
     if (!fn) {
+      fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
 
