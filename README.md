@@ -36,10 +36,16 @@ $ npm install -g fly
 > `hello.js`
 
 ```javascript
-module.exports = (event, ctx) => {
-  return {
-    status: 200,
-    body: 'hello from fly'
+module.exports = {
+  main: (event, ctx) => {
+    return {
+      status: 200,
+      body: 'hello from fly'
+    },
+  }
+
+  configHttp: {
+    path: '/hello'
   }
 }
 ```
@@ -47,7 +53,7 @@ module.exports = (event, ctx) => {
 ### Using fly service run
 
 ```bash
-$ fly service run http ↙
+$ fly service run http↙
 
 ┌────────┬────────────────┬────────┐
 │ Method │ Path           │ Fn     │
