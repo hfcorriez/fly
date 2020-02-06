@@ -17,12 +17,8 @@ module.exports = {
 
   configCommand: {
     _: 'list [type]',
-    args: {
-      '--all': Boolean
-    },
     descriptions: {
-      _: 'List functions',
-      '--all': 'List all commands'
+      _: 'List functions'
     }
   }
 }
