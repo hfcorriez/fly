@@ -13,13 +13,13 @@ module.exports = {
   },
 
   main (event, ctx) {
-    const { bind, port } = event
+    const { bind, port, endpoint } = event
 
     /**
      * Rpc server
      */
-    fastify.options(path.join('/', ctx.config.endpoint, '*'), async (_, reply) => reply.send(''))
-    fastify.post(path.join('/', ctx.config.endpoint, ':fn'), async (request, reply) => {
+    fastify.options(path.join('/', endpoint, '*'), async (_, reply) => reply.send(''))
+    fastify.post(path.join('/', endpoint, ':fn'), async (request, reply) => {
       try {
         let context = { eventType: 'api' }
         if (request.headers['x-fly-id']) context.id = request.headers['x-fly-id']
