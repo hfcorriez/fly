@@ -8,6 +8,7 @@ module.exports = {
   configService: {
     name: 'apiserver',
     title: 'Fly API Server',
+    port: 5020,
     endpoint: ''
   },
 

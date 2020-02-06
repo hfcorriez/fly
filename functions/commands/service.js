@@ -18,7 +18,7 @@ module.exports = {
     }
     const serviceConfig = fn.events.service
     await fly.broadcast('startup')
-    debug('STARTUP...')
+    debug('STARTUP...', serviceConfig)
 
     let stop = false
     EXIT_SIGNALS.forEach(status => process.on(status, async () => {
@@ -81,7 +81,6 @@ module.exports = {
         break
       case 'run':
         const ret = await fly.call(fn, {
-          hotreload: config.hotreload,
           bind: serviceConfig.bind,
           port: serviceConfig.port,
           ...config
@@ -107,13 +106,11 @@ module.exports = {
   configCommand: {
     _: `service <command> <service>`,
     args: {
-      '--hotreload': Boolean,
       '--instance': Number,
       '--bind': String,
       '--port': Number
     },
     alias: {
-      '--hotreload': '-r',
       '--instance': '-i',
       '--bind': '-b',
       '--port': '-p'
@@ -121,7 +118,6 @@ module.exports = {
     descriptions: {
       _: `service`,
       '[command]': 'list | run | start | stop | reload | restart | status | log',
-      '--hotreload': 'Run with hot reload mode',
       '--instance': 'The instance number',
       '--bind': 'Bind address',
       '--port': 'Bind port'

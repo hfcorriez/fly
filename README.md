@@ -300,7 +300,6 @@ System Commands:
     --instance,-i number         The instance number
     --all,-a                     All applications
     --bind,-b string
-    --hotreload,-r               Run with hot reload mode
   install                        Install deps
     --list,-l                    List packages to install
   list                           List functions
