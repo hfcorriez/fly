@@ -1,13 +1,4 @@
-```
-
- ______   __         __  __
-/\  ___\ /\ \       /\ \_\ \
-\ \  __\ \ \ \____  \ \____ \
- \ \_\    \ \_____\  \/\_____\
-  \/_/     \/_____/   \/_____/
-
-
-```
+![fly-banner](https://user-images.githubusercontent.com/119550/73931407-388a1080-4913-11ea-9d6d-c1272d537627.png)
 
 `FLY` is A library for develop backend easy.
 
