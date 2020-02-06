@@ -91,7 +91,7 @@ module.exports = {
         ret && ret.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(ret.address))
         console.log(utils.padding('  PID:', 12), colors.bold(process.pid))
         console.log(utils.padding('  WORK DIR:', 12), colors.bold(process.cwd()))
-        console.log(utils.padding('  HOTRELOAD:', 12), colors.bold(ctx.fly.config.hotreload))
+        console.log(utils.padding('  HOTRELOAD:', 12), colors.bold(ctx.config.hotreload))
         return { wait: true }
     }
   },

@@ -1,19 +1,18 @@
-ignore:
-  - injectjs/**
+project:
+  ignore:
+    - injectjs/**
 
+service:
+  '@http':
+    name: http
+    port: 5001
+    cors: true
 
-events:
-  service:
-    '@http':
-      name: http
-      port: 5001
-      cors: true
+http:
+  getTasks:
+    path: /api/getTasks
+    cache: 200
 
-  http:
-    getTasks:
-      path: /api/getTasks
-      cache: 200
-
-  cron:
-    checkTime:
-      time: "* * * * *"
+cron:
+  checkTime:
+    time: "* * * * *"
