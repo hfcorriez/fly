@@ -85,20 +85,19 @@ module.exports = {
         }, { eventType: 'service' })
 
         console.log(colors.green(`[SERVICE] ${serviceConfig.title}`))
-        console.log(utils.padding('  NAME:', 12), colors.bold(name))
-        console.log(utils.padding('  TYPE:', 12), colors.bold(serviceConfig.name))
-        ret && ret.address && console.log(utils.padding('  ADDRESS:', 12), colors.bold(ret.address))
-        console.log(utils.padding('  PID:', 12), colors.bold(process.pid))
-        console.log(utils.padding('  WORK DIR:', 12), colors.bold(process.cwd()))
-        console.log(utils.padding('  HOTRELOAD:', 12), colors.bold(ctx.config.hotreload))
+        console.log(utils.padding('NAME: '.padStart(9)), colors.bold(name))
+        console.log(utils.padding('TYPE: '.padStart(9)), colors.bold(serviceConfig.name))
+        ret && ret.address && console.log(utils.padding('ADDRESS: '.padStart(9)), colors.bold(ret.address))
+        console.log(utils.padding('PID: '.padStart(9)), colors.bold(process.pid))
+        console.log(utils.padding('ENV: '.padStart(9)), colors.bold(ctx.config.env))
         return { wait: true }
     }
   },
 
   catch (error) {
     console.log(colors.red(`SERVER ERROR`))
-    console.log(utils.padding('  MESSAGE:', 12), colors.bold(error.message))
-    console.log(utils.padding('  STACK:', 12), colors.bold(error.stack))
+    console.log(utils.padding('MESSAGE:'.padStart(9)), colors.bold(error.message))
+    console.log(utils.padding('STACK:'.padStart(9)), colors.bold(error.stack))
   },
 
   configCommand: {
