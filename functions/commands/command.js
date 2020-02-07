@@ -31,7 +31,7 @@ module.exports = {
       result.stdout && console.log(result.stdout)
       result.stderr && console.error(result.stderr)
       if (typeof result.code === 'number') code = result.code
-      wait = result.wait
+      wait = result.$wait
     }
     !wait && process.exit(code)
   },

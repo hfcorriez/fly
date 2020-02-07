@@ -1,15 +1,15 @@
 const PM = require('../../lib/pm')
 
 module.exports = {
-  async main (event, ctx) {
+  async main (event) {
     const { service } = event.params
     const name = process.cwd().split('/').pop()
     const pm = new PM({
-      name: `fly:${service}`,
+      name: `fly:${name}`,
       path: process.argv[1]
     })
-    await pm.stop(name)
-    await pm.status(name)
+    await pm.stop(service)
+    await pm.status(service)
   },
 
   configCommand: {

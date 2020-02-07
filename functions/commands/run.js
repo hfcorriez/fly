@@ -5,24 +5,30 @@ const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT
 
 module.exports = {
   async main (event, ctx) {
-    const { args, params } = event
-    const { service } = params
-    const config = args
+    const { args, params: { service } } = event
     const fly = ctx.fly
-    const fn = fly.list('service').find(i => i.events.service && i.events.service.name === service)
+    const fns = fly.list('service').filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
+    for (let fn of fns) {
+      await this.run(fn, args, ctx)
+    }
+    return { $wait: true }
+  },
+
+  async run (fn, config, ctx) {
     const serviceConfig = fn ? fn.events.service : null
     const name = process.cwd().split('/').pop()
+    const service = serviceConfig.name
+    const fly = ctx.fly
 
-    if (!fn) throw new Error(`service "${service}" not found`)
-    await fly.broadcast('startup')
-    debug('STARTUP...', serviceConfig)
+    await fly.broadcast('startup', { service })
+    debug('STARTUP...', { service })
 
     let stop = false
     EXIT_SIGNALS.forEach(status => process.on(status, async () => {
       try {
         if (stop) return
         stop = true
-        await fly.broadcast('shutdown')
+        await fly.broadcast('shutdown', { service })
         debug('SHUTDOWN', status)
 
         process.exit(0)
@@ -42,8 +48,7 @@ module.exports = {
     console.log(utils.padding('TYPE: '.padStart(9)), colors.bold(serviceConfig.name))
     ret && ret.address && console.log(utils.padding('ADDRESS: '.padStart(9)), colors.bold(ret.address))
     console.log(utils.padding('PID: '.padStart(9)), colors.bold(process.pid))
-    console.log(utils.padding('ENV: '.padStart(9)), colors.bold(ctx.config.env))
-    return { wait: true }
+    console.log(utils.padding('ENV: '.padStart(9)), colors.bold(ctx.project.env))
   },
 
   catch (error) {
