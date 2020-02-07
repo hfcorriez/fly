@@ -280,14 +280,21 @@ Commands:
   install                        Install deps
     --list,-l                    List packages to install
   list [type]                    List functions
+  log [service]                  log service
   new [dir]                      Create new service dir
     [dir]                        Dir name
     --force                      Force create when dir exists
-  service <command> [service]    service
-    [command]                    list | run | start | stop | reload | restart | status | log
+  restart [service]              restart service
+  run [service]                  service
     --instance,-i number         The instance number
     --bind,-b string             Bind address
     --port,-p number             Bind port
+  start [service]                start service
+    --instance,-i number         The instance number
+    --bind,-b string             Bind address
+    --port,-p number             Bind port
+  status [service]               service status
+  stop [service]                 stop service
   test [fn]                      Call function
     <fn>                         Function name
     --timeout number
