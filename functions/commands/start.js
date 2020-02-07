@@ -50,7 +50,7 @@ module.exports = {
         if (!fn) throw new Error(`service "${service}" not found`)
         await pm.start({
           name,
-          args: ['service', 'run', name],
+          args: ['run', name],
           instance: serviceConfig.singleton ? 1 : config.instance,
           env: {
             BIND: config.bind || serviceConfig.bind,
@@ -101,7 +101,7 @@ module.exports = {
   },
 
   configCommand: {
-    _: `service <command> [service]`,
+    _: `start [service]`,
     args: {
       '--instance': Number,
       '--bind': String,
@@ -113,8 +113,7 @@ module.exports = {
       '--port': '-p'
     },
     descriptions: {
-      _: `service`,
-      '[command]': 'list | run | start | stop | reload | restart | status | log',
+      _: `start service`,
       '--instance': 'The instance number',
       '--bind': 'Bind address',
       '--port': 'Bind port'
