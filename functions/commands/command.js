@@ -119,8 +119,8 @@ module.exports = {
       target.args && Object.keys(target.args).forEach(key => {
         key = key.substr(2)
         const capKey = key.toUpperCase()
-        if (!args[key] && process.env[capKey]) {
-          args[key] = process.env[capKey]
+        if (!result.args[key] && process.env[capKey]) {
+          result.args[key] = process.env[capKey]
         }
       })
       return result
