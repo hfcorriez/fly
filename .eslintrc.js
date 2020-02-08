@@ -9,7 +9,8 @@ module.exports = {
 
   "env": {
     "es6": true,
-    "node": true
+    "node": true,
+    "mocha": true
   },
 
   "plugins": [
@@ -44,7 +45,7 @@ module.exports = {
     "eqeqeq": ["error", "always", { "null": "ignore" }],
     "func-call-spacing": ["error", "never"],
     "generator-star-spacing": ["error", { "before": true, "after": true }],
-    "handle-callback-err": ["error", "^(err|error)$" ],
+    "handle-callback-err": ["error", "^(err|error)$"],
     "indent": ["error", 2, {
       "SwitchCase": 1,
       "VariableDeclarator": 1,

@@ -1,18 +1,10 @@
-```
+![fly-banner](https://user-images.githubusercontent.com/119550/74084844-019c3200-4aae-11ea-963a-4c2a13461809.png)
 
-    _/_/_/_/  _/    _/      _/
-   _/        _/      _/  _/
-  _/_/_/    _/        _/
- _/        _/        _/
-_/        _/_/_/_/  _/
+`FLY` is A library for develop backend easy.
 
-```
-
-`FLY` is `f`unctional`ly`: A library for develop backend easy.
-
-- **Isolation**: one file is one function
-- **Modularization**: one directory is one service
-- **Configurability**: config anything hierarchically
+- **Functional**:  Everything is function
+- **Lightweight**: One file can be served
+- **Yare**: Very flexible
 
 ## Installation
 
@@ -26,85 +18,49 @@ $ yarn global add fly
 $ npm install -g fly
 ```
 
-## Example
+## Quick start
 
-### Write function
+### Create project
 
-> `proxy.js`
+```bash
+$ fly new example
+$ cd example
+```
+
+### Write Simple function
+
+> `index.js`
 
 ```javascript
 module.exports = {
-  async main (event, context) {
-    return {url : event.query.url}
+  main: (event, ctx) => {
+    return {
+      status: 200,
+      body: 'hello from fly'
+    }
   },
 
   configHttp: {
-    method: 'GET',
-    path: '/proxy'
+    path: '/'
   }
 }
 ```
 
-### Run
+### Run with fly
 
 ```bash
-$ fly http -r ↙
+$ fly run http↙
 
-┌────────┬────────────────┬────────┬────────┐
-│ Method │ Path           │ Domain │ Fn     │
-│ GET    │ /api           │        │ index  │
-│ GET    │ /api/userLogin │        │ login  │
-│ POST   │ /upload        │        │ upload │
-│ GET    │ /              │        │ home   │
-│ GET    │ /static/:path+ │        │ static │
-└────────┴────────────────┴────────┴────────┘
-SERVER READY
-  NAME:      HTTP
-  ADDRESS:   http://127.0.0.1:5000
-  PID:       20815
-  WORK DIR:  /Users/YourName/Code/fly-example
-  HOT RELOAD: true
-```
-
-## Defintions
-
-### Function Defintion
-
-```javascript
-{
-  extends: String,                              // Extends from function, support file, package
-  imports: Object {String: String}              // Inject function to context
-  config: Object {String: Any},                 // Config object
-  retry: Number || Boolean,                     // Retry count, true is 3
-  main: Function (event, ctx),                  // Main
-  validate: Function (event, ctx),              // Validate
-  before: Function (event, ctx),                // Before filter
-  after: Function (event, ctx),                 // After filter
-  catch: Function (event, ctx),                 // Error catch
-  config<Event>: Object || Boolean || Function, // Startup event
-  before<Event>: Function (event, ctx),         // Before filter
-  after<Event>: Function (event, ctx),          // After filter
-  validate<Event>: Function (event, ctx),       // Validate event
-  catch<Event>: Function (event, ctx),          // Error catch
-}
-```
-
-### Context Defintion
-
-```yaml
-eventId: String                       # Event ID
-eventType: String                     # Event Type：http, command, null is internal
-originalEvent: Event                  # OriginalEvent
-parentEvent: Event                    # Parent Event
-
-call: Function                        # Invoke function
-list: Function                        # List functions
-get: Function                         # Get function
-error: Function                       # Trigger error internal
-<fn>: Function                        # The functions imported
-
-trace: Object                         # Current trace
-config: Object                        # Config object
+┌────────┬────────────────┬────────┐
+│ Method │ Path           │ Fn     │
+│ GET    │ /              │ index  │
+└────────┴────────────────┴────────┘
+[SERVICE] Http Server
+   NAME:  project
+   TYPE:  http
+ADDRESS:  http://127.0.0.1:5000
+    PID:  55195
+    ENV:  development
 ```
 
 ### Command Usage
@@ -114,49 +70,40 @@ Usage:
 
   fly <command> [--options]
 
-System Commands:
+Commands:
 
-  api [command]                  API service
-    [command]                    start | stop | reload | restart | status | log
-    --port,-p number             Bind port
-    --instance,-i number         The instance number
-    --all,-a                     All applications
-    --bind,-b string
   call <fn>                      Call function
     <fn>                         Function name
     --type string                Set event type
     --data,-d string             Set event data
-    --timeout, -t                Set timeout
+    --timeout,-t number
+    --error,-e                   Show full error
   show <fn>                      Show function info
     <fn>                         Function name
   help                           Show help
-    --system,-s                  Show system commands
-  http [command]                 HTTP service
-    [command]                    start | stop | reload | restart | status | log
-    --port,-p number             Bind port
-    --instance,-i number         The instance number
-    --all,-a                     All applications
-    --bind,-b string
-    --hotreload,-r               Run with hot reload mode
   install                        Install deps
     --list,-l                    List packages to install
-  list                           List functions
-    --type string                List with type
-    --all                        List all commands
-  new [dir]                      Create new service dir
+  list [type]                    List functions
+  log [service]                  log service
+  new [dir]                      Create new project
     [dir]                        Dir name
     --force                      Force create when dir exists
-  serve [command]                Serve service
-    [command]                    start | stop | reload | restart | status | log
-    --port,-p number             Bind port
+    --source,-s string           Select source to create. support: http (default), project
+  restart [service]              restart service
+  run [service]                  service
     --instance,-i number         The instance number
-    --all,-a                     All applications
-    --bind,-b string
-
-Global options:
-
-    --id,-i string               Set event id
-    --verbose,-V                 Show verbose
+    --bind,-b string             Bind address
+    --port,-p number             Bind port
+  start [service]                start service
+    --instance,-i number         The instance number
+    --bind,-b string             Bind address
+    --port,-p number             Bind port
+  status [service]               service status
+  stop [service]                 stop service
+  test [fn]                      Call function
+    <fn>                         Function name
+    --timeout number
+    --error,-e                   Show full error
 ```
 
 ## Events
@@ -226,11 +173,11 @@ descriptions: Object              # command descriptions
 
 ```javascript
 module.exports = {
-  main (event, ctx) {
+  main () {
     const command = event.params.command
     const showFull = event.args.full
 
-    // logic
+    # logic
   },
 
   configCommand: {
@@ -269,7 +216,7 @@ timeout: 60         # Maximum time limit
 
 ```javascript
 module.exports = {
-  main (event, ctx) {
+  main() {
     // tick on every 30min
   },
 
@@ -279,31 +226,123 @@ module.exports = {
 }
 ```
 
+### Error
+
+**Error handle Example**
+
+> Example to handle error with `Sentry`
+
+```javascript
+const Sentry = require('@sentry/node')
+
+Sentry.init({
+  dsn: 'http://appkey@sentry.io'
+})
+
+module.exports = {
+  configError: true,
+
+  main (event) {
+    const err = event
+    if (err instanceof Error) {
+      Sentry.captureException(err)
+    } else if (typeof err !== 'undefined') {
+      Sentry.captureMessage(util.inspect(err, { depth: null, breakLength: Infinity }))
+    }
+  }
+}
+```
+
+### Startup
+
+> Connect db When app startup
+
+```javascript
+module.exports = {
+  configStartup: true,
+
+  async main (){
+    ctx.db = await DB.connect()
+    console.log('db connected')
+  }
+}
+```
+
+### Shutdown
+
+> Delete tmp files when shutdown
+
+```javascript
+module.exports = {
+  configShutdown: true,
+
+  main () {
+    return deleteTempFiles()
+  }
+}
+```
+
 ## fly.yml
 
 > Optional. You can place `fly.yml` in directory to overwrite funciton's config
 
 `fly.yml`
-
 ```yaml
-files:
-  - "**/*.fly.js"
+project:
+  ignore:
+    - "example/**"
 
-# Events config overwrite
-events:
-  http:
-    domain:
-      - api.com
-      - localhost
+# config overwrite for service function
+service:
+  '@http':
+    port: 6000
+    title: 'My http server'
 
-# Config overwrite
-config:
-  db:
-    host: localhost
-  module@:
-    db: 'test:3333'
-  url@:
-    url: hello
+# config overwrite for http function
+http:
+  login:
+    method: post
+    path: /api/login
+    cors: true
+```
+
+## Test
+
+> You can write `<name>.test.js` in same folder then run `fly test` it will test automatically
+
+### Setup a test
+
+**index.test.js**
+
+> `index`.test.js file name is same like `index.js` or `index.file.js`, keep them in same folder
+
+```javascript
+const assert = require('assert')
+
+module.exports = {
+  tests: [{
+    name: 'Check result code',
+    event: {},
+    test (result) {
+      assert.strictEqual(result.code, 0)
+    }
+  }]
+}
+```
+
+**Execute test**
+
+```shell
+$ fly test
+◼︎ 2 functions to test
+
+√ [1] +index 1/1 passed
+    √ 1) Check code === 0 (2ms)
+√ [2] +userLogin 2/2 passed
+    √ 1) status === 1 (1ms)
+    √ 2) invalid username trigger validate error (1ms)
+
+√ 2/2 functions passed
 ```
 
 ## API
@@ -316,6 +355,208 @@ config:
 const Fly = require('node-fly')
 const fly = new Fly('/dir')
 await fly.call('test', {host: 'api.com'})
+```
+## Definitions
+
+### Function
+
+**Function Definition**
+
+```yaml
+extends: String                         # Extends from function, start with @ indicate the parent fly
+retry: Number|Boolean                   # Retry count, true is 3
+main: Function                          # Main call -> (event, ctx)
+props:                                  # Props validate definitions
+validate: Function                      # Validate
+before: Function                        # Before filter
+after: Function                         # After filter
+catch: Function                         # Error catch
+config<Event>: Object|Boolean|Function  # Startup event
+before<Event>: Function                 # Before filter
+after<Event>: Function                  # After filter
+validate<Event>: Function               # Validate event
+catch<Event>: Function                  # Error catch
+props<Event>: Object                    # Props definetions for event
+  # same as props, but only for given event
+```
+
+**Example**
+
+**createUser.js**
+
+> Create user with info
+
+```javascript
+{
+  /**
+   * Define event types
+   */
+  props: {
+    id: Number,
+    email: {
+      type: 'email',
+      lowercase: true,
+      message: 'Email invalid'
+    },
+    name: {
+      type: String,
+      default: 'User'
+    },
+    avatar: {
+      type: String,
+      default: 'User'
+    },
+    bornDate: {
+      type: Date,
+      format: 'value'
+    },
+    info: {
+      type: 'Object',
+      props: {
+        title: String,
+      }
+    }
+  },
+
+  // Extends from appbase for initial functions
+  extends: 'authHttpUser',
+
+  /**
+   * Main function
+   */
+  main(event) {
+    const db = this.db()
+    db.collections('user').insertOne(event)
+  },
+
+  /**
+   * Config before http
+   */
+  beforeHttp(event) {
+    # Transform query or body to main
+    return event.query || event.body
+  },
+
+  /**
+   * Config after http
+   */
+  afterHttp(event) {
+    return {
+      code: 0,
+      data: event
+    }
+  },
+
+  /**
+   * Config before command
+   */
+  beforeCommand(event) {
+    return event.args
+  },
+
+  /**
+   * Config after command
+   */
+  afterCommand(event) {
+    Object.keys(event).forEach(name => console.log(`${name}: ${event[name]}`))
+  },
+
+  /**
+   * Config http event
+   */
+  configHttp: {
+    method: 'post',
+    path: '/api/createUser'
+  },
+
+  /**
+   * Config command event
+   */
+  configCommand: {
+    _: 'create',
+    args: {
+      '--name': String,
+      '--email': String,
+      '--id': Number
+    }
+  }
+}
+```
+
+### Context Definition
+
+```yaml
+eventId: String                       # Event ID
+eventType: String                     # Event Type：http, command, null is internal
+originalEvent: Event                  # OriginalEvent
+parentEvent: Event                    # Parent Event
+trace: Object                         # Current trace
+
+call: Function                        # Invoke function
+list: Function                        # List functions
+get: Function                         # Get function
+error: Function                       # Trigger error internal
+return: Function                      # Trigger error internal
+super: Function                       # Call parent method when extends other
+<fn>: Function                        # The functions imported
+```
+
+### Validate
+
+Define validate `props` to validate event, throw `FlyValidateError` if validate failed.
+
+**Define**
+
+> Define properties in `props`
+
+```yaml
+type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
+
+# Pre transform options
+pretrim: Boolean                    # Pre trim
+before: Function                    # Before filter
+
+validate: Function                  # Custom validator with (input, definition)
+
+# String options
+lowercase: Boolean                  # Auto convert lowercase, default is false
+uppercase: Boolean                  # Auto convert uppercase, default is false
+trim: Boolean                       # Trim
+
+# Hash options
+algorithm: String                   # Support: md5, sha1, sha256, sha512
+
+# Pattern options
+enum: Array[String]                 # Enum options
+
+# Date options
+format: String                      # Support: date, datetime, unix, value, ios, [YY-MM-DD]
+
+# After transform options
+after: Function                     # After transform options
+
+# Global options
+default: String                     # Default value if not exists
+message: String                     # Message will throw as FlyValidateError(message),
+
+# Nested options
+props: Object                       # Nested props definetions
+```
+
+**FlyValidateError**
+
+```javascript
+{
+  name: "FlyValidateError",
+  message: "validate failed: filed1, filed2",
+  errors: [
+    {
+      name: "filed1",
+      type: "string",
+      message: "filed1 validate error"
+    }
+  ]
+}
 ```
 
 ## LICENSE

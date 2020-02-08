@@ -27,7 +27,7 @@ function buildFormData () {
 
 /**
  *  # run script first
- * $ export DEBUG=fly/evt/htt; ../../../bin/fly.js http
+ * $ export DEBUG=fly/srv/htt; ../../../bin/fly.js http
  */
 
 /* eslint-env node, mocha */

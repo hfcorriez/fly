@@ -1,14 +1,11 @@
 const fs = require('fs')
 const { promisify } = require('util')
 const assert = require('assert')
-const debug = require('debug')('fly/evt/htt')
+const debug = require('debug')('fly/srv/htt')
 
 const stat = promisify(fs.stat)
 
 module.exports = {
-
-  extends: './apiBase',
-
   async main (event) {
     const { body, files } = event
     const { f1, f2, f3 } = body
@@ -37,6 +34,7 @@ module.exports = {
     }
     return { files: fileList }
   },
+
   configHttp: {
     method: 'post',
     path: '/api/testMultipart',
