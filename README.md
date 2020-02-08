@@ -1,4 +1,4 @@
-![fly-banner](https://user-images.githubusercontent.com/119550/74084811-bd109680-4aad-11ea-8ed0-6bea63962713.png)
+![fly-banner](https://user-images.githubusercontent.com/119550/74084844-019c3200-4aae-11ea-963a-4c2a13461809.png)
 
 `FLY` is A library for develop backend easy.
 
