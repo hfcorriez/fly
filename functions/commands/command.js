@@ -1,8 +1,7 @@
 const arg = require('arg')
-// const path = require('path')
-// const fs = require('fs')
+const colors = require('colors/safe')
 const utils = require('../../lib/utils')
-// const FN_DIR = path.join(__dirname, '../../functions')
+const debug = require('debug')('fly/command')
 
 module.exports = {
   config: {
@@ -11,7 +10,7 @@ module.exports = {
       '--verbose': Boolean
     },
     alias: {
-      '--verbose': '-V',
+      '--verbose': '-v',
       '--id': '-i'
     },
     descriptions: {
@@ -21,39 +20,31 @@ module.exports = {
   },
 
   async main (event, ctx) {
-    // const systemFns = fs.readdirSync(FN_DIR).filter(file => file.endsWith('.js')).map(file => file.split('.').shift())
-    // let dir = '.'
-    // if (systemFns.includes(event.argv[0]) || !event.argv[0]) dir = FN_DIR
-    let result = await this.callFn(event, ctx)
-    let code = 0
-    let wait = false
-    if (typeof result === 'object') {
-      result.stdout && console.log(result.stdout)
-      result.stderr && console.error(result.stderr)
-      if (typeof result.code === 'number') code = result.code
-      wait = result.$wait
-    }
-    !wait && process.exit(code)
-  },
-
-  callFn (event, ctx) {
     const functions = ctx.list('command')
     const evt = {
       argv: event.argv,
       args: {},
       params: {}
     }
+    debug('ready to parse command', event.argv)
 
     let fn = functions.find(f => {
-      let result = this.match(event, f.events.command)
-      if (result) {
-        Object.assign(evt, result)
+      const matched = this.match(event, f.events.command)
+      if (matched) {
+        debug('find matched command', f.name)
+        Object.assign(evt, matched)
         return true
       }
       return false
     })
 
+    if (evt.args.verbose) {
+      debug('lookup fallback command')
+    }
+
+    // Lookup fallback command
     if (!fn) {
+      debug('lookup fallback command')
       fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
@@ -61,13 +52,31 @@ module.exports = {
     if (!fn) throw new Error('function not found')
 
     try {
-      return ctx.fly.call(
-        fn.name,
-        evt,
-        { eventId: evt.args['event-id'] || ctx.eventId, eventType: 'command' }
-      )
+      const result = await ctx.fly.call(fn.name, evt, {
+        eventId: evt.args['event-id'] || ctx.eventId,
+        eventType: 'command'
+      })
+
+      let code = 0
+      let wait = false
+      if (typeof result === 'object' && !Array.isArray(result)) {
+        result.stdout && console.log(result.stdout)
+        result.stderr && console.error(result.stderr)
+        if (typeof result.code === 'number') code = result.code
+        wait = result.wait
+      } else if (['string', 'number', 'boolean', 'array'].includes(typeof result)) {
+        console.log(result)
+      }
+      if (code || !wait) {
+        process.exit(code)
+      }
     } catch (err) {
-      console.error(err)
+      if (evt.args.verbose) {
+        console.error(err)
+      } else {
+        console.error(colors.red(`✖︎ [${err.name}] ${err.message}`))
+      }
+      process.exit(err.code || 1)
     }
   },
 
