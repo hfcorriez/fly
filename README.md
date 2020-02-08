@@ -18,11 +18,18 @@ $ yarn global add fly
 $ npm install -g fly
 ```
 
-## Example
+## Quick start
+
+### Create project
+
+```bash
+$ fly new example
+$ cd example
+```
 
 ### Write Simple function
 
-> `hello.js`
+> `index.js`
 
 ```javascript
 module.exports = {
@@ -34,229 +41,26 @@ module.exports = {
   },
 
   configHttp: {
-    path: '/hello'
+    path: '/'
   }
 }
 ```
 
-### Using fly service run
+### Run with fly
 
 ```bash
-$ fly service run http↙
+$ fly run http↙
 
 ┌────────┬────────────────┬────────┐
 │ Method │ Path           │ Fn     │
-│ GET    │ /hello         │ hello  │
+│ GET    │ /              │ index  │
 └────────┴────────────────┴────────┘
-SERVER READY
-  NAME:      HTTP
-  ADDRESS:   http://127.0.0.1:5000
-  PID:       20815
-  WORK DIR:  /Users/YourName/Code/fly-example
-  HOT RELOAD: true
-```
-
-## Definitions
-
-### Function
-
-**Function Definition**
-
-```yaml
-extends: String                         # Extends from function, start with @ indicate the parent fly
-retry: Number|Boolean                   # Retry count, true is 3
-main: Function                          # Main call -> (event, ctx)
-props:                                  # Props validate definitions
-validate: Function                      # Validate
-before: Function                        # Before filter
-after: Function                         # After filter
-catch: Function                         # Error catch
-config<Event>: Object|Boolean|Function  # Startup event
-before<Event>: Function                 # Before filter
-after<Event>: Function                  # After filter
-validate<Event>: Function               # Validate event
-catch<Event>: Function                  # Error catch
-props<Event>: Object                    # Props definetions for event
-  # same as props, but only for given event
-```
-
-**Example**
-
-**createUser.js**
-
-> Create user with info
-
-```javascript
-{
-  /**
-   * Define event types
-   */
-  props: {
-    id: Number,
-    email: {
-      type: 'email',
-      lowercase: true,
-      message: 'Email invalid'
-    },
-    name: {
-      type: String,
-      default: 'User'
-    },
-    avatar: {
-      type: String,
-      default: 'User'
-    },
-    bornDate: {
-      type: Date,
-      format: 'value'
-    },
-    info: {
-      type: 'Object',
-      props: {
-        title: String,
-      }
-    }
-  },
-
-  // Extends from appbase for initial functions
-  extends: 'authHttpUser',
-
-  /**
-   * Main function
-   */
-  main(event) {
-    const db = this.db()
-    db.collections('user').insertOne(event)
-  },
-
-  /**
-   * Config before http
-   */
-  beforeHttp(event) {
-    # Transform query or body to main
-    return event.query || event.body
-  },
-
-  /**
-   * Config after http
-   */
-  afterHttp(event) {
-    return {
-      code: 0,
-      data: event
-    }
-  },
-
-  /**
-   * Config before command
-   */
-  beforeCommand(event) {
-    return event.args
-  },
-
-  /**
-   * Config after command
-   */
-  afterCommand(event) {
-    Object.keys(event).forEach(name => console.log(`${name}: ${event[name]}`))
-  },
-
-  /**
-   * Config http event
-   */
-  configHttp: {
-    method: 'post',
-    path: '/api/createUser'
-  },
-
-  /**
-   * Config command event
-   */
-  configCommand: {
-    _: 'create',
-    args: {
-      '--name': String,
-      '--email': String,
-      '--id': Number
-    }
-  }
-}
-```
-
-### Context Definition
-
-```yaml
-eventId: String                       # Event ID
-eventType: String                     # Event Type：http, command, null is internal
-originalEvent: Event                  # OriginalEvent
-parentEvent: Event                    # Parent Event
-trace: Object                         # Current trace
-
-call: Function                        # Invoke function
-list: Function                        # List functions
-get: Function                         # Get function
-error: Function                       # Trigger error internal
-return: Function                      # Trigger error internal
-super: Function                       # Call parent method when extends other
-<fn>: Function                        # The functions imported
-```
-
-### Validate
-
-Define validate `props` to validate event, throw `FlyValidateError` if validate failed.
-
-**Define**
-
-> Define properties in `props`
-
-```yaml
-type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
-
-# Pre transform options
-pretrim: Boolean                    # Pre trim
-before: Function                    # Before filter
-
-validate: Function                  # Custom validator with (input, definition)
-
-# String options
-lowercase: Boolean                  # Auto convert lowercase, default is false
-uppercase: Boolean                  # Auto convert uppercase, default is false
-trim: Boolean                       # Trim
-
-# Hash options
-algorithm: String                   # Support: md5, sha1, sha256, sha512
-
-# Pattern options
-enum: Array[String]                 # Enum options
-
-# Date options
-format: String                      # Support: date, datetime, unix, value, ios, [YY-MM-DD]
-
-# After transform options
-after: Function                     # After transform options
-
-# Global options
-default: String                     # Default value if not exists
-message: String                     # Message will throw as FlyValidateError(message),
-
-# Nested options
-props: Object                       # Nested props definetions
-```
-
-**FlyValidateError**
-
-```javascript
-{
-  name: "FlyValidateError",
-  message: "validate failed: filed1, filed2",
-  errors: [
-    {
-      name: "filed1",
-      type: "string",
-      message: "filed1 validate error"
-    }
-  ]
-}
+[SERVICE] Http Server
+   NAME:  project
+   TYPE:  http
+ADDRESS:  http://127.0.0.1:5000
+    PID:  55195
+    ENV:  development
 ```
 
 ### Command Usage
@@ -551,6 +355,208 @@ $ fly test
 const Fly = require('node-fly')
 const fly = new Fly('/dir')
 await fly.call('test', {host: 'api.com'})
+```
+## Definitions
+
+### Function
+
+**Function Definition**
+
+```yaml
+extends: String                         # Extends from function, start with @ indicate the parent fly
+retry: Number|Boolean                   # Retry count, true is 3
+main: Function                          # Main call -> (event, ctx)
+props:                                  # Props validate definitions
+validate: Function                      # Validate
+before: Function                        # Before filter
+after: Function                         # After filter
+catch: Function                         # Error catch
+config<Event>: Object|Boolean|Function  # Startup event
+before<Event>: Function                 # Before filter
+after<Event>: Function                  # After filter
+validate<Event>: Function               # Validate event
+catch<Event>: Function                  # Error catch
+props<Event>: Object                    # Props definetions for event
+  # same as props, but only for given event
+```
+
+**Example**
+
+**createUser.js**
+
+> Create user with info
+
+```javascript
+{
+  /**
+   * Define event types
+   */
+  props: {
+    id: Number,
+    email: {
+      type: 'email',
+      lowercase: true,
+      message: 'Email invalid'
+    },
+    name: {
+      type: String,
+      default: 'User'
+    },
+    avatar: {
+      type: String,
+      default: 'User'
+    },
+    bornDate: {
+      type: Date,
+      format: 'value'
+    },
+    info: {
+      type: 'Object',
+      props: {
+        title: String,
+      }
+    }
+  },
+
+  // Extends from appbase for initial functions
+  extends: 'authHttpUser',
+
+  /**
+   * Main function
+   */
+  main(event) {
+    const db = this.db()
+    db.collections('user').insertOne(event)
+  },
+
+  /**
+   * Config before http
+   */
+  beforeHttp(event) {
+    # Transform query or body to main
+    return event.query || event.body
+  },
+
+  /**
+   * Config after http
+   */
+  afterHttp(event) {
+    return {
+      code: 0,
+      data: event
+    }
+  },
+
+  /**
+   * Config before command
+   */
+  beforeCommand(event) {
+    return event.args
+  },
+
+  /**
+   * Config after command
+   */
+  afterCommand(event) {
+    Object.keys(event).forEach(name => console.log(`${name}: ${event[name]}`))
+  },
+
+  /**
+   * Config http event
+   */
+  configHttp: {
+    method: 'post',
+    path: '/api/createUser'
+  },
+
+  /**
+   * Config command event
+   */
+  configCommand: {
+    _: 'create',
+    args: {
+      '--name': String,
+      '--email': String,
+      '--id': Number
+    }
+  }
+}
+```
+
+### Context Definition
+
+```yaml
+eventId: String                       # Event ID
+eventType: String                     # Event Type：http, command, null is internal
+originalEvent: Event                  # OriginalEvent
+parentEvent: Event                    # Parent Event
+trace: Object                         # Current trace
+
+call: Function                        # Invoke function
+list: Function                        # List functions
+get: Function                         # Get function
+error: Function                       # Trigger error internal
+return: Function                      # Trigger error internal
+super: Function                       # Call parent method when extends other
+<fn>: Function                        # The functions imported
+```
+
+### Validate
+
+Define validate `props` to validate event, throw `FlyValidateError` if validate failed.
+
+**Define**
+
+> Define properties in `props`
+
+```yaml
+type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
+
+# Pre transform options
+pretrim: Boolean                    # Pre trim
+before: Function                    # Before filter
+
+validate: Function                  # Custom validator with (input, definition)
+
+# String options
+lowercase: Boolean                  # Auto convert lowercase, default is false
+uppercase: Boolean                  # Auto convert uppercase, default is false
+trim: Boolean                       # Trim
+
+# Hash options
+algorithm: String                   # Support: md5, sha1, sha256, sha512
+
+# Pattern options
+enum: Array[String]                 # Enum options
+
+# Date options
+format: String                      # Support: date, datetime, unix, value, ios, [YY-MM-DD]
+
+# After transform options
+after: Function                     # After transform options
+
+# Global options
+default: String                     # Default value if not exists
+message: String                     # Message will throw as FlyValidateError(message),
+
+# Nested options
+props: Object                       # Nested props definetions
+```
+
+**FlyValidateError**
+
+```javascript
+{
+  name: "FlyValidateError",
+  message: "validate failed: filed1, filed2",
+  errors: [
+    {
+      name: "filed1",
+      type: "string",
+      message: "filed1 validate error"
+    }
+  ]
+}
 ```
 
 ## LICENSE
