@@ -8,7 +8,7 @@ module.exports = {
     console.log(`  fly ${fn ? fn.events.command._ : '<command>'} [--options]\n`)
 
     if (fn) {
-      console.log('Args:\n')
+      console.log('Options:\n')
       this.OutputCommand(fn.events.command)
       console.log('')
     } else {
