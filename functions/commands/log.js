@@ -13,7 +13,7 @@ module.exports = {
   configCommand: {
     _: `log [service]`,
     descriptions: {
-      _: `log service`
+      _: `Show service log`
     }
   }
 }

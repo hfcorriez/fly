@@ -37,7 +37,7 @@ module.exports = {
       '--source': '-s'
     },
     descriptions: {
-      _: 'Create new project',
+      _: 'Create new fly project',
       '[dir]': 'Dir name',
       '--force': 'Force create when dir exists',
       '--source': 'Select source to create. support: http (default), project'

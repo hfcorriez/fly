@@ -116,7 +116,7 @@ module.exports = {
       '--error': '-e'
     },
     descriptions: {
-      '_': 'Call function',
+      '_': 'Test functions',
       '<fn>': 'Function name',
       '--error': 'Show full error'
     }

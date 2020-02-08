@@ -13,7 +13,7 @@ module.exports = {
   configCommand: {
     _: `status [service]`,
     descriptions: {
-      _: `service status`
+      _: `Show service status`
     }
   }
 }

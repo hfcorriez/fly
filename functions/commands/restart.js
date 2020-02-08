@@ -15,7 +15,7 @@ module.exports = {
   configCommand: {
     _: `restart [service]`,
     descriptions: {
-      _: `restart service`
+      _: `Restart service`
     }
   }
 }

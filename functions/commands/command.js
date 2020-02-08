@@ -7,14 +7,17 @@ module.exports = {
   config: {
     args: {
       '--id': String,
-      '--verbose': Boolean
+      '--verbose': Boolean,
+      '--help': Boolean
     },
     alias: {
       '--verbose': '-v',
-      '--id': '-i'
+      '--id': '-i',
+      '--help': '-h'
     },
     descriptions: {
       '--verbose': 'Show verbose',
+      '--help': 'Show help',
       '--id': 'Set event id'
     }
   },
@@ -38,8 +41,9 @@ module.exports = {
       return false
     })
 
-    if (evt.args.verbose) {
-      debug('lookup fallback command')
+    if (evt.args.help) {
+      await ctx.call('@help', { name: fn.name })
+      process.exit(0)
     }
 
     // Lookup fallback command

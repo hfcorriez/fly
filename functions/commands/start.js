@@ -64,7 +64,7 @@ module.exports = {
       '--port': '-p'
     },
     descriptions: {
-      _: `start service`,
+      _: `Start service as daemon`,
       '--instance': 'The instance number',
       '--bind': 'Bind address',
       '--port': 'Bind port'

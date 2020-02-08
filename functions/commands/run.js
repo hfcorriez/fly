@@ -76,7 +76,7 @@ module.exports = {
       '--port': '-p'
     },
     descriptions: {
-      _: `service`,
+      _: `Run service in foregroud`,
       '--instance': 'The instance number',
       '--bind': 'Bind address',
       '--port': 'Bind port'

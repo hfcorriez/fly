@@ -2,25 +2,24 @@ const utils = require('../../lib/utils')
 
 module.exports = {
   async main (event, ctx) {
+    const { name } = event
+    const fn = name ? ctx.get(name) : null
     console.log('Usage:\n')
-    console.log('  fly <command> [--options]\n')
+    console.log(`  fly ${fn ? fn.events.command._ : '<command>'} [--options]\n`)
 
-    console.log('Commands:\n')
-    this.OutputCommands(ctx.list('command'))
-
-    if (event.config && event.config.args) {
-      console.log('Global options:\n')
-      this.OutputCommand(event.config)
+    if (fn) {
+      console.log('Args:\n')
+      this.OutputCommand(fn.events.command)
+      console.log('')
+    } else {
+      console.log('Commands:\n')
+      const fns = ctx.list('command')
+      fns.map(fn => this.OutputCommand(fn.events.command))
+      if (!fns.length) {
+        console.log('  <NO COMMANDS>')
+      }
       console.log('')
     }
-  },
-
-  OutputCommands (functions) {
-    functions.map(fn => this.OutputCommand(fn.events.command))
-    if (!functions.length) {
-      console.log('  <NO COMMANDS>')
-    }
-    console.log('')
   },
 
   OutputCommand (command) {

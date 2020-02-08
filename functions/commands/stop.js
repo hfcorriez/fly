@@ -15,7 +15,7 @@ module.exports = {
   configCommand: {
     _: `stop [service]`,
     descriptions: {
-      _: `stop service`
+      _: `Stop service`
     }
   }
 }
