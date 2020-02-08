@@ -73,7 +73,7 @@ module.exports = {
           result = err
         }
 
-        await test.check(result)
+        await test.test(result)
         test.ok = true
       } catch (err) {
         test.ok = false
@@ -100,6 +100,7 @@ module.exports = {
       } else {
         console.log(colors.red(`  x ${id}) ${test.name}`))
         console.log(colors.yellow(test.error.message.replace(/(^|\n)/g, '\n  ')))
+        console.log('')
       }
     }
     return passed

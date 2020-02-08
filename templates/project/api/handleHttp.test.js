@@ -8,7 +8,7 @@ module.exports = {
         method: 'post',
         body: { code: 0 }
       },
-      check (result) {
+      test (result) {
         assert.ok(typeof result === 'object')
         assert.strictEqual(result.code, 0)
       }
