@@ -41,7 +41,7 @@ module.exports = {
       result = await ctx.call(name, evt, context)
       console.warn(colors.green(['SUCCESS', name, '<=', JSON.stringify(evt || null)].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
-      process.exit(0)
+      return result && result.$command
     } catch (err) {
       console.error(colors.bgRed('CALL_ERROR'), colors.red(err.message))
       if (args.error) {

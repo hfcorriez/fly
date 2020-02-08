@@ -83,7 +83,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       fastify.listen(port, bind, (err, address) => {
         if (err) return reject(err)
-        resolve({ address })
+        resolve({ address, $command: { wait: true } })
       })
     })
   }

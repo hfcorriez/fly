@@ -259,7 +259,7 @@ module.exports = {
         this.BuildRoutes(fly.list('http')).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, route.fn]))
         console.log(table.toString())
-        resolve({ address })
+        resolve({ address, $command: { wait: true } })
       })
     })
   },

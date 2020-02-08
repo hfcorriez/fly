@@ -22,6 +22,7 @@ module.exports = {
 
     ctx.list('cron').forEach(fn => table.push([fn.events.cron.time, fn.path]))
     console.log(table.toString())
+    return { $command: { wait: true } }
   },
 
   schedule (ctx) {

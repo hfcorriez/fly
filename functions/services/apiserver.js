@@ -57,7 +57,7 @@ module.exports = {
         })
         ctx.list().forEach(fn => table.push([fn.name, fn.path]))
         console.log(table.toString())
-        resolve({ address })
+        resolve({ address, $command: { wait: true } })
       })
     })
   },
