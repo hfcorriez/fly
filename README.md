@@ -281,9 +281,10 @@ Commands:
     --list,-l                    List packages to install
   list [type]                    List functions
   log [service]                  log service
-  new [dir]                      Create new service dir
+  new [dir]                      Create new project
     [dir]                        Dir name
     --force                      Force create when dir exists
+    --source,-s string           Select source to create. support: http (default), project
   restart [service]              restart service
   run [service]                  service
     --instance,-i number         The instance number
