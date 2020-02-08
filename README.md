@@ -516,15 +516,13 @@ http:
 const assert = require('assert')
 
 module.exports = {
-  tests: [
-    {
-      name: 'Check result code',
-      event: {},
-      check (result) {
-        assert.strictEqual(result.code, 0)
-      }
+  tests: [{
+    name: 'Check result code',
+    event: {},
+    test (result) {
+      assert.strictEqual(result.code, 0)
     }
-  ]
+  }]
 }
 ```
 
