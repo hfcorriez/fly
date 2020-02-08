@@ -7,11 +7,17 @@ module.exports = {
   async main (event, ctx) {
     const { args, params: { service } } = event
     const fly = ctx.fly
-    const fns = fly.list('service').filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
+    const fns = fly.list('service')
+      .filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
+
+    if (!fns || !fns.length) {
+      throw new Error(`service ${service} not found`)
+    }
+
     for (let fn of fns) {
       await this.run(fn, args, ctx)
     }
-    return { $wait: true }
+    return { wait: true }
   },
 
   async run (fn, config, ctx) {

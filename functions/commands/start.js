@@ -7,7 +7,12 @@ module.exports = {
     const { args, params: { service } } = event
 
     const fly = ctx.fly
-    const fns = fly.list('service').filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
+    const fns = fly.list('service')
+      .filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
+
+    if (!fns || !fns.length) {
+      throw new Error(`service ${service} not found`)
+    }
 
     // Hot reload
     const name = process.cwd().split('/').pop()
@@ -15,10 +20,12 @@ module.exports = {
       name: `fly:${name}`,
       path: process.argv[1]
     })
+
     for (let fn of fns) {
       const serviceConfig = fn.events.service
       await this.start(serviceConfig, args, pm)
     }
+
     return pm.status(service)
   },
 
