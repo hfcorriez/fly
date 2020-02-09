@@ -85,6 +85,7 @@ module.exports = {
       '<fn>': 'Function name',
       '--type': 'Set event type',
       '--data': 'Set event data',
+      '--timeout': 'Execution timeout',
       '--error': 'Show full error'
     }
   }
