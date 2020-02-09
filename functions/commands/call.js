@@ -82,9 +82,9 @@ module.exports = {
     },
     descriptions: {
       '_': 'Call function',
-      '<fn>': 'Function name',
-      '--type': 'Set event type',
-      '--data': 'Set event data',
+      '<fn>': 'Function name to call',
+      '--type': 'Set event type: such as http',
+      '--data': 'Event data, support JSON and URL-QUERY-ENCODED',
       '--timeout': 'Execution timeout',
       '--error': 'Show full error'
     }
