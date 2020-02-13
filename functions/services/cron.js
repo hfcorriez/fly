@@ -42,7 +42,7 @@ module.exports = {
             console.log(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
             const subprocess = childProcess.spawn(process.argv[0], [
-              path.join(__dirname, '../bin/fly.js'),
+              path.join(__dirname, '../../bin/fly.js'),
               'call',
               fn.file,
               ...cronConfig.timeout ? ['--timeout', cronConfig.timeout] : []
