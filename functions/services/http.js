@@ -86,11 +86,11 @@ module.exports = {
         let result
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        const { fn, mode, params, target } = this.Find(evt, fly) || {}
+        const { fn, mode, params, target } = this.Find(evt, fly, event) || {}
         evt.params = params
 
         try {
-          const isCors = target && target.cors !== false && (target.cors || cors)
+          const isCors = target && (target.cors !== false || cors)
 
           if (mode === 'cors' || isCors) {
             headers = {
@@ -281,13 +281,13 @@ module.exports = {
     })
   },
 
-  Find (event, fly) {
+  Find (event, ctx, config) {
     let matched
     let secondaryMatched
     let fallbackMatched
 
-    fly.list('http').some(fn => {
-      const matchedInfo = this.Match(event, fn.events.http)
+    ctx.list('http').some(fn => {
+      const matchedInfo = this.Match(event, fn.events.http, config)
 
       // No match
       if (!matchedInfo.match) return false
@@ -316,7 +316,7 @@ module.exports = {
    * @param {Object} source
    * @param {Object} target
    */
-  Match (source, target) {
+  Match (source, target, config) {
     if (!target.path && target.default) target.path = target.default
     if (!target.method) target.method = 'get'
     if (!target.path) return false
@@ -351,7 +351,7 @@ module.exports = {
       }
 
       // cors match
-      if (!match && source.method === 'options' && target.cors) {
+      if (!match && source.method === 'options' && (target.cors || config.cors)) {
         match = true
         mode = 'cors'
       }
