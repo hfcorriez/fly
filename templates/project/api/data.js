@@ -17,10 +17,15 @@ module.exports = {
     path: '/data'
   },
 
+  imports: {
+    db: '../lib/db'
+  },
+
   // Main
   async main (event, ctx) {
     return {
       body: {
+        db: ctx.db.create(),
         event,
         user: ctx.user
       }
