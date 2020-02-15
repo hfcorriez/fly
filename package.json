@@ -1,7 +1,7 @@
 {
   "name": "fly",
   "version": "4.0.4",
-  "description": "For develop backend easy",
+  "description": "For back-end development",
   "main": "lib/index.js",
   "bin": {
     "fly": "bin/fly.js"

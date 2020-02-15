@@ -1,6 +1,9 @@
 project:
   ignore:
     - injectjs/**
+  imports:
+    config: config
+    paypalLib: lib/paypal
 
 service:
   '@http':
