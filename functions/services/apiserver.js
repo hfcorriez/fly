@@ -1,6 +1,6 @@
 const fastify = require('fastify')()
 const path = require('path')
-const debug = require('debug')('fly/srv/htt')
+const info = require('debug')('fly:info:apiserver')
 const Table = require('cli-table2')
 const colors = require('colors/safe')
 
@@ -20,30 +20,31 @@ module.exports = {
      */
     fastify.options(path.join('/', endpoint, '*'), async (_, reply) => reply.send(''))
     fastify.post(path.join('/', endpoint, ':fn'), async (request, reply) => {
-      try {
-        let context = { eventType: 'api' }
-        if (request.headers['x-fly-id']) context.id = request.headers['x-fly-id']
-        if (request.headers['x-fly-async']) context.async = request.headers['x-fly-async'] === '1'
-        if (request.headers['x-fly-type']) context.eventType = request.headers['x-fly-type'] || 'api'
+      let context = { eventType: 'api' }
+      if (request.headers['x-fly-id']) context.id = request.headers['x-fly-id']
+      if (request.headers['x-fly-async']) context.async = request.headers['x-fly-async'] === '1'
+      if (request.headers['x-fly-type']) context.eventType = request.headers['x-fly-type'] || 'api'
 
-        const body = request.body || {}
-        const fn = request.params.fn
-        this.Log(fn, context, body)
+      const body = request.body || {}
+      const fn = request.params.fn
+      this.Log(fn, context, body)
 
-        // Check if async will async to do, such as background jobs
-        if (context.async) {
-          reply.send({ code: 0, data: null })
-          ctx.call(fn, body || {}, context)
+      // Check if async will async to do, such as background jobs
+      if (context.async) {
+        ctx.call(fn, body || {}, context)
+        reply.send({ code: 0, data: null })
+      } else {
+        const [result, err] = await ctx.call(fn, body || {}, context)
+
+        if (!err) {
+          reply.send({ code: 0, data: result })
         } else {
-          let data = await ctx.call(fn, body || {}, context)
-          reply.send({ code: 0, data })
+          info('call function error:', err.message, err)
+          reply.send({
+            code: err.code || 1,
+            message: err.message || 'call function error'
+          })
         }
-      } catch (err) {
-        debug('call function error:', err.message, err)
-        reply.send({
-          code: err.code || 1,
-          message: err.message || 'call function error'
-        })
       }
     })
 

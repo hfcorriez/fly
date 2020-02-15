@@ -30,19 +30,17 @@ module.exports = {
     const context = {}
     if (args.type) context.eventType = args.type
 
-    let result
+    // 处理文件路径的调用
+    if (name.includes('.js')) {
+      name = name[0] !== '/' ? path.join(process.cwd(), name) : name
+    }
 
-    try {
-      // 处理文件路径的调用
-      if (name.includes('.js')) {
-        name = name[0] !== '/' ? path.join(process.cwd(), name) : name
-      }
-
-      result = await ctx.call(name, evt, context)
+    const [result, err] = await ctx.call(name, evt, context)
+    if (!err) {
       console.warn(colors.green(['SUCCESS', name, '<=', JSON.stringify(evt || null)].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
       return result && result.$command
-    } catch (err) {
+    } else {
       console.error(colors.bgRed('CALL_ERROR'), colors.red(err.message))
       if (args.error) {
         console.error(err)

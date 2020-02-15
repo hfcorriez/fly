@@ -3,7 +3,7 @@ const cronParser = require('cron-parser')
 const childProcess = require('child_process')
 const path = require('path')
 const dayjs = require('dayjs')
-const debug = require('debug')('fly/srv/cro')
+const info = require('debug')('fly:info:cron')
 
 module.exports = {
   configService: {
@@ -29,7 +29,7 @@ module.exports = {
     let startSeconds
 
     setInterval(async () => {
-      debug(`interval on ${new Date()}`)
+      info(`interval on ${new Date()}`)
       const currentSeconds = Math.ceil(Date.now() / 1000 / 60) * 60
       if (!startSeconds) startSeconds = currentSeconds
       if (startSeconds !== currentSeconds) {
@@ -39,7 +39,7 @@ module.exports = {
         try {
           const fns = this.findFn(event, ctx)
           for (let fn of fns) {
-            debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
+            info('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
             const cronArgs = [
               path.join(__dirname, '../../bin/fly.js'),
@@ -47,7 +47,7 @@ module.exports = {
               fn.file,
               ...cronConfig.timeout ? ['--timeout', cronConfig.timeout] : []
             ]
-            debug('cron args', cronArgs)
+            info('cron args', cronArgs)
             const subprocess = childProcess.spawn(process.argv[0], cronArgs, {
               env: process.env,
               cwd: process.cwd(),

@@ -4,14 +4,18 @@ const Fly = require('../lib/fly')
 const path = require('path')
 const colors = require('colors/safe')
 const debug = require('debug')
-const log = debug('fly/bin')
+const info = debug('fly:info:bin')
 const pkg = require('../package.json')
 console.log(colors.green(`❏ FLY ${pkg.version}`))
 
 const verbose = process.argv.includes('--verbose') || process.argv.includes('-v')
+const fullVerbose = process.argv.includes('-vv')
 if (verbose) {
-  debug.enable('fly*')
-  log('verbose mode enabled')
+  debug.enable('fly:info*')
+  info('verbose mode enabled')
+}
+if (fullVerbose) {
+  debug.enable('fly:*')
 }
 
 const fly = new Fly({
