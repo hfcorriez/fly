@@ -25,6 +25,7 @@ module.exports = {
   async main (event, ctx) {
     return {
       body: {
+        a: 2,
         db: ctx.db.create(),
         event,
         user: ctx.user
