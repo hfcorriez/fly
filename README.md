@@ -294,7 +294,7 @@ project:
 
 # config overwrite for service function
 service:
-  '@http':
+  $http:
     port: 6000
     title: 'My http server'
 

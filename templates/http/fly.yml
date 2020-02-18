@@ -3,7 +3,7 @@ project:
     - injectjs/**
 
 service:
-  '@http':
+  $http:
     name: http
     port: 5000
     cors: true

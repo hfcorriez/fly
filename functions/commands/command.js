@@ -41,7 +41,7 @@ module.exports = {
     })
 
     if (evt.args.help) {
-      const [, err] = await ctx.call('@help', { name: fn.name })
+      const [, err] = await ctx.call('$help', { name: fn.name })
       if (err) {
         process.exit(1)
       } else {

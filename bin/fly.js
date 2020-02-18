@@ -21,10 +21,10 @@ if (fullVerbose) {
 }
 
 const fly = new Fly({
-  mounts: { '@': path.join(__dirname, '../functions') }
+  mounts: { '$': path.join(__dirname, '../functions') }
 })
 
-fly.call('@command', {
+fly.call('$command', {
   argv: process.argv.slice(2),
   verbose
 })
