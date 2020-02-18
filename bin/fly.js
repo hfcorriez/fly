@@ -5,7 +5,6 @@ const path = require('path')
 const colors = require('colors/safe')
 const debug = require('debug')
 const info = Fly.Logger('fly', 'info', 'bin')
-const warn = Fly.Logger('fly', 'warn', 'bin')
 const pkg = require('../package.json')
 console.log(colors.green(`❏ FLY ${pkg.version}`))
 
@@ -20,8 +19,6 @@ if (verbose) {
 if (fullVerbose) {
   debug.enable('*:*:*')
 }
-
-warn('hello')
 
 const fly = new Fly({
   mounts: { '@': path.join(__dirname, '../functions') }
