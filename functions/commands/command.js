@@ -1,7 +1,6 @@
 const arg = require('arg')
 const colors = require('colors/safe')
 const utils = require('../../lib/utils')
-const log = require('debug')('fly:info:command')
 
 module.exports = {
   config: {
@@ -29,12 +28,12 @@ module.exports = {
       args: {},
       params: {}
     }
-    log('ready to parse command', event.argv)
+    ctx.info('ready to parse command', event.argv)
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)
       if (matched) {
-        log('find matched command', f.name)
+        ctx.info('find matched command', f.name)
         Object.assign(evt, matched)
         return true
       }
@@ -52,7 +51,7 @@ module.exports = {
 
     // Lookup fallback command
     if (!fn) {
-      log('lookup fallback command')
+      ctx.info('lookup fallback command')
       fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }

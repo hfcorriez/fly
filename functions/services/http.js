@@ -9,7 +9,6 @@ const fastify = require('fastify')()
 const colors = require('colors/safe')
 const os = require('os')
 const { parseFormData, deleteTempFiles } = require('../../lib/multipartParser')
-const info = require('debug')('fly:info:http')
 
 fastify.register(require('fastify-multipart'))
 fastify.register(require('fastify-xml-body-parser'))
@@ -43,11 +42,11 @@ module.exports = {
       if (err) {
         const msg = `TEMP_DIR_FAILED: ${TMP_DIR} ${err.message}`
         console.log(msg)
-        info(msg)
+        ctx.info(msg)
         process.exit(1)
       }
     }
-    info('TEMP_DIR', TMP_DIR)
+    ctx.info('TEMP_DIR', TMP_DIR)
 
     const fly = ctx.fly
 
@@ -74,7 +73,7 @@ module.exports = {
           cookies: {}
         }
 
-        info('HTTP', evt.method, evt.url)
+        ctx.info('HTTP', evt.method, evt.url)
 
         if (evt.headers.cookie) {
           evt.headers.cookie.split(';').forEach(function (item) {
@@ -202,7 +201,7 @@ module.exports = {
             code: err.code || 500,
             message: err.message
           })
-          info(`backend failed: ${err.message}`, err.stack)
+          ctx.info(`backend failed: ${err.message}`, err.stack)
           this.Log(evt, reply, fn)
           return
         }
@@ -223,7 +222,7 @@ module.exports = {
           // return file
           fs.stat(result.file, (err, stat) => {
             if (err) {
-              info(err)
+              ctx.info(err)
               reply.type('text/html').code(404).send(this.errors['404'])
             } else {
               reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))

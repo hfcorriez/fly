@@ -1,4 +1,3 @@
-const info = require('debug')('fly:info:run')
 const colors = require('colors/safe')
 const utils = require('../../lib/utils')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'SIGUSR1', 'SIGUSR2']
@@ -27,7 +26,7 @@ module.exports = {
     const fly = ctx.fly
 
     await fly.broadcast('startup', { service })
-    info('STARTUP...', { service })
+    ctx.info('STARTUP...', { service })
 
     let stop = false
     EXIT_SIGNALS.forEach(status => process.on(status, async () => {
@@ -35,7 +34,7 @@ module.exports = {
         if (stop) return
         stop = true
         await fly.broadcast('shutdown', { service })
-        info('SHUTDOWN', status)
+        ctx.info('SHUTDOWN', status)
 
         process.exit(0)
       } catch (err) {

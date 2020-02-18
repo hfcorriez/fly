@@ -1,6 +1,5 @@
 const fastify = require('fastify')()
 const path = require('path')
-const info = require('debug')('fly:info:apiserver')
 const Table = require('cli-table2')
 const colors = require('colors/safe')
 
@@ -39,7 +38,7 @@ module.exports = {
         if (!err) {
           reply.send({ code: 0, data: result })
         } else {
-          info('call function error:', err.message, err)
+          ctx.info('call function error:', err.message, err)
           reply.send({
             code: err.code || 1,
             message: err.message || 'call function error'
