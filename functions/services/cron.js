@@ -38,7 +38,7 @@ module.exports = {
         try {
           const fns = this.findFn(event, ctx)
           for (let fn of fns) {
-            ctx.info('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
+            ctx.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
             const cronArgs = [
               path.join(__dirname, '../../bin/fly.js'),
@@ -71,6 +71,7 @@ module.exports = {
         currentDate: new Date(event.time * 1000),
         tz: process.env.TZ
       })
+      ctx.info(fn.name, 'next execution time', interval.next().toString())
       const currentTime = interval.next()._date.startOf('minute').unix() - 60
       return event.time === currentTime
     })
