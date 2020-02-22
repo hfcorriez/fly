@@ -48,8 +48,6 @@ module.exports = {
     }
     ctx.info('TEMP_DIR', TMP_DIR)
 
-    const fly = ctx.fly
-
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
       url: '/*',
@@ -73,7 +71,7 @@ module.exports = {
           cookies: {}
         }
 
-        ctx.info('HTTP', evt.method, evt.url)
+        ctx.info(evt.method, evt.url)
 
         if (evt.headers.cookie) {
           evt.headers.cookie.split(';').forEach(function (item) {
@@ -82,10 +80,10 @@ module.exports = {
           })
         }
 
-        let result
+        let result, err
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        const { fn, mode, params, target } = this.Find(evt, fly, event) || {}
+        const { fn, mode, params, target } = this.Find(evt, ctx, event) || {}
         evt.params = params
 
         try {
@@ -157,7 +155,8 @@ module.exports = {
             }
 
             // Normal and fallback
-            result = await fly.call(fn.name, evt, { eventId, eventType: 'http' })
+            [result, err] = await ctx.call(fn.name, evt, { eventId, eventType: 'http' })
+            if (err) throw err
 
             // delete temp files uploaded
             if (isUpload) {
@@ -168,10 +167,7 @@ module.exports = {
             if (result && result.url) {
               let res
               try {
-                res = await axios({
-                  url: result.url
-                  // headers: request.headers
-                }, { responseType: 'stream' })
+                res = await axios({ url: result.url }, { responseType: 'stream' })
               } catch (err) {
                 res = err.response
               }
@@ -255,7 +251,7 @@ module.exports = {
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
-        this.BuildRoutes(fly.list('http')).forEach(route =>
+        this.BuildRoutes(ctx.list('http')).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, route.fn]))
         console.log(table.toString())
         resolve({ address, $command: { wait: true } })

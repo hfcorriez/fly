@@ -59,10 +59,11 @@ module.exports = {
     if (!fn) throw new Error('function not found')
 
     try {
-      const result = await ctx.fly.call(fn.name, evt, {
+      const [result, err] = await ctx.call(fn.name, evt, {
         eventId: evt.args['event-id'] || ctx.eventId,
         eventType: 'command'
       })
+      if (err) throw err
 
       let code = 0
       let wait = false
