@@ -1,11 +1,10 @@
 const PM = require('../../lib/pm')
 
 module.exports = {
-  async main (event) {
+  async main (event, ctx) {
     const { service } = event.params
-    const name = process.cwd().split('/').pop()
     const pm = new PM({
-      name: `fly:${name}`,
+      name: `fly:${ctx.project.name}`,
       path: process.argv[1]
     })
     await pm.reload(service)

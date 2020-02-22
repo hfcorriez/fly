@@ -21,7 +21,6 @@ module.exports = {
 
   async run (fn, config, ctx) {
     const serviceConfig = fn ? fn.events.service : null
-    const name = process.cwd().split('/').pop()
     const service = serviceConfig.name
     const fly = ctx.fly
 
@@ -49,7 +48,7 @@ module.exports = {
     }, { eventType: 'service' })
 
     console.log(colors.green(`[SERVICE] ${serviceConfig.title}`))
-    console.log(utils.padding('NAME: '.padStart(9)), colors.bold(name))
+    console.log(utils.padding('NAME: '.padStart(9)), colors.bold(ctx.project.name))
     console.log(utils.padding('TYPE: '.padStart(9)), colors.bold(serviceConfig.name))
     ret && ret.address && console.log(utils.padding('ADDRESS: '.padStart(9)), colors.bold(ret.address))
     console.log(utils.padding('PID: '.padStart(9)), colors.bold(process.pid))

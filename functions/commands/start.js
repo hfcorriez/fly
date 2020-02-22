@@ -15,9 +15,8 @@ module.exports = {
     }
 
     // Hot reload
-    const name = process.cwd().split('/').pop()
     const pm = new PM({
-      name: `fly:${name}`,
+      name: `fly:${ctx.project.name}`,
       path: process.argv[1]
     })
 
