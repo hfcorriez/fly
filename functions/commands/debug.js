@@ -30,10 +30,7 @@ module.exports = {
             }
             break
           case 'service':
-            console.info(`[${id}]`, 'connected')
-            Object.keys(service).forEach(key => {
-              console.info(`[${id}]`, 'service', key, service[key])
-            })
+            console.info(`[${id}]`, 'connected', JSON.stringify(service))
             break
         }
       })
