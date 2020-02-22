@@ -20,7 +20,8 @@ module.exports = {
       url: '/*',
       handler: async (req, res) => {
         const urlObj = new URL('http://' + req.headers.host + req.raw.url)
-        const filePath = path.join(root, decodeURIComponent(urlObj.pathname.substr(1)))
+        const pathname = decodeURIComponent(urlObj.pathname)
+        const filePath = path.join(root, pathname)
         if (fs.existsSync(filePath)) {
           const stat = fs.statSync(filePath)
 
@@ -34,7 +35,7 @@ module.exports = {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Index of ${urlObj.pathname}</title>
+  <title>Index of ${pathname}</title>
   <style>
   * {
     font-size: 15px;
@@ -220,7 +221,7 @@ module.exports = {
   </style>
 </head>
 <body>
-<h2>Index of ${urlObj.pathname}</h2>
+<h2>Index of ${pathname}</h2>
 <ul>`,
               (urlObj.pathname === '/' ? [] : ['..']).concat(files).map(file => {
                 const name = typeof file === 'string' ? file : file.name
