@@ -1,12 +1,17 @@
 const colors = require('colors/safe')
+const debug = require('debug')
+const ipc = require('node-ipc')
 const utils = require('../../lib/utils')
-const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT', 'SIGUSR1', 'SIGUSR2']
+const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT']
+const debugStore = {
+  names: null,
+  log: null
+}
 
 module.exports = {
   async main (event, ctx) {
     const { args, params: { service } } = event
-    const fly = ctx.fly
-    const fns = fly.list('service')
+    const fns = ctx.list('service')
       .filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
 
     if (!fns || !fns.length) {
@@ -22,43 +27,90 @@ module.exports = {
   async run (fn, config, ctx) {
     const serviceConfig = fn ? fn.events.service : null
     const service = serviceConfig.name
-    const fly = ctx.fly
 
-    await fly.broadcast('startup', { service })
+    this.service = {
+      name: ctx.project.name,
+      type: service,
+      pid: process.pid,
+      env: ctx.project.env
+    }
+
+    // broadcast startup events
+    await ctx.broadcast('startup', { service })
     ctx.info('STARTUP...', { service })
 
-    let stop = false
-    EXIT_SIGNALS.forEach(status => process.on(status, async () => {
-      try {
-        if (stop) return
-        stop = true
-        await fly.broadcast('shutdown', { service })
-        ctx.info('SHUTDOWN', status)
+    // handle debug event
+    process.on('SIGUSR2', _ => this.startDebug(ctx))
+    EXIT_SIGNALS.forEach(status => process.on(status, status => this.stopServer(status, ctx)))
 
-        process.exit(0)
-      } catch (err) {
-        console.error(`shutdown with error: ${err.message} `)
-        process.exit(1)
-      }
-    }))
+    const [ret, err] = await ctx.call(fn, { ...serviceConfig, ...config }, { eventType: 'service' })
+    if (err) throw err
 
-    const ret = await fly.call(fn, {
-      ...serviceConfig,
-      ...config
-    }, { eventType: 'service' })
+    if (typeof ret === 'object') {
+      Object.assign(this.service, ret)
+    }
 
     console.log(colors.green(`[SERVICE] ${serviceConfig.title}`))
-    console.log(utils.padding('NAME: '.padStart(9)), colors.bold(ctx.project.name))
-    console.log(utils.padding('TYPE: '.padStart(9)), colors.bold(serviceConfig.name))
-    ret && ret.address && console.log(utils.padding('ADDRESS: '.padStart(9)), colors.bold(ret.address))
-    console.log(utils.padding('PID: '.padStart(9)), colors.bold(process.pid))
-    console.log(utils.padding('ENV: '.padStart(9)), colors.bold(ctx.project.env))
+    Object.keys(this.service).forEach(key => {
+      typeof this.service[key] !== 'object' && console.log(utils.padding(String(key.toUpperCase() + ': ').padStart(9)), this.service[key])
+    })
   },
 
   catch (error) {
     console.log(colors.red(`SERVER ERROR`))
     console.log(utils.padding('MESSAGE:'.padStart(9)), colors.bold(error.message))
     console.log(utils.padding('STACK:'.padStart(9)), colors.bold(error.stack))
+  },
+
+  async stopServer (status, ctx) {
+    try {
+      if (this.isStopping) return
+      this.isStopping = true
+      await ctx.broadcast('shutdown', { service: this.service.type })
+      ctx.info('SHUTDOWN', status)
+
+      process.exit(0)
+    } catch (err) {
+      console.error(`shutdown with error: ${err.message} `)
+      process.exit(1)
+    }
+  },
+
+  startDebug (ctx) {
+    ctx.info('debug start')
+    debugStore.log = debug.log
+    debugStore.names = debug.names
+
+    ipc.config.id = `${this.service.name}-${process.pid}`
+    ipc.config.retry = 1500
+    ipc.config.logger = _ => {}
+
+    ipc.connectTo('fly-debugger', _ => {
+      ipc.of['fly-debugger'].on('connect', _ => ipc.of['fly-debugger'].emit('message', {
+        type: 'service',
+        service: this.service,
+        id: ipc.config.id
+      }))
+      ipc.of['fly-debugger'].on('disconnect', _ => this.stopDebug(ctx))
+      ipc.of['fly-debugger'].on('error', _ => {
+        ipc.disconnect('fly-debugger')
+        this.stopDebug(ctx)
+      })
+    })
+
+    debug.log = (...args) => ipc.of['fly-debugger'] && ipc.of['fly-debugger'].emit('message', { type: 'log', log: args, id: ipc.config.id })
+    debug.enable('*:*:*')
+    this.isStoppingDebug = false
+  },
+
+  stopDebug (ctx) {
+    if (this.isStoppingDebug) return
+    this.isStoppingDebug = true
+    debug.log = debugStore.log
+    debug.enable(debugStore.names.map(toNamespace).join(','))
+    debugStore.log = null
+    debugStore.names = null
+    ctx.info('debug stopped')
   },
 
   configCommand: {
@@ -80,4 +132,10 @@ module.exports = {
       '--port': 'Bind port'
     }
   }
+}
+
+function toNamespace (regexp) {
+  return regexp.toString()
+    .substring(2, regexp.toString().length - 2)
+    .replace(/\.\*\?/g, '*')
 }

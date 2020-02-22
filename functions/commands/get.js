@@ -12,9 +12,9 @@ module.exports = {
   },
 
   configCommand: {
-    _: 'show <fn>',
+    _: 'get <fn>',
     descriptions: {
-      _: 'Show function info',
+      _: 'Get function info',
       '<fn>': 'Function name'
     }
   }
