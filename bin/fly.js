@@ -11,9 +11,9 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
 const verbose = process.argv.includes('--verbose') || process.argv.includes('-v')
 const fullVerbose = process.argv.includes('-vv')
 
-debug.enable('*:warn:*,*:fatal:*')
+debug.enable('*:warn:*,*:error:*,*:fatal:*')
 if (verbose) {
-  debug.enable('*:warn:*,*:fatal:*,*:info:*')
+  debug.enable('*:info:*,*:warn:*,*:error:*,*:fatal:*')
   info('verbose mode enabled')
 }
 if (fullVerbose) {
