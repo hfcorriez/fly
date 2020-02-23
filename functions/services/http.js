@@ -33,6 +33,7 @@ module.exports = {
 
   main (event, ctx) {
     const { bind, port, cors } = event
+    const { info, warn, call, list } = ctx
 
     try {
       if (!fs.existsSync(TMP_DIR)) {
@@ -42,11 +43,11 @@ module.exports = {
       if (err) {
         const msg = `TEMP_DIR_FAILED: ${TMP_DIR} ${err.message}`
         console.log(msg)
-        ctx.info(msg)
+        info(msg)
         process.exit(1)
       }
     }
-    ctx.info('TEMP_DIR', TMP_DIR)
+    info('TEMP_DIR', TMP_DIR)
 
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
@@ -71,7 +72,7 @@ module.exports = {
           cookies: {}
         }
 
-        ctx.info(evt.method, evt.url)
+        info(evt.method, evt.url)
 
         if (evt.headers.cookie) {
           evt.headers.cookie.split(';').forEach(function (item) {
@@ -155,7 +156,7 @@ module.exports = {
             }
 
             // Normal and fallback
-            [result, err] = await ctx.call(fn.name, evt, { eventId, eventType: 'http' })
+            [result, err] = await call(fn.name, evt, { eventId, eventType: 'http' })
             if (err) throw err
 
             // delete temp files uploaded
@@ -197,7 +198,7 @@ module.exports = {
             code: err.code || 500,
             message: err.message
           })
-          ctx.info(`backend failed: ${err.message}`, err.stack)
+          info(`backend failed: ${err.message}`, err.stack)
           this.Log(evt, reply, fn)
           return
         }
@@ -218,7 +219,7 @@ module.exports = {
           // return file
           fs.stat(result.file, (err, stat) => {
             if (err) {
-              ctx.info(err)
+              warn('FILE_ERROR', err)
               reply.type('text/html').code(404).send(this.errors['404'])
             } else {
               reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
@@ -251,7 +252,7 @@ module.exports = {
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
-        this.BuildRoutes(ctx.list('http')).forEach(route =>
+        this.BuildRoutes(list('http')).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, route.fn]))
         console.log(table.toString())
         resolve({ address, $command: { wait: true } })
