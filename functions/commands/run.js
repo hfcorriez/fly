@@ -82,8 +82,8 @@ module.exports = {
     debugStore.names = debug.names
 
     ipc.config.id = `${this.service.name}-${process.pid}`
-    ipc.config.retry = 1500
     ipc.config.logger = _ => {}
+    ipc.config.stopRetrying = true
 
     ipc.connectTo('fly-debugger', _ => {
       ipc.of['fly-debugger'].on('connect', _ => ipc.of['fly-debugger'].emit('message', {
