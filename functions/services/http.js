@@ -33,7 +33,7 @@ module.exports = {
 
   main (event, ctx) {
     const { bind, port, cors } = event
-    const { info, warn, call, list } = ctx
+    const { info, warn, error, call, list } = ctx
 
     try {
       if (!fs.existsSync(TMP_DIR)) {
@@ -198,7 +198,7 @@ module.exports = {
             code: err.code || 500,
             message: err.message
           })
-          info(`backend failed: ${err.message}`, err.stack)
+          error(`backend failed with "[${err.name}] ${err.message}"`)
           this.Log(evt, reply, fn)
           return
         }
