@@ -32,7 +32,7 @@ $ cd example
 > `index.js`
 
 ```javascript
-// plan object
+// plan object style
 module.exports = {
   extends: 'baseFn'
   main: (event, ctx) => {
@@ -47,6 +47,8 @@ module.exports = {
   }
 }
 // or ES6 class style
+const BaseFn = require('/path/to/base-fn')
+
 module.exports = class SayHello extends BaseFn {
   constructor () {
     super()
