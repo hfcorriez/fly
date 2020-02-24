@@ -32,7 +32,9 @@ $ cd example
 > `index.js`
 
 ```javascript
+// plan object style
 module.exports = {
+  extends: 'baseFn'
   main: (event, ctx) => {
     return {
       status: 200,
@@ -44,6 +46,25 @@ module.exports = {
     path: '/'
   }
 }
+// or ES6 class style
+const BaseFn = require('/path/to/base-fn')
+
+module.exports = class SayHello extends BaseFn {
+  constructor () {
+    super()
+    this.configHttp = {
+      path: '/'
+    }
+  }
+
+  main (event, ctx) {
+    return {
+      status: 200,
+      body: 'hello from fly'
+    }
+  }
+}
+
 ```
 
 ### Run with fly
