@@ -33,7 +33,7 @@ module.exports = {
 
   main (event, ctx) {
     const { bind, port, cors } = event
-    const { info, warn, error, call, list } = ctx
+    const { info, warn, error, debug, call, list } = ctx
 
     try {
       if (!fs.existsSync(TMP_DIR)) {
@@ -88,9 +88,9 @@ module.exports = {
         evt.params = params
 
         try {
-          const isCors = target && (target.cors !== false || cors)
+          const isCors = mode === 'cors' || (target && (target.cors !== false || cors))
 
-          if (mode === 'cors' || isCors) {
+          if (isCors) {
             headers = {
               'access-control-allow-origin': request.headers['origin'] || '*',
               'access-control-allow-methods': request.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -98,34 +98,33 @@ module.exports = {
               'access-control-allow-headers': request.headers['access-control-request-headers'] || '*'
             }
 
-            if (isCors) {
-              if (typeof target.cors === 'string') {
-                headers['access-control-allow-origin'] = target.cors
-              } else if (typeof target.cors === 'object') {
-                Object.keys(target.cors).forEach(key => {
-                  const value = target.cors[key]
-                  switch (key) {
-                    case 'origin':
-                      headers['access-control-allow-origin'] = value
-                      break
-                    case 'methods':
-                      headers['access-control-allow-methods'] = value
-                      break
-                    case 'headers':
-                      headers['access-control-allow-headers'] = value
-                      break
-                    case 'credentials':
-                      if (value === false) {
-                        delete headers['access-control-allow-credentials']
-                      }
-                      break
-                  }
-                })
-              }
+            if (target && typeof target.cors === 'string') {
+              headers['access-control-allow-origin'] = target.cors
+            } else if (target && typeof target.cors === 'object') {
+              Object.keys(target.cors).forEach(key => {
+                const value = target.cors[key]
+                switch (key) {
+                  case 'origin':
+                    headers['access-control-allow-origin'] = value
+                    break
+                  case 'methods':
+                    headers['access-control-allow-methods'] = value
+                    break
+                  case 'headers':
+                    headers['access-control-allow-headers'] = value
+                    break
+                  case 'credentials':
+                    if (value === false) {
+                      delete headers['access-control-allow-credentials']
+                    }
+                    break
+                }
+              })
             }
           }
 
           if (mode === 'cors') {
+            debug(204, 'cors mode')
             // Preflight
             result = { status: 204 }
           } else if (fn) {
@@ -226,6 +225,7 @@ module.exports = {
             }
           })
         } else if (!result.body) {
+          debug(204, 'no result body')
           // empty body
           if (!result.status) reply.code(204)
           reply.send('')
