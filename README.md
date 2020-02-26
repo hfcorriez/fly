@@ -66,6 +66,7 @@ ADDRESS:  http://127.0.0.1:5000
 ### Command Usage
 
 ```bash
+❏ FLY 4.1.0
 Usage:
 
   fly <command> [--options]
@@ -73,34 +74,37 @@ Usage:
 Commands:
 
   call <fn>                      Call function
-    <fn>                         Function name
-    --type string                Set event type
-    --data,-d string             Set event data
-    --timeout,-t number
+    <fn>                         Function name to call
+    --type string                Set event type: such as http
+    --data,-d string             Event data, support JSON and URL-QUERY-ENCODED
+    --timeout,-t number          Execution timeout
     --error,-e                   Show full error
-  show <fn>                      Show function info
+  debug <service>                Debug online server
+    <service>                    Service type
+    --filter,-f string
+  get <fn>                       Get function info
     <fn>                         Function name
   help                           Show help
-  install                        Install deps
-    --list,-l                    List packages to install
   list [type]                    List functions
-  log [service]                  log service
-  new [dir]                      Create new project
+  log [service]                  Show service log
+  new [dir]                      Create new fly project
     [dir]                        Dir name
     --force                      Force create when dir exists
     --source,-s string           Select source to create. support: http (default), project
-  restart [service]              restart service
-  run [service]                  service
+  reload [service]               Reload service
+  restart [service]              Restart service
+  run [service]                  Run service in foregroud
     --instance,-i number         The instance number
     --bind,-b string             Bind address
     --port,-p number             Bind port
-  start [service]                start service
+  start [service]                Start service as daemon
     --instance,-i number         The instance number
     --bind,-b string             Bind address
     --port,-p number             Bind port
-  status [service]               service status
-  stop [service]                 stop service
-  test [fn]                      Call function
+    --cron-restart string        Schedule time to restart with cron pattern
+  status [service]               Show service status
+  stop [service]                 Stop service
+  test [fn]                      Test functions
     <fn>                         Function name
     --timeout number
     --error,-e                   Show full error
