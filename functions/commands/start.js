@@ -31,10 +31,12 @@ module.exports = {
     const service = serviceConfig.name
     const bind = config.bind || serviceConfig.bind
     const port = config.port || serviceConfig.port
+    const cronRestart = config['cron-restart'] || serviceConfig.cronRestart
 
     return pm.start({
       name: service,
       args: ['run', service],
+      cronRestart,
       env: {
         BIND: bind,
         PORT: port
@@ -54,7 +56,8 @@ module.exports = {
     args: {
       '--instance': Number,
       '--bind': String,
-      '--port': Number
+      '--port': Number,
+      '--cron-restart': String
     },
     alias: {
       '--instance': '-i',
@@ -65,7 +68,8 @@ module.exports = {
       _: `Start service as daemon`,
       '--instance': 'The instance number',
       '--bind': 'Bind address',
-      '--port': 'Bind port'
+      '--port': 'Bind port',
+      '--cron-restart': 'Schedule time to restart with cron pattern'
     }
   }
 }
