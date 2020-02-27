@@ -1,7 +1,3 @@
-project:
-  ignore:
-    - injectjs/**
-
 service:
   $http:
     name: http

@@ -1,18 +1,5 @@
-project:
-  ignore:
-    - injectjs/**
-
 service:
   $http:
     name: http
     port: 5000
     cors: true
-
-http:
-  getTasks:
-    path: /api/getTasks
-    cache: 200
-
-cron:
-  checkTime:
-    time: "* * * * *"
