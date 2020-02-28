@@ -5,7 +5,7 @@ const colors = require('colors/safe')
 
 module.exports = {
   configService: {
-    name: 'apiserver',
+    name: 'api',
     title: 'Fly API Server',
     port: 4000,
     endpoint: '',
