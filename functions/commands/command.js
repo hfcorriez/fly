@@ -28,7 +28,7 @@ module.exports = {
       args: {},
       params: {}
     }
-    ctx.info('ready to parse command', event.argv)
+    ctx.info('parse command: ', event.argv.join(' '))
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)

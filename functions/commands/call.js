@@ -35,7 +35,7 @@ module.exports = {
       name = name[0] !== '/' ? path.join(process.cwd(), name) : name
     }
 
-    const [result, err] = await call(name, evt, context)
+    const [result, err] = await call(name, evt, { eventType: null, ...context })
     if (!err) {
       console.warn(colors.green(['SUCCESS', name, '<=', JSON.stringify(evt || null)].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
