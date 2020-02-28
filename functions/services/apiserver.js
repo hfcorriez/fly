@@ -7,33 +7,46 @@ module.exports = {
   configService: {
     name: 'apiserver',
     title: 'Fly API Server',
-    port: 5020,
-    endpoint: ''
+    port: 4000,
+    endpoint: '',
+    keys: [],
+    functions: []
   },
 
   main (event, ctx) {
-    const { bind, port, endpoint } = event
+    const { bind, port, endpoint, keys, functions } = event
 
-    /**
-     * Rpc server
-     */
-    fastify.options(path.join('/', endpoint, '*'), async (_, reply) => reply.send(''))
-    fastify.post(path.join('/', endpoint, ':fn'), async (request, reply) => {
-      let context = { eventType: 'api' }
-      if (request.headers['x-fly-id']) context.id = request.headers['x-fly-id']
-      if (request.headers['x-fly-async']) context.async = request.headers['x-fly-async'] === '1'
-      if (request.headers['x-fly-type']) context.eventType = request.headers['x-fly-type'] || 'api'
+    fastify.options(path.join('/', endpoint), async (_, reply) => reply.send(''))
+    fastify.post(path.join('/', endpoint), async (request, reply) => {
+      const key = request.headers['x-fly-key']
 
-      const body = request.body || {}
-      const fn = request.params.fn
-      this.Log(fn, context, body)
+      if (keys && keys.length && !keys.includes(key)) {
+        reply.send({
+          code: 100,
+          message: 'auth failed'
+        })
+        return
+      }
+
+      const { name, event = {}, context = {} } = request.body || {}
+      if (!context.eventType) context.eventType = 'api'
+
+      if (!name || name.startsWith('$') || (functions && functions.length && !functions.includes(name))) {
+        reply.send({
+          code: 101,
+          message: 'function not exists'
+        })
+        return
+      }
+
+      this.Log(name, context, event)
 
       // Check if async will async to do, such as background jobs
       if (context.async) {
-        ctx.call(fn, body || {}, context)
-        reply.send({ code: 0, data: null })
+        ctx.call(name, event, context)
+        reply.send({ code: 0, message: 'no result with async call', data: null })
       } else {
-        const [result, err] = await ctx.call(fn, body || {}, context)
+        const [result, err] = await ctx.call(name, event, context)
 
         if (!err) {
           reply.send({ code: 0, data: result })
@@ -41,7 +54,7 @@ module.exports = {
           ctx.info('call function error:', err.message, err)
           reply.send({
             code: err.code || 1,
-            message: err.message || 'call function error'
+            message: err.message || 'call function failed'
           })
         }
       }
@@ -55,7 +68,7 @@ module.exports = {
           head: ['Fn', 'Path'],
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
-        ctx.list().forEach(fn => table.push([fn.name, fn.path]))
+        ctx.list().filter(fn => !fn.name.startsWith('$')).forEach(fn => table.push([fn.name, fn.path]))
         console.log(table.toString())
         resolve({ address, $command: { wait: true } })
       })
