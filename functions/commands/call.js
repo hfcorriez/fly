@@ -3,51 +3,61 @@ const colors = require('colors/safe')
 const path = require('path')
 
 module.exports = {
-  async main (event, ctx) {
-    const { args, params } = event
-
-    let name = params[0]
-    let eventData = args.data || (await this.getStdin())
+  async main (event, { call, warn }) {
+    let { context, timeout, error, verbose, data } = event.args
+    data = data || (await this.getStdin())
+    let name = event.params[0]
     let evt
 
-    if (eventData) {
-      try {
-        evt = JSON.parse(eventData)
-      } catch (err) {
-        if (eventData.includes('=')) evt = querystring.parse(eventData)
-        if (!evt) {
-          console.warn(colors.bgRed('ERROR_DATA'), colors.red.underline('Event data parse failed'))
-          return
-        }
+    if (data) {
+      evt = this.parseData(data)
+      if (!evt) {
+        warn('ERROR_EVENT', 'Event data parse failed')
+        return
       }
     }
 
-    if (args.timeout && typeof args.timeout === 'number') {
-      // Setup timeout
-      _exitIfTimeout(args.timeout, () => console.error(`call timeout ${args.timeout}s`))
+    if (context) {
+      context = this.parseData(context)
+      if (!context) {
+        warn('ERROR_CONTEXT', 'Context data parse failed')
+        return
+      }
     }
 
-    const context = {}
-    if (args.type) context.eventType = args.type
+    if (typeof timeout === 'number') {
+      // Setup timeout
+      _exitIfTimeout(timeout, () => console.error(`call timeout ${timeout}s`))
+    }
 
     // 处理文件路径的调用
     if (name.includes('.js')) {
       name = name[0] !== '/' ? path.join(process.cwd(), name) : name
     }
 
-    const [result, err] = await ctx.call(name, evt, context)
+    const [result, err] = await call(name, evt, context)
     if (!err) {
       console.warn(colors.green(['SUCCESS', name, '<=', JSON.stringify(evt || null)].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
       return result && result.$command
     } else {
       console.error(colors.bgRed('CALL_ERROR'), colors.red(err.message))
-      if (args.error) {
+      if (error) {
         console.error(err)
       }
-      if (args.verbose) console.error(err)
+      if (verbose) console.error(err)
       process.exit(1)
     }
+  },
+
+  parseData (data) {
+    let ret
+    try {
+      ret = JSON.parse(data)
+    } catch (err) {
+      if (data.includes('=')) ret = querystring.parse(data)
+    }
+    return ret
   },
 
   getStdin () {
@@ -70,11 +80,13 @@ module.exports = {
     args: {
       '--type': String,
       '--data': String,
+      '--context': String,
       '--timeout': Number,
       '--error': Boolean
     },
     alias: {
       '--data': '-d',
+      '--context': '-c',
       '--timeout': '-t',
       '--error': '-e'
     },
@@ -83,6 +95,7 @@ module.exports = {
       '<fn>': 'Function name to call',
       '--type': 'Set event type: such as http',
       '--data': 'Event data, support JSON and URL-QUERY-ENCODED',
+      '--context': 'Context data, support JSON and URL-QUERY-ENCODED',
       '--timeout': 'Execution timeout',
       '--error': 'Show full error'
     }

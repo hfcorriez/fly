@@ -10,11 +10,12 @@ module.exports = {
     port: 4000,
     endpoint: '',
     keys: [],
-    functions: []
+    functions: [],
+    useContext: false
   },
 
   main (event, ctx) {
-    const { bind, port, endpoint, keys, functions } = event
+    const { bind, port, endpoint, keys, functions, useContext } = event
 
     fastify.options(path.join('/', endpoint), async (_, reply) => reply.send(''))
     fastify.post(path.join('/', endpoint), async (request, reply) => {
@@ -28,8 +29,11 @@ module.exports = {
         return
       }
 
-      const { name, event = {}, context = {} } = request.body || {}
-      if (!context.eventType) context.eventType = 'api'
+      const { name, event = {}, context: userContext } = request.body || {}
+      const context = { eventType: 'api' }
+      if (useContext) {
+        Object.assign(context, userContext || {})
+      }
 
       if (!name || name.startsWith('$') || (functions && functions.length && !functions.includes(name))) {
         reply.send({
