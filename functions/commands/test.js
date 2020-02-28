@@ -35,7 +35,7 @@ module.exports = {
       }
       process.exit(0)
     } catch (err) {
-      console.error(colors.bgRed('TEST_ERROR'), colors.red(err.message))
+      console.error(colors.bgRed('test error'), colors.red(err.message))
       if (args.error) {
         console.error(err)
       }

@@ -12,7 +12,7 @@ module.exports = {
     if (data) {
       evt = this.parseData(data)
       if (!evt) {
-        warn('ERROR_EVENT', 'Event data parse failed')
+        warn('error event', 'Event data parse failed')
         return
       }
     }
@@ -20,7 +20,7 @@ module.exports = {
     if (context) {
       context = this.parseData(context)
       if (!context) {
-        warn('ERROR_CONTEXT', 'Context data parse failed')
+        warn('error context', 'Context data parse failed')
         return
       }
     }
@@ -37,11 +37,11 @@ module.exports = {
 
     const [result, err] = await call(name, evt, { eventType: null, ...context })
     if (!err) {
-      console.warn(colors.green(['SUCCESS', name, '<=', JSON.stringify(evt || null)].join(' ')))
+      console.warn(colors.green(['call ok', name, '<=', JSON.stringify(evt || null)].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
       return result && result.$command
     } else {
-      console.error(colors.bgRed('CALL_ERROR'), colors.red(err.message))
+      console.error(colors.bgRed('call error'), colors.red(err.message))
       if (error) {
         console.error(err)
       }
