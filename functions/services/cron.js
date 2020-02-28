@@ -1,7 +1,5 @@
 const Table = require('cli-table2')
 const cronParser = require('cron-parser')
-const childProcess = require('child_process')
-const path = require('path')
 const dayjs = require('dayjs')
 
 module.exports = {
@@ -40,20 +38,7 @@ module.exports = {
           for (let fn of fns) {
             ctx.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
-            const cronArgs = [
-              path.join(__dirname, '../../bin/fly.js'),
-              'call',
-              fn.file,
-              ...cronConfig.timeout ? ['--timeout', cronConfig.timeout] : []
-            ]
-            ctx.info('cron args', cronArgs)
-            const subprocess = childProcess.spawn(process.argv[0], cronArgs, {
-              env: process.env,
-              cwd: process.cwd(),
-              detached: true,
-              stdio: 'ignore'
-            })
-            subprocess.unref()
+            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout })
           }
         } catch (err) {
           console.error(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'FAILED', err.stack)
