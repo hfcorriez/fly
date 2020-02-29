@@ -1,7 +1,11 @@
 
 module.exports = {
-  async main (event, ctx) {
-    const fn = ctx.get(event.params.fn)
+  async main (event, { get }) {
+    const fn = get(event.params.fn)
+    if (!fn) {
+      console.error(`error: function "${event.params.fn}" not found`)
+      return
+    }
     console.log(JSON.stringify({
       name: fn.name,
       prefix: fn.prefix,

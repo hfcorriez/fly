@@ -7,15 +7,18 @@ module.exports = {
     args: {
       '--id': String,
       '--verbose': Boolean,
+      '--debug': Boolean,
       '--help': Boolean
     },
     alias: {
       '--verbose': '-v',
+      '--debug': '-vv',
       '--id': '-i',
       '--help': '-h'
     },
     descriptions: {
-      '--verbose': 'Show verbose',
+      '--verbose': 'Show info level log',
+      '--debug': 'Show debug level log',
       '--help': 'Show help',
       '--id': 'Set event id'
     }

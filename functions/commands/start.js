@@ -32,6 +32,10 @@ module.exports = {
     const bind = config.bind || serviceConfig.bind
     const port = config.port || serviceConfig.port
     const cronRestart = config['cron-restart'] || serviceConfig.cronRestart
+    const args = ['run', service]
+
+    if (config.verbose) args.push('-v')
+    else if (config.debug) args.push('-vv')
 
     return pm.start({
       name: service,
