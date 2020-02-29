@@ -8,7 +8,7 @@ const info = Fly.Logger('fly', 'info', 'bin')
 const pkg = require('../package.json')
 console.log(colors.green(`❏ FLY ${pkg.version}`))
 
-const verbose = process.argv.includes('--verbose') || process.argv.includes('-v')
+const verbose = process.argv.includes('-v')
 const fullVerbose = process.argv.includes('-vv')
 
 debug.enable('*:warn:*,*:error:*,*:fatal:*')
