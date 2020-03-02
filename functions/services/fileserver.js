@@ -8,7 +8,7 @@ module.exports = {
   configService: {
     name: 'file',
     title: 'File server',
-    port: 6000
+    port: 5050
   },
 
   main (event) {
