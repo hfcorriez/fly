@@ -42,7 +42,7 @@ module.exports = {
 
     ipc.server.start()
 
-    const list = await pm.list('http')
+    const list = await pm.list(service)
     for (let item of list) {
       process.kill(item.pid, 'SIGUSR2')
     }
