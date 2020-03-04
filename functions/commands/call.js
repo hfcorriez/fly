@@ -2,9 +2,11 @@ const querystring = require('querystring')
 const colors = require('colors/safe')
 const path = require('path')
 
+const sleep = seconds => new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
+
 module.exports = {
   async main (event, { call, warn }) {
-    let { context, timeout, error, verbose, data } = event.args
+    let { context, timeout, data, interval } = event.args
     data = data || (await this.getStdin())
     let name = event.params[0]
     let evt
@@ -35,19 +37,20 @@ module.exports = {
       name = name[0] !== '/' ? path.join(process.cwd(), name) : name
     }
 
-    const [result, err] = await call(name, evt, { eventType: null, ...context })
-    if (!err) {
-      console.warn(colors.green(['call ok', name, '<=', JSON.stringify(evt || null)].join(' ')))
+    let no = 1
+    do {
+      const [result, err] = await call(name, evt, { eventType: null, ...context })
+      if (err) throw err
+      console.warn(colors.green([`#${no}`, '⇲', name, '(', JSON.stringify(evt || {}), ')'].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
-      return result && result.$command
-    } else {
-      console.error(colors.bgRed('call error'), colors.red(err.message))
-      if (error) {
-        console.error(err)
+
+      if (!interval) {
+        return result && result.$command
       }
-      if (verbose) console.error(err)
-      process.exit(1)
-    }
+
+      no++
+      await sleep(interval)
+    } while (true)
   },
 
   parseData (data) {
@@ -82,13 +85,15 @@ module.exports = {
       '--data': String,
       '--context': String,
       '--timeout': Number,
-      '--error': Boolean
+      '--error': Boolean,
+      '--interval': Number
     },
     alias: {
       '--data': '-d',
       '--context': '-c',
       '--timeout': '-t',
-      '--error': '-e'
+      '--error': '-e',
+      '--interval': '-i'
     },
     descriptions: {
       '_': 'Call function',
@@ -97,7 +102,8 @@ module.exports = {
       '--data': 'Event data, support JSON and URL-QUERY-ENCODED',
       '--context': 'Context data, support JSON and URL-QUERY-ENCODED',
       '--timeout': 'Execution timeout',
-      '--error': 'Show full error'
+      '--error': 'Show full error',
+      '--interval': 'Run function every seconds'
     }
   }
 }
