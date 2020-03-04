@@ -21,19 +21,19 @@ module.exports = {
     }
   },
 
-  async main (event, ctx) {
-    const functions = ctx.list('command')
+  async main (event, { list, call, info, eventId }) {
+    const functions = list('command')
     const evt = {
       argv: event.argv,
       args: {},
       params: {}
     }
-    ctx.info('parse command: ', event.argv.join(' '))
+    info('parse command: ', event.argv.join(' '))
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)
       if (matched) {
-        ctx.info('find matched command', f.name)
+        info('find matched command', f.name)
         Object.assign(evt, matched)
         return true
       }
@@ -41,7 +41,7 @@ module.exports = {
     })
 
     if (evt.args.help) {
-      const [, err] = await ctx.call('$help', { name: fn.name })
+      const [, err] = await call('$help', { name: fn.name })
       if (err) {
         process.exit(1)
       } else {
@@ -51,7 +51,7 @@ module.exports = {
 
     // Lookup fallback command
     if (!fn) {
-      ctx.info('lookup fallback command')
+      info('lookup fallback command')
       fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
@@ -59,8 +59,8 @@ module.exports = {
     if (!fn) throw new Error('function not found')
 
     try {
-      const [result, err] = await ctx.call(fn.name, evt, {
-        eventId: evt.args['event-id'] || ctx.eventId,
+      const [result, err] = await call(fn.name, evt, {
+        eventId: evt.args['event-id'] || eventId,
         eventType: 'command'
       })
       if (err) throw err
