@@ -131,14 +131,17 @@ module.exports = {
             /**
              * Cache define
              */
-            if (target.hasOwnProperty('cache') && ['get', 'head', undefined].includes(target.method)) {
+            if (target.hasOwnProperty('cache') && (
+              !target.method ||
+              target.method.includes('get') ||
+              target.method.includes('head'))) {
               if (['string', 'number'].includes(typeof target.cache) || target.cache === true) {
-                if (target.cache === true) target.cache = 600
-                headers['cache-control'] = `public, max-age=${target.cache}`
+                headers['cache-control'] = `public, max-age=${target.cache === true ? 600 : target.cache}`
               } else if (!target.cache) {
                 headers['cache-control'] = `no-cache, no-store`
               }
             }
+
             /**
              * multipart/form-data request, parse body, write temp file to temp dir
              */
@@ -317,12 +320,8 @@ module.exports = {
     if (!target.path && target.default) target.path = target.default
     if (!target.method) target.method = 'get'
     if (!target.path) return false
-    if (source.domain.split('.').length !== 4 && target.domain) {
-      if (typeof target.domain === 'string') target.domain = [target.domain]
-      let domainValid = target.domain.some(domain => new RegExp('^' + domain.replace(/\./g, '\\.').replace(/\*/g, '.*?') + '$').test(source.domain))
-      if (!domainValid) return false
-    }
-    // change target.method
+
+    // Normalrize method
     target.method = target.method.toLowerCase()
 
     if (target.path[0] !== '/') {
@@ -343,7 +342,7 @@ module.exports = {
       keys.forEach((key, i) => (params[key.name] = pathMatched[i + 1]))
 
       // method match
-      if (!match && (source.method === target.method || target.method === '*')) {
+      if (!match && (target.method.includes(source.method) || target.method === '*')) {
         match = true
       }
 
@@ -354,7 +353,7 @@ module.exports = {
       }
 
       // head match
-      if (!match && source.method === 'head' && (target.method === 'get' || target.method === '*')) {
+      if (!match && source.method === 'head' && (target.method.includes('get') || target.method === '*')) {
         match = true
         mode = 'head'
       }
