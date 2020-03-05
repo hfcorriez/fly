@@ -5,30 +5,25 @@ const utils = require('../../lib/utils')
 module.exports = {
   config: {
     args: {
-      '--verbose': Boolean,
-      '--debug': Boolean,
       '--help': Boolean
     },
     alias: {
-      '--verbose': '-v',
-      '--debug': '-vv',
       '--help': '-h'
     },
     descriptions: {
-      '--verbose': 'Show info level log',
-      '--debug': 'Show debug level log',
       '--help': 'Show help'
     }
   },
 
   async main (event, { list, call, info, eventId }) {
+    const { argv, verbose } = event
     const functions = list('command')
     const evt = {
-      argv: event.argv,
+      argv,
       args: {},
       params: {}
     }
-    info('parse command: ', event.argv.join(' '))
+    info('parse command: ', argv.join(' '))
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)
@@ -57,6 +52,8 @@ module.exports = {
     }
 
     if (!fn) throw new Error('function not found')
+
+    evt.args.verbose = verbose
 
     try {
       const [result, err] = await call(fn.name, evt, {
