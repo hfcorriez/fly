@@ -10,12 +10,19 @@
  */
 
 module.exports = {
+  configHttp: {
+    path: '/login'
+  },
+
   // Main
-  async main (_, ctx) {
-    let ret = await ctx.userLogin({ username: 'test', password: 'test' })
+  async main (_, { debug, userLogin, error }) {
+    let ret = await userLogin({ username: 'test', password: 'test' })
     if (Math.random() > 0.5) {
-      ctx.error(new Error('random value is greater than 0.5, will log by sentry'))
+      error(new Error('random value is greater than 0.5, will log by sentry'))
     }
-    return ret
+    debug('haha', 'hha')
+    return {
+      body: ret
+    }
   }
 }
