@@ -367,7 +367,7 @@ await fly.call('test', {host: 'api.com'})
 **Function Definition**
 
 ```yaml
-extend: String                          # Extends from function, start with @ indicate the parent fly
+extends: String                          # Extends from function, start with @ indicate the parent fly
 retry: Number|Boolean                   # Retry count, true is 3
 perload: String|Array                   # Preload some functions before (add in v4.1)
 main: Function                          # Main call -> (event, ctx)
@@ -424,7 +424,7 @@ props<Event>: Object                    # Props definetions for event
   },
 
   // Extends from appbase for initial functions
-  extend: 'authHttpUser',
+  extends: 'authHttpUser',
 
   /**
    * Main function

@@ -10,15 +10,11 @@
  */
 
 module.exports = {
-  beforeHttp: 'handleHttp',
+  extends: 'handleHttp',
 
   // Http default config
   configHttp: {
     path: '/data'
-  },
-
-  imports: {
-    db: '../lib/db'
   },
 
   // Main

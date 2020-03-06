@@ -1,3 +1,7 @@
+project:
+  import:
+    db: lib/db
+
 service:
   $http:
     name: http
