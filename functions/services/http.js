@@ -198,7 +198,8 @@ module.exports = {
         } catch (err) {
           reply.code(500).type('application/json').send({
             code: err.code || 500,
-            message: err.message
+            message: err.message,
+            stack: ctx.project.env === 'development' ? err.stack.split('\n') : undefined
           })
           error(`backend failed with "[${err.name}] ${err.message}"`)
           this.Log(evt, reply, fn)

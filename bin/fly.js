@@ -8,6 +8,10 @@ const Fly = require('../lib/fly')
 const path = require('path')
 const debug = require('debug')
 
+if (!process.stdin.isTTY) {
+  colors.disable()
+}
+
 const VERBOSE_LEVELS = ['-v', '-vv', '-vvv']
 const VERBOSE_STRS = ['*:info:*,*:warn:*,*:error:*,*:fatal:*,-fly:*', '*:info:*,*:warn:*,*:error:*,*:fatal:*', '*:*:*']
 const verboseArg = process.argv.find(arg => VERBOSE_LEVELS.includes(arg))

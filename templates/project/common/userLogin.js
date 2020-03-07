@@ -6,7 +6,8 @@ module.exports = {
     }
   },
 
-  main ({ username, password }) {
+  main ({ username, password }, { info }) {
+    info('someone call login for:', username)
     return {
       username,
       password,

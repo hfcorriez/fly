@@ -15,12 +15,13 @@ module.exports = {
   },
 
   // Main
-  async main (_, { debug, userLogin, error }) {
+  async main (_, { info, userLogin, error }) {
     let ret = await userLogin({ username: 'test', password: 'test' })
+    info('some one start login')
     if (Math.random() > 0.5) {
-      error(new Error('random value is greater than 0.5, will log by sentry'))
+      throw new Error('random value is greater than 0.5')
     }
-    debug('haha', 'hha')
+    info('some one login ok')
     return {
       body: ret
     }
