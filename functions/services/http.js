@@ -91,7 +91,7 @@ module.exports = {
         let result, err
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        const { fn, mode, params, target } = this.Find(evt, ctx, event) || {}
+        const { fn, mode, params, target } = this.findFn(evt, ctx, event) || {}
         evt.params = params
 
         try {
@@ -197,7 +197,7 @@ module.exports = {
                 message: `path not found`
               })
             }
-            this.Log(evt, reply, fn)
+            this.log(evt, reply, fn)
             return
           } else if (result.constructor !== Object) {
             throw new Error('function return illegal')
@@ -209,7 +209,7 @@ module.exports = {
             stack: ctx.project.env === 'development' ? err.stack.split('\n') : undefined
           })
           error(`backend failed with "[${err.name}] ${err.message}"`)
-          this.Log(evt, reply, fn)
+          this.log(evt, reply, fn)
           return
         }
 
@@ -229,7 +229,7 @@ module.exports = {
           // return file
           fs.stat(result.file, (err, stat) => {
             if (err) {
-              warn('FILE_ERROR', err)
+              warn('file read error:', err)
               reply.type('text/html').code(404).send(this.errors['404'])
             } else {
               reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
@@ -248,9 +248,9 @@ module.exports = {
           // no body and other options response 500
           reply.code(500).type('text/html').send(this.errors['500'])
         } else {
-          reply.code(500).type('application/json').send('no body return')
+          reply.code(500).type('application/json').send({ message: 'no body return' })
         }
-        this.Log(evt, reply, fn)
+        this.log(evt, reply, fn)
       }
     })
 
@@ -263,7 +263,7 @@ module.exports = {
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
-        this.BuildRoutes(list('http')).forEach(route =>
+        this.buildRoutes(list('http')).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, route.fn]))
         console.log(table.toString())
         resolve({ address, $command: { wait: true } })
@@ -271,7 +271,14 @@ module.exports = {
     })
   },
 
-  Log (event, reply, fn) {
+  /**
+   * Log
+   *
+   * @param {Object} event
+   * @param {Object} reply
+   * @param {Object} fn
+   */
+  log (event, reply, fn) {
     if (!require('tty').isatty(process.stderr.fd)) return
     let res = reply.res
     console.log([
@@ -282,20 +289,32 @@ module.exports = {
     ].join(' '))
   },
 
-  BuildRoutes (functions) {
+  /**
+   * Build routes
+   *
+   * @param {Array} functions
+   */
+  buildRoutes (functions) {
     return functions.map(fn => {
       let e = fn.events.http
       return { method: e.method || 'get', path: e.path, domain: e.domain, fn: fn.name }
     })
   },
 
-  Find (event, ctx, config) {
+  /**
+   * Find function
+   *
+   * @param {Object} event
+   * @param {Object} ctx
+   * @param {Object} config
+   */
+  findFn (event, ctx, config) {
     let matched
     let secondaryMatched
     let fallbackMatched
 
     ctx.list('http').some(fn => {
-      const matchedInfo = this.Match(event, fn.events.http, config)
+      const matchedInfo = this.matchRoute(event, fn.events.http, config)
 
       // No match
       if (!matchedInfo.match) return false
@@ -324,21 +343,20 @@ module.exports = {
    * @param {Object} source
    * @param {Object} target
    */
-  Match (source, target, config) {
+  matchRoute (source, target, config) {
     if (!target.path && target.default) target.path = target.default
     if (!target.method) target.method = 'get'
     if (!target.path) return false
 
     // Normalrize method
     target.method = target.method.toLowerCase()
-
     if (target.path[0] !== '/') {
       console.warn('warn: http path is not start with "/", recommend to add it')
       target.path = '/' + target.path
     }
 
     let keys = []
-    let regex = pathToRegexp(target.path, keys)
+    let regex = target._pathRegexpCache = target._pathRegexpCache || pathToRegexp(target.path, keys)
     let pathMatched = regex.exec(source.path)
     let mode = null
     let match = false
