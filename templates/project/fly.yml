@@ -7,6 +7,9 @@ service:
     name: http
     port: 5000
     cors: true
+    static:
+      - prefix: /static
+        root: static
 
 http:
   getTasks:

@@ -14,6 +14,7 @@ module.exports = {
 
   // Http default config
   configHttp: {
+    method: 'get,post',
     path: '/data'
   },
 

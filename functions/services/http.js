@@ -1,7 +1,7 @@
 const Table = require('cli-table2')
 const fs = require('fs')
 const mime = require('mime')
-const pathToRegexp = require('path-to-regexp')
+const { pathToRegexp } = require('path-to-regexp')
 const { URL } = require('url')
 const path = require('path')
 const axios = require('axios')
@@ -32,22 +32,29 @@ module.exports = {
   },
 
   main (event, ctx) {
-    const { bind, port, cors } = event
-    const { info, warn, error, debug, call, list } = ctx
+    const { bind, port, cors, static: staticConfigs } = event
+    const { info, warn, error, debug, call, list, project } = ctx
 
     try {
-      if (!fs.existsSync(TMP_DIR)) {
-        fs.mkdirSync(TMP_DIR)
-      }
+      !fs.existsSync(TMP_DIR) && fs.mkdirSync(TMP_DIR)
     } catch (err) {
       if (err) {
-        const msg = `TEMP_DIR_FAILED: ${TMP_DIR} ${err.message}`
-        console.log(msg)
-        info(msg)
+        const msg = `tmp dir create failed: ${TMP_DIR} ${err.message}`
+        error(msg)
         process.exit(1)
       }
     }
-    info('TEMP_DIR', TMP_DIR)
+    info('tmp dir:', TMP_DIR)
+
+    if (staticConfigs && staticConfigs.length) {
+      for (let staticConfig of staticConfigs) {
+        info('register static:', staticConfig)
+        fastify.register(require('fastify-static'), {
+          root: path.join(project.dir, staticConfig.root),
+          prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/')
+        })
+      }
+    }
 
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],

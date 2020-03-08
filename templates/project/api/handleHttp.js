@@ -1,7 +1,7 @@
 module.exports = {
-  beforeHttp (event, ctx) {
-    return ctx.end({ body: 'haha1' })
-  },
+  // beforeHttp (event, ctx) {
+  //   return ctx.end({ body: 'haha1' })
+  // },
 
   main (event, ctx) {
     ctx.user = { name: 'x' }
