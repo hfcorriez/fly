@@ -37,7 +37,7 @@ module.exports = {
 
     // broadcast startup events
     await ctx.broadcast('startup', { service })
-    ctx.info('STARTUP...', { service })
+    ctx.info('starting...', { service })
 
     // handle debug event
     process.on('SIGUSR2', _ => this.startDebug(ctx))

@@ -23,7 +23,7 @@ module.exports = {
       args: {},
       params: {}
     }
-    info('parse command: ', argv.join(' '))
+    info('parse command:', argv.join(' '))
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)
