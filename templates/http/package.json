@@ -1,0 +1,27 @@
+{
+  "name": "fly-http",
+  "version": "1.0.0",
+  "description": "For back-end development",
+  "scripts": {
+    "start": "fly start all",
+    "dev:http": "fly run http",
+    "dev:api": "fly run api",
+    "dev:cron": "fly run cron"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "fly": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^11.12.2",
+    "eslint": "^5.11.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^8.0.0",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
+  }
+}
