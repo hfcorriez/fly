@@ -1,6 +1,6 @@
 module.exports = {
   // beforeHttp (event, ctx) {
-  //   return ctx.end({ body: 'haha1' })
+  //   return ctx.fly.end({ body: 'haha1' })
   // },
 
   main (event, ctx) {

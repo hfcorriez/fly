@@ -9,24 +9,24 @@ module.exports = {
     singleton: true
   },
 
-  main (event, ctx) {
-    this.schedule(ctx)
+  main (event, { fly }) {
+    this.schedule(fly)
 
     const table = new Table({
       head: ['Time', 'Path'],
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
 
-    ctx.list('cron').forEach(fn => table.push([fn.events.cron.time, fn.path]))
+    fly.list('cron').forEach(fn => table.push([fn.events.cron.time, fn.path]))
     console.log(table.toString())
     return { $command: { wait: true } }
   },
 
-  schedule (ctx) {
+  schedule (fly) {
     let startSeconds
 
     setInterval(async () => {
-      ctx.info(`interval on ${new Date()}`)
+      fly.info(`interval on ${new Date()}`)
       const currentSeconds = Math.ceil(Date.now() / 1000 / 60) * 60
       if (!startSeconds) startSeconds = currentSeconds
       if (startSeconds !== currentSeconds) {
@@ -34,11 +34,11 @@ module.exports = {
         const event = { time: currentSeconds }
 
         try {
-          const fns = this.findFn(event, ctx)
+          const fns = this.findFn(event, fly)
           for (let fn of fns) {
-            ctx.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
+            fly.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
-            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout })
+            await fly.fork({ name: fn.name, timeout: cronConfig.timeout })
           }
         } catch (err) {
           console.error(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'FAILED', err.stack)
@@ -47,8 +47,8 @@ module.exports = {
     }, 1000)
   },
 
-  findFn (event, ctx) {
-    return ctx.list('cron').filter(fn => {
+  findFn (event, fly) {
+    return fly.list('cron').filter(fn => {
       const target = fn.events.cron
       const cron = target.time || target.default
       if (!cron) return false
@@ -56,7 +56,7 @@ module.exports = {
         currentDate: new Date(event.time * 1000),
         tz: process.env.TZ
       })
-      ctx.info(fn.name, 'next execution time', interval.next().toString())
+      fly.info(fn.name, 'next execution time', interval.next().toString())
       const currentTime = interval.next()._date.startOf('minute').unix() - 60
       return event.time === currentTime
     })

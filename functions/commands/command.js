@@ -15,20 +15,20 @@ module.exports = {
     }
   },
 
-  async main (event, { list, call, info, eventId }) {
+  async main (event, { fly, eventId }) {
     const { argv, verbose } = event
-    const functions = list('command')
+    const functions = fly.list('command')
     const evt = {
       argv,
       args: {},
       params: {}
     }
-    info('parse command:', argv.join(' '))
+    fly.info('parse command:', argv.join(' '))
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)
       if (matched) {
-        info('find matched command', f.name)
+        fly.info('find matched command', f.name)
         Object.assign(evt, matched)
         return true
       }
@@ -36,7 +36,7 @@ module.exports = {
     })
 
     if (evt.args.help) {
-      const [, err] = await call('$help', { name: fn.name })
+      const [, err] = await fly.call('$help', { name: fn.name })
       if (err) {
         process.exit(1)
       } else {
@@ -46,7 +46,7 @@ module.exports = {
 
     // Lookup fallback command
     if (!fn) {
-      info('lookup fallback command')
+      fly.info('lookup fallback command')
       fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }
@@ -56,7 +56,7 @@ module.exports = {
     evt.args.verbose = verbose
 
     try {
-      const [result, err] = await call(fn.name, evt, {
+      const [result, err] = await fly.call(fn.name, evt, {
         eventId: evt.args['event-id'] || eventId,
         eventType: 'command'
       })

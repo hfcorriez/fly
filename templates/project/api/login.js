@@ -15,13 +15,13 @@ module.exports = {
   },
 
   // Main
-  async main (_, { info, userLogin, error }) {
+  async main (_, { fly, userLogin }) {
     let ret = await userLogin({ username: 'test', password: 'test' })
-    info('some one start login')
+    fly.info('some one start login')
     if (Math.random() > 0.5) {
       throw new Error('random value is greater than 0.5')
     }
-    info('some one login ok')
+    fly.info('some one login ok')
     return {
       body: ret
     }

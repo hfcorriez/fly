@@ -9,41 +9,41 @@ const debugStore = {
 }
 
 module.exports = {
-  async main (event, ctx) {
+  async main (event, { fly, service: serviceConfig, project }) {
     const { args, params: { service } } = event
-    const fns = ctx.list('service')
-      .filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
+    const fns = fly.list('service')
+      .filter(fn => service === 'all' ? Object.keys(serviceConfig).includes(fn.name) : fn.events.service.name === service)
 
     if (!fns || !fns.length) {
       throw new Error(`service ${service} not found`)
     }
 
     for (let fn of fns) {
-      await this.run(fn, args, ctx)
+      await this.run(fn, args, fly, project)
     }
     return { wait: true }
   },
 
-  async run (fn, config, ctx) {
+  async run (fn, config, fly, project) {
     const serviceConfig = fn ? fn.events.service : null
     const service = serviceConfig.name
 
     this.service = {
-      name: ctx.project.name,
+      name: project.name,
       type: service,
       pid: process.pid,
-      env: ctx.project.env
+      env: project.env
     }
 
     // broadcast startup events
-    await ctx.broadcast('startup', { service })
-    ctx.info('starting...', { service })
+    await fly.broadcast('startup', { service })
+    fly.info('starting...', { service })
 
     // handle debug event
-    process.on('SIGUSR2', _ => this.startDebug(ctx))
-    EXIT_SIGNALS.forEach(status => process.on(status, status => this.stopServer(status, ctx)))
+    process.on('SIGUSR2', _ => this.startDebug(fly))
+    EXIT_SIGNALS.forEach(status => process.on(status, status => this.stopServer(status, fly)))
 
-    const [ret, err] = await ctx.call(fn, { ...serviceConfig, ...config }, { eventType: 'service' })
+    const [ret, err] = await fly.call(fn, { ...serviceConfig, ...config }, { eventType: 'service' })
     if (err) throw err
 
     if (typeof ret === 'object') {
@@ -62,12 +62,12 @@ module.exports = {
     console.log(utils.padding('STACK:'.padStart(9)), colors.bold(error.stack))
   },
 
-  async stopServer (status, ctx) {
+  async stopServer (status, fly) {
     try {
       if (this.isStopping) return
       this.isStopping = true
-      await ctx.broadcast('shutdown', { service: this.service.type })
-      ctx.info('SHUTDOWN', status)
+      await fly.broadcast('shutdown', { service: this.service.type })
+      fly.info('SHUTDOWN', status)
 
       process.exit(0)
     } catch (err) {
@@ -76,8 +76,8 @@ module.exports = {
     }
   },
 
-  startDebug (ctx) {
-    ctx.info('debug start')
+  startDebug (fly) {
+    fly.info('debug start')
     debugStore.log = debug.log
     debugStore.names = debug.names
 
@@ -91,10 +91,10 @@ module.exports = {
         service: this.service,
         id: ipc.config.id
       }))
-      ipc.of['fly-debugger'].on('disconnect', _ => this.stopDebug(ctx))
+      ipc.of['fly-debugger'].on('disconnect', _ => this.stopDebug(fly))
       ipc.of['fly-debugger'].on('error', _ => {
         ipc.disconnect('fly-debugger')
-        this.stopDebug(ctx)
+        this.stopDebug(fly)
       })
     })
 
@@ -103,14 +103,14 @@ module.exports = {
     this.isStoppingDebug = false
   },
 
-  stopDebug (ctx) {
+  stopDebug (fly) {
     if (this.isStoppingDebug) return
     this.isStoppingDebug = true
     debug.log = debugStore.log
     debug.enable(debugStore.names.map(toNamespace).join(','))
     debugStore.log = null
     debugStore.names = null
-    ctx.info('debug stopped')
+    fly.info('debug stopped')
   },
 
   configCommand: {

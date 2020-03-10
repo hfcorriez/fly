@@ -6,8 +6,8 @@ module.exports = {
     }
   },
 
-  main ({ username, password }, { info }) {
-    info('someone call login for:', username)
+  main ({ username, password }, { fly }) {
+    fly.info('someone call login for:', username)
     return {
       username,
       password,

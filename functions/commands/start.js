@@ -3,11 +3,11 @@ const colors = require('colors/safe')
 const utils = require('../../lib/utils')
 
 module.exports = {
-  async main (event, ctx) {
+  async main (event, { fly, service: serviceConfig, project }) {
     const { args, params: { service } } = event
 
-    const fns = ctx.list('service')
-      .filter(fn => service === 'all' ? Object.keys(ctx.service).includes(fn.name) : fn.events.service.name === service)
+    const fns = fly.list('service')
+      .filter(fn => service === 'all' ? Object.keys(serviceConfig).includes(fn.name) : fn.events.service.name === service)
 
     if (!fns || !fns.length) {
       throw new Error(`service ${service} not found`)
@@ -15,7 +15,7 @@ module.exports = {
 
     // Hot reload
     const pm = new PM({
-      name: `fly:${ctx.project.name}`,
+      name: `fly:${project.name}`,
       path: process.argv[1]
     })
 

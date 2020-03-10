@@ -14,7 +14,7 @@ module.exports = {
     useContext: false
   },
 
-  main (event, ctx) {
+  main (event, { fly }) {
     const { bind, port, endpoint, keys, functions, useContext } = event
 
     fastify.options(path.join('/', endpoint), async (_, reply) => reply.send(''))
@@ -47,15 +47,15 @@ module.exports = {
 
       // Check if async will async to do, such as background jobs
       if (context.async) {
-        ctx.call(name, event, context)
+        fly.call(name, event, context)
         reply.send({ code: 0, message: 'no result with async call', data: null })
       } else {
-        const [result, err] = await ctx.call(name, event, context)
+        const [result, err] = await fly.call(name, event, context)
 
         if (!err) {
           reply.send({ code: 0, data: result })
         } else {
-          ctx.info('call function error:', err.message, err)
+          fly.info('call function error:', err.message, err)
           reply.send({
             code: err.code || 1,
             message: err.message || 'call function failed'
@@ -72,7 +72,7 @@ module.exports = {
           head: ['Fn', 'Path'],
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
-        ctx.list().filter(fn => !fn.name.startsWith('$')).forEach(fn => table.push([fn.name, fn.path]))
+        fly.list().filter(fn => !fn.name.startsWith('$')).forEach(fn => table.push([fn.name, fn.path]))
         console.log(table.toString())
         resolve({ address, $command: { wait: true } })
       })

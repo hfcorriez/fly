@@ -1,8 +1,8 @@
 const Table = require('cli-table2')
 
 module.exports = {
-  main (event, ctx) {
-    const functions = ctx.list(event.params.type)
+  main (event, { fly }) {
+    const functions = fly.list(event.params.type)
     const table = new Table({
       head: ['Name', 'Events', 'File'],
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }

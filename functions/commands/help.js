@@ -1,9 +1,9 @@
 const utils = require('../../lib/utils')
 
 module.exports = {
-  async main (event, ctx) {
+  async main (event, { fly }) {
     const { name } = event
-    const fn = name ? ctx.get(name) : null
+    const fn = name ? fly.get(name) : null
     console.log('Usage:\n')
     console.log(`  fly ${fn ? fn.events.command._ : '<command>'} [--options]\n`)
 
@@ -13,7 +13,7 @@ module.exports = {
       console.log('')
     } else {
       console.log('Commands:\n')
-      const fns = ctx.list('command')
+      const fns = fly.list('command')
       fns.map(fn => this.OutputCommand(fn.events.command))
       if (!fns.length) {
         console.log('  <NO COMMANDS>')

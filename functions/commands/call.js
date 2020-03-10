@@ -5,7 +5,7 @@ const path = require('path')
 const sleep = seconds => new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
 
 module.exports = {
-  async main (event, { call, warn }) {
+  async main (event, { fly }) {
     let { context, timeout, data, interval } = event.args
     data = data || (await this.getStdin())
     let name = event.params[0]
@@ -14,7 +14,7 @@ module.exports = {
     if (data) {
       evt = this.parseData(data)
       if (!evt) {
-        warn('error event', 'Event data parse failed')
+        fly.warn('error event', 'Event data parse failed')
         return
       }
     }
@@ -22,7 +22,7 @@ module.exports = {
     if (context) {
       context = this.parseData(context)
       if (!context) {
-        warn('error context', 'Context data parse failed')
+        fly.warn('error context', 'Context data parse failed')
         return
       }
     }
@@ -39,7 +39,7 @@ module.exports = {
 
     let no = 1
     do {
-      const [result, err] = await call(name, evt, { eventType: null, ...context })
+      const [result, err] = await fly.call(name, evt, { eventType: null, ...context })
       if (err) throw err
       console.warn(colors.green([`#${no}`, '⇲', name, '(', JSON.stringify(evt || {}), ')'].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')

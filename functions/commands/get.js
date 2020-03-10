@@ -1,7 +1,7 @@
 
 module.exports = {
-  async main (event, { get }) {
-    const fn = get(event.params.fn)
+  async main (event, { fly }) {
+    const fn = fly.get(event.params.fn)
     if (!fn) {
       console.error(`error: function "${event.params.fn}" not found`)
       return
