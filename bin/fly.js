@@ -31,8 +31,5 @@ if (!process.env.DEBUG) {
   }
 }
 
-const fly = new Fly({
-  mounts: { '$': path.join(__dirname, '../functions') }
-})
-
+const fly = new Fly()
 fly.call('$command', { argv, verbose })

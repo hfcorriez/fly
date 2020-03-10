@@ -1,4 +1,4 @@
-const Table = require('cli-table2')
+const Table = require('cli-table3')
 
 module.exports = {
   main (event, { fly }) {
