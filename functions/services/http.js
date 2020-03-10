@@ -90,7 +90,7 @@ module.exports = {
         let result, err
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        const { name, mode, params, target } = await matchHttp({ event: evt, config: event }, {})
+        const { name, mode, params, target } = await matchHttp({ event: evt, config: event }) || {}
         evt.params = params
 
         try {
