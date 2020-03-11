@@ -56,7 +56,7 @@ module.exports = {
     }
 
     let keys = []
-    let regex = target._pathRegexpCache = target._pathRegexpCache || pathToRegexp(target.path, keys)
+    let regex = pathToRegexp(target.path, keys)
     let pathMatched = regex.exec(source.path)
     let mode = null
     let match = false

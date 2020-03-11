@@ -207,7 +207,7 @@ module.exports = {
             message: err.message,
             stack: ctx.project.env === 'development' ? err.stack.split('\n') : undefined
           })
-          fly.error(`backend failed with "[${err.name}] ${err.message}"`)
+          fly.error(`backend failed with "[${err.name}] ${err.message}"`, err)
           this.log(evt, reply, name)
           return
         }
