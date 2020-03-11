@@ -4,6 +4,10 @@
   "description": "For back-end development",
   "scripts": {
     "start": "fly start all",
+    "reload": "fly reload all",
+    "stop": "fly stop all",
+    "status": "fly status all",
+    "fly": "fly",
     "dev:http": "fly run http",
     "dev:api": "fly run api",
     "dev:cron": "fly run cron"
