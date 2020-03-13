@@ -284,7 +284,7 @@ module.exports = {
       res.statusCode < 300 ? colors.green(res.statusCode) : (res.statusCode < 400 ? colors.yellow(res.statusCode) : colors.red(res.statusCode)),
       event.method.toUpperCase(),
       event.path,
-      colors.grey(name)
+      colors.grey(name || '-')
     ].join(' '))
   },
 
