@@ -43,11 +43,11 @@ module.exports = {
         return
       }
 
-      this.Log(name, context, event)
+      this.log(name, context, event)
 
       // Check if async will async to do, such as background jobs
       if (context.async) {
-        fly.call(name, event, context)
+        fly.call(name, event, context, true)
         reply.send({ code: 0, message: 'no result with async call', data: null })
       } else {
         const [result, err] = await fly.call(name, event, context)
@@ -79,7 +79,7 @@ module.exports = {
     })
   },
 
-  Log (fn, ctx, body) {
+  log (fn, ctx, body) {
     console.log([
       '+',
       colors.green(fn),

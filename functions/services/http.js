@@ -164,7 +164,7 @@ module.exports = {
             }
 
             // Normal and fallback
-            [result, err] = await fly.call(name, evt, { eventId, eventType: 'http' })
+            [result, err] = await fly.call(name, evt, { eventId, eventType: 'http' }, true)
             if (err) throw err
 
             // delete temp files uploaded
