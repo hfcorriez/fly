@@ -6,6 +6,12 @@
 - **Lightweight**: One file can be served
 - **Yare**: Very flexible
 
+## Features
+
+- **Hot Reload**: Develop functions or native js with hot-reload for back-end development
+- **Injection**: Call functions without path, inject anything to context
+- **Online Debug**: Online debug withot restart tto solve problem quickly
+
 ## Installation
 
 > Require `node >= 8`
@@ -13,9 +19,6 @@
 ```bash
 ## Yarn
 $ yarn global add fly
-
-## NPM
-$ npm install -g fly
 ```
 
 ## Quick start
@@ -62,6 +65,8 @@ ADDRESS:  http://127.0.0.1:5000
     PID:  55195
     ENV:  development
 ```
+
+> If you change index.js, the function will hot reload without restart. this feature will disabled when NODE_ENV is not `<empty>` or `development`
 
 ### Command Usage
 
