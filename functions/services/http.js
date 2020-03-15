@@ -3,18 +3,13 @@ const fs = require('fs')
 const mime = require('mime')
 const { URL } = require('url')
 const path = require('path')
-const axios = require('axios')
 const fastify = require('fastify')()
 const colors = require('colors/safe')
-const os = require('os')
-const { parseFormData, deleteTempFiles } = require('../../lib/multipartParser')
+const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
 
 fastify.register(require('fastify-multipart'))
 fastify.register(require('fastify-xml-body-parser'))
 fastify.register(require('fastify-formbody'))
-
-const MULTIPART_REGEXP = /^multipart\/form-data/i
-const TMP_DIR = path.join(os.tmpdir(), 'flyhttp')
 
 module.exports = {
   errors: {
@@ -33,17 +28,6 @@ module.exports = {
   main (event, ctx) {
     const { bind, port, cors, static: staticConfigs } = event
     const { fly, project, matchHttp } = ctx
-
-    try {
-      !fs.existsSync(TMP_DIR) && fs.mkdirSync(TMP_DIR)
-    } catch (err) {
-      if (err) {
-        const msg = `tmp dir create failed: ${TMP_DIR} ${err.message}`
-        fly.error(msg)
-        process.exit(1)
-      }
-    }
-    fly.info('tmp dir:', TMP_DIR)
 
     if (staticConfigs && staticConfigs.length) {
       for (let staticConfig of staticConfigs) {
@@ -153,36 +137,22 @@ module.exports = {
              */
             const isUpload = target.upload && evt.method === 'post' &&
               typeof evt.headers['content-type'] === 'string' &&
-              MULTIPART_REGEXP.test(evt.headers['content-type'])
+              contentTypeRegex.test(evt.headers['content-type'])
 
             let files = {}
             if (isUpload) {
-              const formBody = await parseFormData(request, target.upload, TMP_DIR)
+              const formBody = await handleUpload(request, target.upload)
               evt.body = formBody.fieldPairs
               evt.files = formBody.files
-              files = formBody.files
             }
 
             // Normal and fallback
             [result, err] = await fly.call(name, evt, { eventId, eventType: 'http' }, true)
             if (err) throw err
 
-            // delete temp files uploaded
-            if (isUpload) {
-              await deleteTempFiles(files)
-            }
-
-            // Handle url
-            if (result && result.url) {
-              let res
-              try {
-                res = await axios({ url: result.url }, { responseType: 'stream' })
-              } catch (err) {
-                res = err.response
-              }
-              // console.log(res.headers)
-              // Object.assign(headers, res.headers)
-              Object.assign(result, { status: res.status, body: res.data, url: undefined })
+            // delete upload files after used
+            if (isUpload && evt.files && Object.keys(evt.files).length) {
+              await cleanUploadFiles(files)
             }
           }
 
