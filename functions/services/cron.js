@@ -38,7 +38,7 @@ module.exports = {
           for (let fn of fns) {
             ctx.fly.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
-            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout })
+            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout, stdio: true })
           }
         } catch (err) {
           console.error(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'FAILED', err.stack)
@@ -56,7 +56,7 @@ module.exports = {
         currentDate: new Date(event.time * 1000),
         tz: process.env.TZ
       })
-      ctx.fly.info(fn.name, 'next execution time', interval.next().toString())
+      ctx.fly.info(fn.name, 'matched')
       const currentTime = interval.next()._date.startOf('minute').unix() - 60
       return event.time === currentTime
     })
