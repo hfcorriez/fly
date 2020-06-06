@@ -1,0 +1,8 @@
+project:
+  ignore: 
+    - lib/**
+service:
+  $http:
+    name: http
+config: 
+  debug: true

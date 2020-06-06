@@ -7,7 +7,7 @@
     "fly": "bin/fly.js"
   },
   "scripts": {
-    "test": "npx mocha -r intelli-espower-loader 'test/**/*.js'"
+    "test": "export NODE_ENV=test && export DEBUG=TEST* && npx mocha -r intelli-espower-loader "
   },
   "repository": {
     "type": "git",
@@ -52,6 +52,13 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "mocha": "^7.2.0",
+    "module-alias": "^2.2.2",
+    "power-assert": "^1.6.1",
+    "rewire": "^4.0.1"
+  },
+  "_moduleAliases": {
+    "@server": "test/mock/server"
   }
 }
