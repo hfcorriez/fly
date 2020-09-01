@@ -6,7 +6,7 @@ module.exports = {
     await new PM({
       name: `fly:${ctx.project.name}`,
       path: process.argv[1]
-    }).status(`${service}:${app}`)
+    }).status(`${service}-${app}`)
   },
 
   configCommand: {

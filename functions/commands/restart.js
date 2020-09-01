@@ -7,8 +7,8 @@ module.exports = {
       name: `fly:${ctx.project.name}`,
       path: process.argv[1]
     })
-    await pm.restart(`${service}:${app}`)
-    await pm.status(`${service}:${app}`)
+    await pm.restart(`${service}-${app}`)
+    await pm.status(`${service}-${app}`)
   },
 
   configCommand: {

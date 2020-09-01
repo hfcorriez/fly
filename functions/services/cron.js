@@ -52,7 +52,7 @@ module.exports = {
       const target = fn.events.cron
       const cronApps = target.apps
       const app = ctx.app
-      if (app !== '*' && Array.isArray(cronApps) && !cronApps.include(app)) {
+      if (app !== 'all' && Array.isArray(cronApps) && !cronApps.include(app)) {
         return false
       }
       const cron = target.time || target.default

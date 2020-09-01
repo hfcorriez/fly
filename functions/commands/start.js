@@ -21,10 +21,10 @@ module.exports = {
 
     for (let fn of fns) {
       const serviceConfig = fn.events.service
-      await this.start(serviceConfig, args, pm)
+      await this.start(app, serviceConfig, args, pm)
     }
 
-    return pm.status(`${service}:${app}`)
+    return pm.status(`${service}-${app}`)
   },
 
   start (app, serviceConfig, config, pm) {
@@ -38,7 +38,7 @@ module.exports = {
     else if (config.debug) args.push('-vv')
 
     return pm.start({
-      name: `${service}:{app}`,
+      name: `${service}-${app}`,
       args: ['run', service, app],
       cronRestart,
       env: {
