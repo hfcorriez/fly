@@ -50,6 +50,11 @@ module.exports = {
   findFn (event, ctx) {
     return ctx.fly.list('cron').filter(fn => {
       const target = fn.events.cron
+      const cronApps = target.apps
+      const app = ctx.app
+      if (app !== '*' && Array.isArray(cronApps) && !cronApps.include(app)) {
+        return false
+      }
       const cron = target.time || target.default
       if (!cron) return false
       const interval = cronParser.parseExpression(cron, {

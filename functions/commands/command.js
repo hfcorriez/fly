@@ -34,6 +34,7 @@ module.exports = {
       }
       return false
     })
+    evt.params.app = evt.params.app || '*'
 
     if (evt.args.help) {
       const [, err] = await fly.call('$help', { name: fn.name })
@@ -56,6 +57,7 @@ module.exports = {
     evt.args.verbose = verbose
 
     try {
+      fly.setApp(evt.params.app)
       const [result, err] = await fly.call(fn.name, evt, {
         eventId: evt.args['event-id'] || eventId,
         eventType: 'command'

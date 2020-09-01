@@ -79,7 +79,7 @@ module.exports = {
   },
 
   configCommand: {
-    _: 'call <fn>',
+    _: 'call <fn> [app]',
     args: {
       '--type': String,
       '--data': String,

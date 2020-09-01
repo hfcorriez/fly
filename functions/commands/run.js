@@ -10,7 +10,7 @@ const debugStore = {
 
 module.exports = {
   async main (event, { fly, service: serviceConfig, project }) {
-    const { args, params: { service } } = event
+    const { args, params: { service, app } } = event
     const fns = fly.list('service')
       .filter(fn => service === 'all' ? Object.keys(serviceConfig).includes(fn.name) : fn.events.service.name === service)
 
@@ -30,6 +30,7 @@ module.exports = {
 
     this.service = {
       name: project.name,
+      app: project.app,
       type: service,
       pid: process.pid,
       env: project.env
@@ -114,7 +115,7 @@ module.exports = {
   },
 
   configCommand: {
-    _: `run [service]`,
+    _: `run [service] [app]`,
     args: {
       '--instance': Number,
       '--bind': String,
