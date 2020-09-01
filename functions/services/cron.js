@@ -51,7 +51,7 @@ module.exports = {
     return ctx.fly.list('cron').filter(fn => {
       const target = fn.events.cron
       const cronApps = target.apps
-      const app = ctx.app
+      const app = ctx.$app
       if (app !== 'all' && Array.isArray(cronApps) && !cronApps.include(app)) {
         return false
       }

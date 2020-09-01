@@ -34,7 +34,7 @@ module.exports = {
       }
       return false
     })
-    evt.params.app = evt.params.app || '*'
+    evt.params.app = evt.params.app || 'all'
 
     if (evt.args.help) {
       const [, err] = await fly.call('$help', { name: fn.name })

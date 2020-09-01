@@ -27,7 +27,7 @@ module.exports = {
 
   main (event, ctx) {
     const { bind, port, cors, static: staticConfigs } = event
-    const { fly, project, matchHttp } = ctx
+    const { fly, project } = ctx
 
     if (staticConfigs && staticConfigs.length) {
       for (let staticConfig of staticConfigs) {
@@ -74,7 +74,7 @@ module.exports = {
         let result, err
         let eventId = request.headers['x-fly-id'] || null
         let headers = {}
-        const { name, mode, params, target } = await matchHttp({ event: evt, config: event }) || {}
+        const { name, mode, params, target } = await ctx.matchHttp({ event: evt, config: event }) || {}
         evt.params = params
 
         try {
