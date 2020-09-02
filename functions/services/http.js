@@ -18,15 +18,14 @@ module.exports = {
   },
 
   configService: {
-    name: 'http',
     singleton: false,
-    title: 'Http Server',
+    name: 'Http Server',
     port: parseInt(process.env.PORT || 5000, 10),
     address: '127.0.0.1'
   },
 
   main (event, ctx) {
-    const { bind, port, cors, static: staticConfigs } = event
+    const { bind, port, cors, static: staticConfigs, context } = event
     const { fly, project, matchHttp } = ctx
 
     if (staticConfigs && staticConfigs.length) {
@@ -147,7 +146,7 @@ module.exports = {
             }
 
             // Normal and fallback
-            [result, err] = await fly.call(name, evt, { eventId, eventType: 'http' }, true)
+            [result, err] = await fly.call(name, evt, { eventId, eventType: 'http', ...context }, true)
             if (err) throw err
 
             // delete upload files after used
