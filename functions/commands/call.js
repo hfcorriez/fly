@@ -39,7 +39,7 @@ module.exports = {
 
     let no = 1
     do {
-      const [result, err] = await fly.call(name, evt, { eventType: null, ...context })
+      const [result, err] = await fly.call(name, evt, { eventType: null, ...context }, true)
       if (err) throw err
       console.warn(colors.green([`#${no}`, '⇲', name, '(', JSON.stringify(evt || {}), ')'].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
