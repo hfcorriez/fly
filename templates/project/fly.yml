@@ -1,4 +1,8 @@
 project:
+  lazyload: true
+  dirs:
+    - api
+    - common
   import:
     db: lib/db
 
@@ -10,7 +14,7 @@ service:
     static:
       - prefix: /static
         root: static
-    context:
+  context:
       id: master
 
   http2:
@@ -21,8 +25,8 @@ service:
       id: branch
 
 http:
-  getTasks:
-    path: /api/getTasks
+  login:
+    path: /login
     cache: 200
 
 cron:
