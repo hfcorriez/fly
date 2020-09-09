@@ -37,7 +37,7 @@ module.exports = {
           for (let fn of fns) {
             ctx.fly.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
-            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout, stdio: true })
+            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout, stdio: true, context: { $app: ctx.$app } })
           }
         } catch (err) {
           console.error(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'FAILED', err.stack)
