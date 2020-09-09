@@ -4,8 +4,7 @@ const dayjs = require('dayjs')
 
 module.exports = {
   configService: {
-    name: 'cron',
-    title: 'Cron Deamon',
+    name: 'Cron deamon',
     singleton: true
   },
 

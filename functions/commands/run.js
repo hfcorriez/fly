@@ -2,6 +2,7 @@ const colors = require('colors/safe')
 const debug = require('debug')
 const ipc = require('node-ipc')
 const utils = require('../../lib/utils')
+const arg = require('arg')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT']
 const debugStore = {
   names: null,
@@ -9,27 +10,23 @@ const debugStore = {
 }
 
 module.exports = {
-  async main (event, { fly, service: serviceConfig, project }) {
+  async main (event, ctx) {
+    const { getService } = ctx
     const { args, params: { service } } = event
-    const fns = fly.list('service')
-      .filter(fn => service === 'all' ? Object.keys(serviceConfig).includes(fn.name) : fn.events.service.name === service)
+    const { config, fn } = await getService({service, args})
 
-    if (!fns || !fns.length) {
-      throw new Error(`service ${service} not found`)
-    }
+    await this.run(fn, config, ctx)
 
-    for (let fn of fns) {
-      await this.run(fn, args, fly, project)
-    }
     return { wait: true }
   },
 
-  async run (fn, config, fly, project) {
-    const serviceConfig = fn ? fn.events.service : null
-    const service = serviceConfig.name
+  async run (fn, config, ctx) {
+    const { fly, project } = ctx
+    const fnConfig = fn ? fn.events.service : null
+    const service = config.service
 
     this.service = {
-      name: project.name,
+      project: project.name,
       type: service,
       pid: process.pid,
       env: project.env
@@ -43,14 +40,14 @@ module.exports = {
     process.on('SIGUSR2', _ => this.startDebug(fly))
     EXIT_SIGNALS.forEach(status => process.on(status, status => this.stopServer(status, fly)))
 
-    const [ret, err] = await fly.call(fn, { ...serviceConfig, ...config }, { eventType: 'service' })
+    const [ret, err] = await fly.call(fn, { ...fnConfig, ...config }, { eventType: 'service' }, true)
     if (err) throw err
 
     if (typeof ret === 'object') {
       Object.assign(this.service, ret)
     }
 
-    console.log(colors.green(`[SERVICE] ${serviceConfig.title}`))
+    console.log(colors.green(`[SERVICE] ${fnConfig.name}`))
     Object.keys(this.service).forEach(key => {
       typeof this.service[key] !== 'object' && console.log(utils.padding(String(key.toUpperCase() + ': ').padStart(9)), this.service[key])
     })

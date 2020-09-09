@@ -5,7 +5,6 @@ const pkg = require('../package.json')
 console.log(colors.green(`❏ FLY ${pkg.version}`))
 
 const Fly = require('../lib/fly')
-const path = require('path')
 const debug = require('debug')
 
 if (!process.stdin.isTTY) {

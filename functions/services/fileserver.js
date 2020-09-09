@@ -6,8 +6,7 @@ const fastify = require('fastify')()
 
 module.exports = {
   configService: {
-    name: 'file',
-    title: 'File server',
+    name: 'File server',
     port: 5050
   },
 
