@@ -3,13 +3,22 @@ project:
     db: lib/db
 
 service:
-  $http:
-    name: http
+  http:
+    fn: $http
     port: 5000
     cors: true
     static:
       - prefix: /static
         root: static
+    context:
+      id: master
+
+  http2:
+    fn: $http
+    port: 5001
+    cors: true
+    context:
+      id: branch
 
 http:
   getTasks:

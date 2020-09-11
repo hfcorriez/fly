@@ -3,15 +3,15 @@ const colors = require('colors/safe')
 const utils = require('../../lib/utils')
 
 module.exports = {
-  async main (event, { fly, service: serviceConfig, project }) {
+  async main (event, ctx) {
+    const { getService, project } = ctx
     const { args, params: { service } } = event
+    const { config } = await getService({ service, args })
+    const { bind, port, 'cron-restart': cronRestart } = config
+    const commandArgs = ['run', service]
 
-    const fns = fly.list('service')
-      .filter(fn => service === 'all' ? Object.keys(serviceConfig).includes(fn.name) : fn.events.service.name === service)
-
-    if (!fns || !fns.length) {
-      throw new Error(`service ${service} not found`)
-    }
+    if (config.verbose) commandArgs.push('-v')
+    else if (config.debug) commandArgs.push('-vv')
 
     // Hot reload
     const pm = new PM({
@@ -19,34 +19,18 @@ module.exports = {
       path: process.argv[1]
     })
 
-    for (let fn of fns) {
-      const serviceConfig = fn.events.service
-      await this.start(serviceConfig, args, pm)
-    }
-
-    return pm.status(service)
-  },
-
-  start (serviceConfig, config, pm) {
-    const service = serviceConfig.name
-    const bind = config.bind || serviceConfig.bind
-    const port = config.port || serviceConfig.port
-    const cronRestart = config['cron-restart'] || serviceConfig.cronRestart
-    const args = ['run', service]
-
-    if (config.verbose) args.push('-v')
-    else if (config.debug) args.push('-vv')
-
-    return pm.start({
+    await pm.start({
       name: service,
-      args: ['run', service],
+      args: commandArgs,
       cronRestart,
       env: {
         BIND: bind,
         PORT: port
       },
-      instance: serviceConfig.singleton ? 1 : config.instance
+      instance: config.singleton ? 1 : config.instance
     })
+
+    return pm.status(service)
   },
 
   catch (error) {

@@ -22,7 +22,7 @@ module.exports = {
   async main (event, ctx) {
     return {
       body: {
-        a: 2,
+        id: ctx.id,
         db: ctx.db.create(),
         event,
         user: ctx.user
