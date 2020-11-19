@@ -9,7 +9,7 @@ module.exports = {
   },
 
   main (event, ctx) {
-    this.schedule(ctx)
+    this.schedule(event, ctx)
 
     const table = new Table({
       head: ['Time', 'Path'],
@@ -21,7 +21,7 @@ module.exports = {
     return { $command: { wait: true } }
   },
 
-  schedule (ctx) {
+  schedule (orgEvent, ctx) {
     let startSeconds
 
     setInterval(async () => {
@@ -37,7 +37,7 @@ module.exports = {
           for (let fn of fns) {
             ctx.fly.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
-            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout, stdio: true })
+            await ctx.fork({ name: fn.name, timeout: cronConfig.timeout, stdio: true, context: orgEvent.context || {} })
           }
         } catch (err) {
           console.error(dayjs().format('YYYY-MM-DD HH:mm:ss'), 'FAILED', err.stack)

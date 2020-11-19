@@ -58,7 +58,7 @@ module.exports = {
     try {
       ret = JSON.parse(data)
     } catch (err) {
-      if (data.includes('=')) ret = querystring.parse(data)
+      if (data.includes('=')) ret = querystring.parse(data.replace(/\+/g, '%2B'))
     }
     return ret
   },
