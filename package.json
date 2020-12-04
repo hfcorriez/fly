@@ -1,6 +1,6 @@
 {
   "name": "fly",
-  "version": "4.1.8",
+  "version": "4.1.9",
   "description": "For back-end development",
   "main": "lib/index.js",
   "bin": {
