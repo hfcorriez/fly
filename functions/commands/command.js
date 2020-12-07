@@ -51,7 +51,7 @@ module.exports = {
       if (fn) evt.fallback = true
     }
 
-    if (!fn) throw new Error('function not found')
+    if (!fn) throw new Error(`function not found: `)
 
     evt.args.verbose = verbose
 
@@ -65,7 +65,7 @@ module.exports = {
       let code = 0
       let wait = false
 
-      if (result === null || result === NaN || result === undefined) { 
+      if (result === null || isNaN(result) || result === undefined) {
         // noop
       } else if (typeof result === 'object' && !Array.isArray(result)) {
         result.stdout && console.log(result.stdout)
