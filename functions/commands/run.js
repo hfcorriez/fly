@@ -2,7 +2,6 @@ const colors = require('colors/safe')
 const debug = require('debug')
 const ipc = require('node-ipc')
 const utils = require('../../lib/utils')
-const arg = require('arg')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT']
 const debugStore = {
   names: null,
@@ -13,7 +12,7 @@ module.exports = {
   async main (event, ctx) {
     const { getService } = ctx
     const { args, params: { service } } = event
-    const { config, fn } = await getService({service, args})
+    const { config, fn } = await getService({ service, args })
 
     await this.run(fn, config, ctx)
 

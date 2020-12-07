@@ -6,7 +6,7 @@ module.exports = (event, ctx) => {
     throw new Error(`service "${service}" not found in fly.yml`)
   }
 
-  const config = { ...services[service], service, ...args}
+  const config = { ...services[service], service, ...args }
   if (!config.fn) {
     throw new Error(`service "${service}" need "fn" to run`)
   }
@@ -16,5 +16,5 @@ module.exports = (event, ctx) => {
     throw new Error(`function "${config.fn}" not found in "${service}"`)
   }
 
-  return {fn, config}
+  return { fn, config }
 }
