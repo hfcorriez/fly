@@ -51,7 +51,7 @@ module.exports = {
       if (fn) evt.fallback = true
     }
 
-    if (!fn) throw new Error(`function not found: `)
+    if (!fn) throw new Error('function not found')
 
     evt.args.verbose = verbose
 
