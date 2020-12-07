@@ -65,9 +65,7 @@ module.exports = {
       let code = 0
       let wait = false
 
-      if (result === null || isNaN(result) || result === undefined) {
-        // noop
-      } else if (typeof result === 'object' && !Array.isArray(result)) {
+      if (typeof result === 'object' && !Array.isArray(result)) {
         result.stdout && console.log(result.stdout)
         result.stderr && console.error(result.stderr)
         if (typeof result.code === 'number') code = result.code
