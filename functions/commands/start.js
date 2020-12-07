@@ -7,7 +7,7 @@ module.exports = {
     const { getService, project } = ctx
     const { args, params: { service } } = event
     const { config } = await getService({ service, args })
-    const { bind, port, 'cron-restart': cronRestart } = config
+    const { bind, port, 'cron-restart': cronRestart, 'max-memory': maxMemory } = config
     const commandArgs = ['run', service]
 
     if (config.verbose) commandArgs.push('-v')
@@ -23,6 +23,7 @@ module.exports = {
       name: service,
       args: commandArgs,
       cronRestart,
+      maxMemory,
       env: {
         BIND: bind,
         PORT: port
@@ -45,7 +46,8 @@ module.exports = {
       '--instance': Number,
       '--bind': String,
       '--port': Number,
-      '--cron-restart': String
+      '--cron-restart': String,
+      '--max-memory': String
     },
     alias: {
       '--instance': '-i',
@@ -57,7 +59,8 @@ module.exports = {
       '--instance': 'The instance number',
       '--bind': 'Bind address',
       '--port': 'Bind port',
-      '--cron-restart': 'Schedule time to restart with cron pattern'
+      '--cron-restart': 'Schedule time to restart with cron pattern',
+      '--max-memory': 'Max memory(MB) to reload'
     }
   }
 }
