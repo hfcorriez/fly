@@ -19,7 +19,7 @@ module.exports = {
   },
 
   async beforeHttp (event, { fly }) {
-    console.log('data', event)
+    fly.info('data beforeHttp')
     event = await fly.super(event)
     event.data = true
     return event
