@@ -443,7 +443,7 @@ props<Event>: Object                    # Props definetions for event
    * Config before http
    */
   beforeHttp(event) {
-    # Transform query or body to main
+    // Transform query or body to main
     return event.query || event.body
   },
 

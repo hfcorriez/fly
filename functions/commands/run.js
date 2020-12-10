@@ -32,7 +32,7 @@ module.exports = {
     }
 
     // broadcast startup events
-    await fly.broadcast('startup', { service })
+    await fly.emit('startup', { service })
     fly.info('starting...', { service })
 
     // handle debug event
@@ -62,7 +62,7 @@ module.exports = {
     try {
       if (this.isStopping) return
       this.isStopping = true
-      await fly.broadcast('shutdown', { service: this.service.type })
+      await fly.emit('shutdown', { service: this.service.type })
       fly.info('SHUTDOWN', status)
 
       process.exit(0)
