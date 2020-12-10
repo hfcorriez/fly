@@ -18,6 +18,13 @@ module.exports = {
     path: '/data'
   },
 
+  async beforeHttp (event, { fly }) {
+    console.log('data', event)
+    event = await fly.super(event)
+    event.data = true
+    return event
+  },
+
   // Main
   async main (event, ctx) {
     return {
