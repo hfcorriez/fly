@@ -13,7 +13,7 @@ module.exports = {
       console.log('')
     } else {
       console.log('Commands:\n')
-      const fns = fly.list('command')
+      const fns = fly.find('command')
       fns.map(fn => this.OutputCommand(fn.events.command))
       if (!fns.length) {
         console.log('  <NO COMMANDS>')

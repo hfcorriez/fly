@@ -71,7 +71,7 @@ module.exports = {
           head: ['Fn', 'Path'],
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
-        fly.list().filter(fn => !fn.name.startsWith('$')).forEach(fn => table.push([fn.name, fn.path]))
+        fly.find().filter(fn => !fn.name.startsWith('$')).forEach(fn => table.push([fn.name, fn.path]))
         console.log(table.toString())
         resolve({ address, $command: { wait: true } })
       })

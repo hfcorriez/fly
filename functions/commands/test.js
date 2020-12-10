@@ -14,7 +14,7 @@ module.exports = {
       let testCount = 0
 
       if (!name) {
-        const functions = fly.list().filter(fn => fn.test)
+        const functions = fly.find().filter(fn => fn.test)
         testCount = functions.length
         console.log(`◼︎ ${testCount} functions to test\n`)
         for (let fn of functions) {

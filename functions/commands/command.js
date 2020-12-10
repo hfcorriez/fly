@@ -17,7 +17,7 @@ module.exports = {
 
   async main (event, { fly, eventId }) {
     const { argv, verbose } = event
-    const functions = fly.list('command')
+    const functions = fly.find('command')
     const evt = {
       argv,
       args: {},
