@@ -186,7 +186,7 @@ module.exports = {
     const command = event.params.command
     const showFull = event.args.full
 
-    # logic
+    // Your logic here
   },
 
   configCommand: {
@@ -500,15 +500,16 @@ eventId: String                       # Event ID
 eventType: String                     # Event Type：http, command, null is internal
 originalEvent: Event                  # OriginalEvent
 parentEvent: Event                    # Parent Event
-trace: Object                         # Current trace
-
-call: Function                        # Invoke function
-list: Function                        # List functions
-get: Function                         # Get function
-error: Function                       # Trigger error internal
-return: Function                      # Trigger error internal
-super: Function                       # Call parent method when extend other
-<fn>: Function                        # The functions imported
+fly:
+  call: Function                      # Call function
+  find: Function                      # List functions
+  get: Function                       # Get function
+  info: Function                      # Log info
+  warn: Function                      # Log warn
+  error: Function                     # log error
+  super: Function                     # Call parent method when extend other
+<function>: Function                  # The functions imported
+<module>: Mixed                       # Module imported with require
 ```
 
 ### Validate
