@@ -16,7 +16,7 @@ let verbose = false
 
 if (!process.env.DEBUG) {
   const VERBOSE_LEVELS = ['-v', '-vv']
-  const VERBOSE_STRS = ['*:* [info],*:* [warn],*:* [error],-fly:* [*]', '*:* [*]']
+  const VERBOSE_STRS = ['<*:*>*,-<fly:*>*', '<*:*>*']
   const verboseArg = process.argv.find(arg => VERBOSE_LEVELS.includes(arg))
 
   verbose = VERBOSE_LEVELS.indexOf(verboseArg) + 1
@@ -26,7 +26,7 @@ if (!process.env.DEBUG) {
     debug.enable(VERBOSE_STRS[verbose - 1])
     console.log(colors.gray(`verbose mode: ${VERBOSE_STRS[verbose - 1]} (${verbose})`))
   } else {
-    debug.enable('*:* [info],*:* [warn]')
+    debug.enable('<*:*>*error*,<*:*>*warn*')
   }
 }
 
