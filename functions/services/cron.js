@@ -35,7 +35,7 @@ module.exports = {
         try {
           const fns = this.findFn(event, ctx)
           for (let fn of fns) {
-            ctx.fly.debug('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
+            ctx.fly.info('cron run at', dayjs().format('YYYY-MM-DD HH:mm:ss'), 'EXEC', fn.file)
             const cronConfig = fn.events.cron
             await ctx.fork({ name: fn.name, timeout: cronConfig.timeout, stdio: true, context: orgEvent.context || {} })
           }

@@ -113,7 +113,7 @@ module.exports = {
           }
 
           if (mode === 'cors') {
-            fly.debug(204, 'cors mode')
+            fly.info(204, 'cors mode')
             // Preflight
             result = { status: 204 }
           } else if (name) {
@@ -204,7 +204,7 @@ module.exports = {
             }
           })
         } else if (!result.body) {
-          fly.debug(204, 'no result body')
+          fly.info(204, 'no result body')
           // empty body
           if (!result.status) reply.code(204)
           reply.send('')
