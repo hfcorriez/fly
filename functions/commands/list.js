@@ -9,7 +9,7 @@ module.exports = {
     })
 
     functions.forEach(fn => {
-      table.push([fn.name, Object.keys(fn.events).join(',') || '-', fn.file])
+      table.push([fn.name, Object.keys(fn.events).join(',') || '-', fn.path])
     })
 
     console.log(table.toString())
