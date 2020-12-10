@@ -1,10 +1,7 @@
 project:
-  lazyload: true
-  dirs:
-    - api
-    - common
   import:
-    db: lib/db
+    db: ./lib/db
+    dayjs: dayjs
 
 service:
   http:
