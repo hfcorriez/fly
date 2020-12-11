@@ -9,6 +9,18 @@ const Fly = require('../lib/fly')
 
 console.log(colors.green(`❏ FLY ${pkg.version}`))
 
+/**
+ * Run compile with another process to avoid fly runtime waste boostrap memory
+ */
+if (process.argv.includes('compile')) {
+  const fly = new Fly({ ignoreCache: process.argv.includes('-f') })
+  console.log('compile ok:', fly.loader.cache.path())
+  process.exit()
+}
+
+/**
+ * Process args and debug
+ */
 let argv = process.argv.slice(2)
 let verbose = false
 
@@ -32,14 +44,8 @@ if (!process.env.DEBUG) {
   }
 }
 
-if (process.argv.includes('compile')) {
-  const fly = new Fly()
-  console.log('compile ok:', fly.loader.cache.path())
-  process.exit()
-} else {
-  // Call compile force to avoid load functions in memory
-  execSync(`${process.argv[0]} ${__filename} compile`)
+// Call compile force to avoid load functions in memory
+execSync(`${process.argv[0]} ${__filename} compile`)
 
-  const fly = new Fly()
-  fly.call('$command', { argv, verbose })
-}
+const fly = new Fly()
+fly.call('$command', { argv, verbose })

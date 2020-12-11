@@ -56,7 +56,7 @@ module.exports = {
     evt.args.verbose = verbose
 
     try {
-      const [result, err] = await fly.call(fn.name, evt, {
+      const [result, err] = await fly.call(fn, evt, {
         eventId: evt.args['event-id'] || eventId,
         eventType: 'command'
       })
