@@ -1,18 +1,20 @@
 #!/usr/bin/env node
 
 const colors = require('colors/safe')
+const debug = require('debug')
+const { execSync } = require('child_process')
+
 const pkg = require('../package.json')
+const Fly = require('../lib/fly')
+
 console.log(colors.green(`❏ FLY ${pkg.version}`))
 
-const Fly = require('../lib/fly')
-const debug = require('debug')
+let argv = process.argv.slice(2)
+let verbose = false
 
 if (!process.stdin.isTTY) {
   colors.disable()
 }
-
-let argv = process.argv.slice(2)
-let verbose = false
 
 if (!process.env.DEBUG) {
   const VERBOSE_LEVELS = ['-v', '-vv']
@@ -30,5 +32,14 @@ if (!process.env.DEBUG) {
   }
 }
 
-const fly = new Fly()
-fly.call('$command', { argv, verbose })
+if (process.argv.includes('compile')) {
+  const fly = new Fly()
+  console.log('compile ok:', fly.loader.cache.path())
+  process.exit()
+} else {
+  // Call compile force to avoid load functions in memory
+  execSync(`${process.argv[0]} ${__filename} compile`)
+
+  const fly = new Fly()
+  fly.call('$command', { argv, verbose })
+}
