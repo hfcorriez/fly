@@ -17,7 +17,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
     const fly = new Fly({ ignoreCache: process.argv.includes('-f') })
     await fly.bootstrap()
     console.log('compile ok:', fly.loader.cache.path())
-    process.exit()
+    return process.exit()
   }
 
   /**
@@ -49,7 +49,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
   // Call compile force to avoid load functions in memory
   execSync(`${process.argv[0]} ${__filename} compile`)
 
-  const fly = new Fly()
+  const fly = new Fly({ ignoreCacheCheck: true })
   await fly.bootstrap()
   return fly.call('$command', { argv, verbose })
 })()
