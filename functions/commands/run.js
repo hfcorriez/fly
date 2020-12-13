@@ -10,9 +10,9 @@ const debugStore = {
 
 module.exports = {
   async main (event, ctx) {
-    const { getService } = ctx
+    const { getServiceConfig } = ctx
     const { args, params: { service } } = event
-    const { config, fn } = await getService({ service, args })
+    const { config, fn } = await getServiceConfig({ service, args })
 
     await this.run(fn, config, ctx)
 

@@ -4,9 +4,9 @@ const utils = require('../../lib/utils')
 
 module.exports = {
   async main (event, ctx) {
-    const { getService, project } = ctx
+    const { getServiceConfig, project } = ctx
     const { args, params: { service } } = event
-    const { config } = await getService({ service, args })
+    const { config } = await getServiceConfig({ service, args })
     const { bind, port, 'cron-restart': cronRestart, 'max-memory': maxMemory } = config
     const commandArgs = ['run', service]
 

@@ -1,12 +1,16 @@
 module.exports = (event, ctx) => {
-  const { fly, service: services } = ctx
+  const { fly, service: serviceConfig } = ctx
   const { args, service } = event
 
-  if (!services[service]) {
+  if (!serviceConfig) {
+    throw new Error('service not config in fly.yml')
+  }
+
+  if (!serviceConfig[service]) {
     throw new Error(`service "${service}" not found in fly.yml`)
   }
 
-  const config = { ...services[service], service, ...args }
+  const config = { ...serviceConfig[service], service, ...args }
   if (!config.fn) {
     throw new Error(`service "${service}" need "fn" to run`)
   }
