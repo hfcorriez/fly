@@ -77,7 +77,7 @@ module.exports = {
     debugStore.log = debug.log
     debugStore.names = debug.names
 
-    ipc.config.id = `${this.service.name}-${process.pid}`
+    ipc.config.id = `${this.service.project}-${process.pid}`
     ipc.config.logger = _ => {}
     ipc.config.stopRetrying = true
 
@@ -95,7 +95,7 @@ module.exports = {
     })
 
     debug.log = (...args) => ipc.of['fly-debugger'] && ipc.of['fly-debugger'].emit('message', { type: 'log', log: args, id: ipc.config.id })
-    debug.enable('*:*:*')
+    debug.enable('<*:*>*')
     this.isStoppingDebug = false
   },
 

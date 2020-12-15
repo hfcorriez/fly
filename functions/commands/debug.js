@@ -26,11 +26,11 @@ module.exports = {
           case 'log':
             const line = log.join(' ')
             if (!filter || line.includes(filter)) {
-              console.info(`[${id}]`, line)
+              console.info(colors.gray(`${id} |`), line)
             }
             break
           case 'service':
-            console.info(`[${id}]`, 'connected', JSON.stringify(service))
+            console.info(colors.gray(`${id} |`), 'connected', JSON.stringify(service))
             break
         }
       })
