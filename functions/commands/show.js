@@ -6,7 +6,7 @@ module.exports = {
       console.error(`error: function "${event.params.fn}" not found`)
       return
     }
-    console.log(require('util').inspect(fn))
+    console.log(fn)
   },
 
   configCommand: {

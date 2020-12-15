@@ -20,15 +20,15 @@ module.exports = {
   },
 
   async run (fn, config, ctx) {
-    const { fly, project } = ctx
+    const { fly } = ctx
     const fnConfig = fn ? fn.events.service : null
     const service = config.service
 
     this.service = {
-      project: project.name,
+      project: fly.project.name,
       type: service,
       pid: process.pid,
-      env: project.env
+      env: fly.project.env
     }
 
     // broadcast startup events

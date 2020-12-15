@@ -1,10 +1,10 @@
 const PM = require('../../lib/pm')
 
 module.exports = {
-  async main (event, ctx) {
+  async main (event, { fly }) {
     const { service } = event.params
     await new PM({
-      name: `fly:${ctx.project.name}`,
+      name: `fly:${fly.project.name}`,
       path: process.argv[1]
     }).status(service)
   },

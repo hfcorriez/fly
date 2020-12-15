@@ -3,16 +3,17 @@ const colors = require('colors/safe')
 const PM = require('../../lib/pm')
 
 module.exports = {
-  async main (event, { project, service: serviceConfig }) {
+  async main (_, { fly }) {
+    console.log('project', fly.project)
     const table = new Table({
       head: ['Name', 'Function', 'Title', 'Status'],
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
 
-    await Promise.all(Object.keys(serviceConfig).map(async (name) => {
-      const config = serviceConfig[name]
+    await Promise.all(Object.keys(fly.service || {}).map(async (name) => {
+      const config = fly.service[name]
       const list = await new PM({
-        name: `fly:${project.name}`,
+        name: `fly:${fly.project.name}`,
         path: process.argv[1]
       }).list(name)
       table.push([name, config.fn, config.name, list.length ? colors.green('running') : colors.red('stopped')])

@@ -8,14 +8,14 @@ ipc.config.retry = 1500
 ipc.config.logger = _ => {}
 
 module.exports = {
-  async main (event, ctx) {
+  async main (event, { fly }) {
     const { service } = event.params
     const { filter } = event.args
 
     if (!service) throw new Error('service must be specified')
 
     const pm = new PM({
-      name: `fly:${ctx.project.name}`,
+      name: `fly:${fly.project.name}`,
       path: process.argv[1]
     })
 

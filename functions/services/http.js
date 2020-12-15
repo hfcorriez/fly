@@ -24,15 +24,14 @@ module.exports = {
     address: '127.0.0.1'
   },
 
-  main (event, ctx) {
+  main (event, { fly, matchHttp }) {
     const { bind, port, cors, static: staticConfigs, context } = event
-    const { fly, project, matchHttp } = ctx
 
     if (staticConfigs && staticConfigs.length) {
       for (let staticConfig of staticConfigs) {
         fly.info('register static:', staticConfig)
         fastify.register(require('fastify-static'), {
-          root: path.join(project.dir, staticConfig.root),
+          root: path.join(fly.project.dir, staticConfig.root),
           prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/')
         })
       }
@@ -174,7 +173,7 @@ module.exports = {
           reply.code(500).type('application/json').send({
             code: err.code || 500,
             message: err.message,
-            stack: ctx.project.env === 'development' ? err.stack.split('\n') : undefined
+            stack: fly.project.env === 'development' ? err.stack.split('\n') : undefined
           })
           fly.error(`backend failed with "[${err.name}] ${err.message}"`, err)
           this.log(evt, reply, name)
