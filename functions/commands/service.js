@@ -4,7 +4,6 @@ const PM = require('../../lib/pm')
 
 module.exports = {
   async main (_, { fly }) {
-    console.log('project', fly.project)
     const table = new Table({
       head: ['Name', 'Function', 'Title', 'Status'],
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
