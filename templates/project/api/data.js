@@ -18,14 +18,22 @@ module.exports = {
     path: '/data'
   },
 
+  async beforeHttp (event, { fly }) {
+    fly.info('data beforeHttp')
+    event = await fly.super(event)
+    event.data = true
+    return event
+  },
+
   // Main
-  async main (event, ctx) {
+  async main (event, { eventId, db, user, dayjs }) {
     return {
       body: {
-        id: ctx.id,
-        db: ctx.db.create(),
+        id: eventId,
+        db: db.create(),
         event,
-        user: ctx.user
+        user,
+        date: dayjs().format('YYYY-MM-DD')
       }
     }
   }

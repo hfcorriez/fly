@@ -3,10 +3,9 @@ const colors = require('colors/safe')
 const utils = require('../../lib/utils')
 
 module.exports = {
-  async main (event, ctx) {
-    const { getService, project } = ctx
+  async main (event, { fly, getServiceConfig }) {
     const { args, params: { service } } = event
-    const { config } = await getService({ service, args })
+    const { config } = await getServiceConfig({ service, args })
     const { bind, port, 'cron-restart': cronRestart, 'max-memory': maxMemory } = config
     const commandArgs = ['run', service]
 
@@ -15,7 +14,7 @@ module.exports = {
 
     // Hot reload
     const pm = new PM({
-      name: `fly:${project.name}`,
+      name: `fly:${fly.project.name}`,
       path: process.argv[1]
     })
 

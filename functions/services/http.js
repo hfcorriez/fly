@@ -24,15 +24,14 @@ module.exports = {
     address: '127.0.0.1'
   },
 
-  main (event, ctx) {
+  main (event, { fly, matchHttp }) {
     const { bind, port, cors, static: staticConfigs, context } = event
-    const { fly, project, matchHttp } = ctx
 
     if (staticConfigs && staticConfigs.length) {
       for (let staticConfig of staticConfigs) {
         fly.info('register static:', staticConfig)
         fastify.register(require('fastify-static'), {
-          root: path.join(project.dir, staticConfig.root),
+          root: path.join(fly.project.dir, staticConfig.root),
           prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/')
         })
       }
@@ -113,7 +112,7 @@ module.exports = {
           }
 
           if (mode === 'cors') {
-            fly.debug(204, 'cors mode')
+            fly.info(204, 'cors mode')
             // Preflight
             result = { status: 204 }
           } else if (name) {
@@ -174,7 +173,7 @@ module.exports = {
           reply.code(500).type('application/json').send({
             code: err.code || 500,
             message: err.message,
-            stack: ctx.project.env === 'development' ? err.stack.split('\n') : undefined
+            stack: fly.project.env === 'development' ? err.stack.split('\n') : undefined
           })
           fly.error(`backend failed with "[${err.name}] ${err.message}"`, err)
           this.log(evt, reply, name)
@@ -195,16 +194,16 @@ module.exports = {
           reply.redirect(result.status || 302, result.redirect)
         } else if (result.file) {
           // return file
-          fs.stat(result.file, (err, stat) => {
+          fs.stat(result.file, (err) => {
             if (err) {
-              fly.warn('file read error:', err)
+              fly.warn('file read error:', result.file)
               reply.type('text/html').code(404).send(this.errors['404'])
             } else {
               reply.type(mime.getType(result.file)).send(fs.createReadStream(result.file))
             }
           })
         } else if (!result.body) {
-          fly.debug(204, 'no result body')
+          fly.info(204, 'no result body')
           // empty body
           if (!result.status) reply.code(204)
           reply.send('')
@@ -231,7 +230,7 @@ module.exports = {
           chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
         })
 
-        this.buildRoutes(fly.list('http')).forEach(route =>
+        this.buildRoutes(fly.find('http')).forEach(route =>
           table.push([route.method.toUpperCase(), route.path, route.fn]))
         console.log(table.toString())
         resolve({ address, $command: { wait: true } })

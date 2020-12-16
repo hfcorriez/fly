@@ -8,7 +8,7 @@ module.exports = {
     const command = [
       path.join(__dirname, '../../../bin/fly.js'),
       'call',
-      fn.file,
+      fn.name,
       '-d',
       JSON.stringify(event),
       '-c',

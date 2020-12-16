@@ -17,7 +17,7 @@ module.exports = {
 
   async main (event, { fly, eventId }) {
     const { argv, verbose } = event
-    const functions = fly.list('command')
+    const functions = fly.find('command')
     const evt = {
       argv,
       args: {},
@@ -56,7 +56,7 @@ module.exports = {
     evt.args.verbose = verbose
 
     try {
-      const [result, err] = await fly.call(fn.name, evt, {
+      const [result, err] = await fly.call(fn, evt, {
         eventId: evt.args['event-id'] || eventId,
         eventType: 'command'
       })
@@ -65,9 +65,7 @@ module.exports = {
       let code = 0
       let wait = false
 
-      if (result === null || result === NaN || result === undefined) { 
-        // noop
-      } else if (typeof result === 'object' && !Array.isArray(result)) {
+      if (typeof result === 'object' && !Array.isArray(result)) {
         result.stdout && console.log(result.stdout)
         result.stderr && console.error(result.stderr)
         if (typeof result.code === 'number') code = result.code

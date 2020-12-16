@@ -13,7 +13,7 @@ module.exports = {
     let secondaryMatched
     let fallbackMatched
 
-    fly.list('http').some(fn => {
+    fly.find('http').some(fn => {
       const matchedInfo = this.matchRoute(event, fn.events.http, config)
 
       // No match

@@ -6,19 +6,13 @@ module.exports = {
       console.error(`error: function "${event.params.fn}" not found`)
       return
     }
-    console.log(JSON.stringify({
-      name: fn.name,
-      prefix: fn.prefix,
-      file: fn.file,
-      path: fn.path,
-      events: fn.events
-    }, null, 4))
+    console.log(fn)
   },
 
   configCommand: {
-    _: 'get <fn>',
+    _: 'show <fn>',
     descriptions: {
-      _: 'Get function info',
+      _: 'Show full function info',
       '<fn>': 'Function name'
     }
   }

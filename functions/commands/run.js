@@ -2,7 +2,6 @@ const colors = require('colors/safe')
 const debug = require('debug')
 const ipc = require('node-ipc')
 const utils = require('../../lib/utils')
-const arg = require('arg')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT']
 const debugStore = {
   names: null,
@@ -11,9 +10,9 @@ const debugStore = {
 
 module.exports = {
   async main (event, ctx) {
-    const { getService } = ctx
+    const { getServiceConfig } = ctx
     const { args, params: { service } } = event
-    const { config, fn } = await getService({service, args})
+    const { config, fn } = await getServiceConfig({ service, args })
 
     await this.run(fn, config, ctx)
 
@@ -21,19 +20,19 @@ module.exports = {
   },
 
   async run (fn, config, ctx) {
-    const { fly, project } = ctx
+    const { fly } = ctx
     const fnConfig = fn ? fn.events.service : null
     const service = config.service
 
     this.service = {
-      project: project.name,
+      project: fly.project.name,
       type: service,
       pid: process.pid,
-      env: project.env
+      env: fly.project.env
     }
 
     // broadcast startup events
-    await fly.broadcast('startup', { service })
+    await fly.emit('startup', { service })
     fly.info('starting...', { service })
 
     // handle debug event
@@ -63,7 +62,7 @@ module.exports = {
     try {
       if (this.isStopping) return
       this.isStopping = true
-      await fly.broadcast('shutdown', { service: this.service.type })
+      await fly.emit('shutdown', { service: this.service.type })
       fly.info('SHUTDOWN', status)
 
       process.exit(0)
@@ -78,7 +77,7 @@ module.exports = {
     debugStore.log = debug.log
     debugStore.names = debug.names
 
-    ipc.config.id = `${this.service.name}-${process.pid}`
+    ipc.config.id = `${this.service.project}-${process.pid}`
     ipc.config.logger = _ => {}
     ipc.config.stopRetrying = true
 
@@ -96,7 +95,7 @@ module.exports = {
     })
 
     debug.log = (...args) => ipc.of['fly-debugger'] && ipc.of['fly-debugger'].emit('message', { type: 'log', log: args, id: ipc.config.id })
-    debug.enable('*:*:*')
+    debug.enable('<*:*>*')
     this.isStoppingDebug = false
   },
 
