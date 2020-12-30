@@ -59,7 +59,7 @@ module.exports = {
       const [result, err] = await fly.call(fn, evt, {
         eventId: evt.args['event-id'] || eventId,
         eventType: 'command'
-      })
+      }, true)
       if (err) throw err
 
       let code = 0
