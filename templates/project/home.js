@@ -8,6 +8,10 @@ const Func = {
     return { file: path.join(__dirname, '/index.html') }
   },
 
+  catchHttp (err) {
+    return { body: { code: 1, message: err.stack } }
+  },
+
   configHttp: {
     path: '/'
   }
