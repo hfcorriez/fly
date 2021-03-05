@@ -11,8 +11,8 @@ service:
     static:
       - prefix: /static
         root: static
-  context:
-      id: master
+    context:
+        id: master
 
   http2:
     fn: $http
