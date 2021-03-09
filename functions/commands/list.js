@@ -10,8 +10,6 @@ module.exports = {
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
 
-    console.log('system', system)
-
     functions.forEach(fn => {
       if (!system && fn.prefix === '$') return
       if (filter) {
