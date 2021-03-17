@@ -20,5 +20,5 @@ module.exports = (event, ctx) => {
     throw new Error(`function "${config.fn}" not found in "${service}"`)
   }
 
-  return { fn, config }
+  return { fn, config: { ...fn.configService, ...config } }
 }

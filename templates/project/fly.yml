@@ -21,6 +21,9 @@ service:
     context:
       id: branch
 
+  cron:
+    fn: $cron
+
 http:
   login:
     path: /login
