@@ -66,14 +66,14 @@ module.exports = {
       test.startTime = Date.now()
 
       try {
-        let result
+        let result, err
         try {
-          result = await fly.call(fn, test.event, context)
-        } catch (err) {
-          result = err
+          [result, err] = await fly.call(fn, test.event, context)
+        } catch (e) {
+          err = e
         }
 
-        await test.test(result)
+        await test.test(result, err)
         test.ok = true
       } catch (err) {
         test.ok = false
