@@ -163,7 +163,7 @@ module.exports = {
                 message: `path not found`
               })
             }
-            this.log(evt, reply, name)
+            this.log({ evt, reply, name }, fly)
             return
           } else if (result.constructor !== Object) {
             throw new Error('function return illegal')
@@ -175,7 +175,7 @@ module.exports = {
             stack: fly.project.env === 'development' ? err.stack.split('\n') : undefined
           })
           fly.error(`backend failed with "[${err.name}] ${err.message}"`, err)
-          this.log(evt, reply, name)
+          this.log({ evt, reply, name }, fly)
           return
         }
 
@@ -216,7 +216,7 @@ module.exports = {
         } else {
           reply.code(500).type('application/json').send({ message: 'no body return' })
         }
-        this.log(evt, reply, name)
+        this.log({ evt, reply, name }, fly)
       }
     })
 
@@ -244,10 +244,10 @@ module.exports = {
    * @param {Object} reply
    * @param {Object} fn
    */
-  log (event, reply, name) {
+  log ({ evt: event, reply, name }, fly) {
     if (!require('tty').isatty(process.stderr.fd)) return
     let res = reply.raw
-    console.log([
+    fly.info([
       res.statusCode < 300 ? colors.green(res.statusCode) : (res.statusCode < 400 ? colors.yellow(res.statusCode) : colors.red(res.statusCode)),
       event.method.toUpperCase(),
       event.path,
