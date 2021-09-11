@@ -8,7 +8,6 @@ const colors = require('colors/safe')
 const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
 
 fastify.register(require('fastify-multipart'))
-fastify.register(require('fastify-xml-body-parser'))
 fastify.register(require('fastify-formbody'))
 
 module.exports = {
@@ -247,7 +246,7 @@ module.exports = {
    */
   log (event, reply, name) {
     if (!require('tty').isatty(process.stderr.fd)) return
-    let res = reply.res
+    let res = reply.raw
     console.log([
       res.statusCode < 300 ? colors.green(res.statusCode) : (res.statusCode < 400 ? colors.yellow(res.statusCode) : colors.red(res.statusCode)),
       event.method.toUpperCase(),

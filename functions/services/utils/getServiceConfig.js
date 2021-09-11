@@ -1,7 +1,4 @@
-module.exports = (event, ctx) => {
-  const { fly } = ctx
-  const { args, service } = event
-
+module.exports = ({ args, service }, { fly }) => {
   if (!fly.service) {
     throw new Error('service not config in fly.yml')
   }
