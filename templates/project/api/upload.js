@@ -1,6 +1,9 @@
 module.exports = {
   main (event) {
     console.log(event.files, event.body)
+    return {
+      body: 'ok'
+    }
   },
 
   configHttp: {
