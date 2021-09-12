@@ -63,7 +63,7 @@ module.exports = {
       if (this.isStopping) return
       this.isStopping = true
       await fly.emit('shutdown', { service: this.service.type })
-      fly.info('SHUTDOWN', status)
+      fly.info('shutdown: ', status)
 
       process.exit(0)
     } catch (err) {
