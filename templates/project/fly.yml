@@ -8,7 +8,7 @@ service:
     fn: $http
     port: .PORT/5000
     cors: true
-    instance: $INS
+    instance: 1
     static:
       - prefix: /static
         root: static
