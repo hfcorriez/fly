@@ -42,7 +42,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
       debug.enable(VERBOSE_STRS[verbose - 1])
       console.log(colors.gray(`verbose mode: ${VERBOSE_STRS[verbose - 1]} (${verbose})`))
     } else {
-      debug.enable('<*>*error*,<*>*warn*')
+      debug.enable('<*>*ERROR*,<*>*WARN*,<*>*INFO*')
     }
   }
 

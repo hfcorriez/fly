@@ -23,12 +23,13 @@ module.exports = {
       args: {},
       params: {}
     }
+
     fly.info('parse command:', argv.join(' '))
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)
       if (matched) {
-        fly.info('find matched command', f.name)
+        fly.debug('find matched command', f.name)
         Object.assign(evt, matched)
         return true
       }
