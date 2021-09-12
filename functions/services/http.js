@@ -248,10 +248,10 @@ module.exports = {
     if (!require('tty').isatty(process.stderr.fd)) return
     let res = reply.raw
     fly.info([
-      res.statusCode < 300 ? colors.green(res.statusCode) : (res.statusCode < 400 ? colors.yellow(res.statusCode) : colors.red(res.statusCode)),
+      `<${name || ''}>`,
       event.method.toLowerCase(),
       event.host + event.path,
-      colors.grey(name || '-')
+      res.statusCode < 300 ? colors.green(res.statusCode) : (res.statusCode < 400 ? colors.yellow(res.statusCode) : colors.red(res.statusCode))
     ].join(' '))
   },
 
