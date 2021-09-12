@@ -4,7 +4,6 @@ const mime = require('mime')
 const { URL } = require('url')
 const path = require('path')
 const fastify = require('fastify')()
-const colors = require('colors/safe')
 const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
 
 fastify.register(require('fastify-multipart'))
@@ -248,10 +247,8 @@ module.exports = {
     if (!require('tty').isatty(process.stderr.fd)) return
     let res = reply.raw
     fly.info([
-      `<${name || ''}>`,
-      event.method.toLowerCase(),
-      event.host + event.path,
-      res.statusCode < 300 ? colors.green(res.statusCode) : (res.statusCode < 400 ? colors.yellow(res.statusCode) : colors.red(res.statusCode))
+      event.method.toLowerCase() + '/' + res.statusCode,
+      event.host + event.path
     ].join(' '))
   },
 
