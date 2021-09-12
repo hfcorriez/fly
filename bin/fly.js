@@ -32,7 +32,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
 
   if (!process.env.DEBUG) {
     const VERBOSE_LEVELS = ['-v', '-vv']
-    const VERBOSE_STRS = ['*<*>', '*<*>']
+    const VERBOSE_STRS = ['*<*>,-*<_*>', '*<*>']
     const verboseArg = process.argv.find(arg => VERBOSE_LEVELS.includes(arg))
 
     verbose = VERBOSE_LEVELS.indexOf(verboseArg) + 1
