@@ -73,7 +73,7 @@ module.exports = {
   },
 
   startDebug (fly) {
-    fly.info('debug start')
+    fly.debug('debug start')
     debugStore.log = debug.log
     debugStore.names = debug.names
 
@@ -106,7 +106,7 @@ module.exports = {
     debug.enable(debugStore.names.map(toNamespace).join(','))
     debugStore.log = null
     debugStore.names = null
-    fly.info('debug stopped')
+    fly.debug('debug stopped')
   },
 
   configCommand: {
