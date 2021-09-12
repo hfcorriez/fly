@@ -6,8 +6,9 @@ project:
 service:
   http:
     fn: $http
-    port: 5000
-    cors: true
+    port: .PORT/5000
+    cors: .CORS/default
+    instance: $INS
     static:
       - prefix: /static
         root: static

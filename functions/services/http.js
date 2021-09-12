@@ -219,6 +219,8 @@ module.exports = {
       }
     })
 
+    if (!port) throw new Error('port must be specified')
+
     return new Promise((resolve, reject) => {
       fastify.listen(port, bind, (err, address) => {
         if (err) return reject(err)
