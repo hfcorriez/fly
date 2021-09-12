@@ -58,7 +58,7 @@ module.exports = {
           cookies: {}
         }
 
-        fly.info(evt.method, evt.url)
+        // fly.info(evt.method, evt.url)
 
         if (evt.headers.cookie) {
           evt.headers.cookie.split(';').forEach(function (item) {
