@@ -32,7 +32,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
 
   if (!process.env.DEBUG) {
     const VERBOSE_LEVELS = ['-v', '-vv']
-    const VERBOSE_STRS = ['<*>*', '<*>*']
+    const VERBOSE_STRS = ['*<*>', '*<*>']
     const verboseArg = process.argv.find(arg => VERBOSE_LEVELS.includes(arg))
 
     verbose = VERBOSE_LEVELS.indexOf(verboseArg) + 1
@@ -42,7 +42,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
       debug.enable(VERBOSE_STRS[verbose - 1])
       console.log(colors.gray(`verbose mode: ${VERBOSE_STRS[verbose - 1]} (${verbose})`))
     } else {
-      debug.enable('<*>*error*,<*>*warn*,<*>*info*')
+      debug.enable('*error*<*>,*warn*<*>,*info*<*>')
     }
   }
 
