@@ -24,7 +24,7 @@ module.exports = {
       params: {}
     }
 
-    fly.info('parse command:', argv.join(' '))
+    fly.debug('parse command:', argv.join(' '))
 
     let fn = functions.find(f => {
       const matched = this.match(event, f.events.command)
@@ -47,7 +47,7 @@ module.exports = {
 
     // Lookup fallback command
     if (!fn) {
-      fly.info('lookup fallback command')
+      fly.debug('lookup fallback command')
       fn = functions.find(f => f.events.command.fallback)
       if (fn) evt.fallback = true
     }

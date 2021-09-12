@@ -33,7 +33,7 @@ module.exports = {
 
     // broadcast startup events
     await fly.emit('startup', { service })
-    fly.info('starting...', { service })
+    fly.debug('starting...', { service })
 
     // handle debug event
     process.on('SIGUSR2', _ => this.startDebug(fly))

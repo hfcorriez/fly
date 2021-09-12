@@ -28,7 +28,7 @@ module.exports = {
 
     if (staticConfigs && staticConfigs.length) {
       for (let staticConfig of staticConfigs) {
-        fly.info('register static:', staticConfig)
+        fly.debug('register static:', staticConfig)
         fastify.register(require('fastify-static'), {
           root: path.join(fly.project.dir, staticConfig.root),
           prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/')
