@@ -1,6 +1,6 @@
 module.exports = {
   beforeHttp (event, { fly }) {
-    fly.info('handleHttp beforeHttp')
+    fly.info('start handleHttp:beforeHttp')
     event.handled = true
     return event
     // return ctx.fly.end({ body: 'haha1' })

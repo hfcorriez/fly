@@ -19,14 +19,15 @@ module.exports = {
   },
 
   async beforeHttp (event, { fly }) {
-    fly.info('data beforeHttp')
+    fly.info('start data beforeHttp')
     event = await fly.super(event)
     event.data = true
     return event
   },
 
   // Main
-  async main (event, { eventId, db, user, dayjs }) {
+  async main (event, { eventId, db, user, dayjs, fly }) {
+    fly.info('start data main')
     return {
       body: {
         id: eventId,
