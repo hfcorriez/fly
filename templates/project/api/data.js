@@ -34,7 +34,8 @@ module.exports = {
         db: db.create(),
         event,
         user,
-        date: dayjs().format('YYYY-MM-DD')
+        date: dayjs().format('YYYY-MM-DD'),
+        env: process.env
       }
     }
   }

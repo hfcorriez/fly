@@ -4,6 +4,7 @@ node_modules/
 *.heapsnapshot
 .vscode
 .DS_Store
+.env
 tests/
 dist/
 test/tmp/
