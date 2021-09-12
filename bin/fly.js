@@ -49,7 +49,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
   // Call compile force to avoid load functions in memory
   execSync(`DEBUG=no ${process.argv[0]} ${__filename} compile`)
 
-  const fly = new Fly({ useCache: true })
+  const fly = new Fly({ useCache: true, verbose })
   await fly.bootstrap()
   return fly.call('$command', { argv, verbose })
 })()
