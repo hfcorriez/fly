@@ -15,7 +15,7 @@ module.exports = {
     if (!service) throw new Error('service must be specified')
 
     const pm = new PM({
-      name: `fly:${fly.project.name}`,
+      name: fly.project.name,
       path: process.argv[1]
     })
 
