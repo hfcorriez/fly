@@ -25,7 +25,7 @@ module.exports = {
     let startSeconds
 
     setInterval(async () => {
-      ctx.fly.info(`interval on ${new Date()}`)
+      ctx.fly.debug(`interval on ${new Date()}`)
       const currentSeconds = Math.ceil(Date.now() / 1000 / 60) * 60
       if (!startSeconds) startSeconds = currentSeconds
       if (startSeconds !== currentSeconds) {
@@ -55,7 +55,7 @@ module.exports = {
         currentDate: new Date(event.time * 1000),
         tz: process.env.TZ
       })
-      ctx.fly.info(fn.name, 'matched')
+      ctx.fly.debug(fn.name, 'matched')
       const currentTime = interval.next()._date.startOf('minute').unix() - 60
       return event.time === currentTime
     })
