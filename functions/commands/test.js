@@ -111,11 +111,7 @@ module.exports = {
   configCommand: {
     _: 'test [fn]',
     args: {
-      '--timeout': Number,
-      '--error': Boolean
-    },
-    alias: {
-      '--error': '-e'
+      '--timeout': Number
     },
     descriptions: {
       '_': 'Test functions',
