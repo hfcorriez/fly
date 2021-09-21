@@ -16,7 +16,7 @@ module.exports = {
       ...timeout ? ['--timeout', timeout] : [],
       process.argv.find(arg => ['-v', '-vv'].includes(arg))
     ]
-    fly.info('fork command', command.join(' '))
+    fly.debug('fork command', command.join(' '))
     const subprocess = childProcess.spawn(process.argv[0], command, {
       env: process.env,
       cwd: process.cwd(),
