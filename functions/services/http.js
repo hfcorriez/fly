@@ -137,9 +137,9 @@ module.exports = {
 
             let files = {}
             if (isUpload) {
-              const formBody = await handleUpload(request, target.upload)
-              evt.body = formBody.fieldPairs
-              evt.files = formBody.files
+              const uploadData = await handleUpload(request, target.upload)
+              evt.body = uploadData.fieldPairs
+              files = evt.files = uploadData.files
             }
 
             // Normal and fallback
@@ -147,7 +147,8 @@ module.exports = {
             if (err) throw err
 
             // delete upload files after used
-            if (isUpload && evt.files && Object.keys(evt.files).length) {
+            if (isUpload && files && Object.keys(files).length) {
+              fly.debug('clean upload file', Object.keys(evt.files))
               await cleanUploadFiles(files)
             }
           }

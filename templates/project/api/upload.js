@@ -1,6 +1,6 @@
 module.exports = {
-  main (event) {
-    console.log(event.files, event.body)
+  main (event, { fly }) {
+    fly.info('upload files:', event.files)
     return {
       body: 'ok'
     }
