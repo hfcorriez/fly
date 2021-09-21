@@ -19,17 +19,18 @@ module.exports = {
   },
 
   async beforeHttp (event, ctx) {
-    ctx.fly.info('start data beforeHttp')
-    ctx.fly.super(event)
-    ctx.hook('main', (r) => ctx.fly.info('log: ', r.body.id))
-    ctx.fly.info('ctx from super:', ctx.user)
+    const { fly, hook } = ctx
+    fly.info('execute data:beforeHttp')
+    fly.super(event)
+    hook('main', (r) => fly.info('log:', r.body.id))
+    fly.info('ctx from super:', ctx.user)
     event.data = true
     return event
   },
 
   // Main
   async main (event, { eventId, db, user, dayjs, fly, handleHttp }) {
-    fly.info('start data main')
+    fly.info('execute data:main')
     return {
       body: {
         id: eventId,
