@@ -18,9 +18,11 @@ module.exports = {
     path: '/data'
   },
 
-  async beforeHttp (event, { fly }) {
-    fly.info('start data beforeHttp')
-    fly.super(event)
+  async beforeHttp (event, ctx) {
+    ctx.fly.info('start data beforeHttp')
+    ctx.fly.super(event)
+    ctx.hook('main', (r) => ctx.fly.info('log: ', r.body.id))
+    ctx.fly.info('ctx from super:', ctx.user)
     event.data = true
     return event
   },
