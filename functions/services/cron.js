@@ -56,7 +56,7 @@ module.exports = {
         tz: process.env.TZ
       })
       ctx.fly.debug(fn.name, 'matched')
-      const currentTime = interval.next()._date.startOf('minute').unix() - 60
+      const currentTime = dayjs(interval.next()._date.ts).startOf('minute').unix() - 60
       return event.time === currentTime
     })
   }
