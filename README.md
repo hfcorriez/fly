@@ -373,7 +373,6 @@ await fly.call('test', {host: 'api.com'})
 
 ```yaml
 extends: String                          # Extends from function, start with @ indicate the parent fly
-retry: Number|Boolean                   # Retry count, true is 3
 main: Function                          # Main call -> (event, ctx)
 props:                                  # Props validate definitions
 validate: Function                      # Validate
