@@ -1,13 +1,14 @@
 module.exports = {
-  beforeHttp (event, { fly }) {
-    fly.info('start handleHttp:beforeHttp')
-    event.handled = true
+  beforeHttp (event, ctx) {
+    ctx.fly.info('execute handleHttp:beforeHttp')
+    event.handleHttp = true
+    ctx.user = { name: 'main' }
     return event
     // return ctx.fly.end({ body: 'haha1' })
   },
 
   main (event, ctx) {
-    ctx.user = { name: 'main' }
+    ctx.fly.info('execute handleHttp:main')
     return event.method === 'post' ? event.body : event.query
   },
 
