@@ -166,6 +166,7 @@ module.exports = {
             this.log({ evt, reply, name }, fly)
             return
           } else if (result.constructor !== Object) {
+            // function must return object
             throw new Error('function return illegal')
           }
         } catch (err) {
