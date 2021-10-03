@@ -30,8 +30,8 @@ service:
     name: telegram
     type: telegram
     config:
-      token: xxxxxxxxx
-      username: xxxxxxx
+      token: .BOT_TOKEN
+      username: .BOT_USERNAME
 
 http:
   login:
