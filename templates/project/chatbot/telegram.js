@@ -17,6 +17,7 @@ module.exports = {
         'Update',
         'Delete',
         { text: 'Data', action: 'Data', data: { type: 'display' } },
+        'Confirm',
         'Condition'
       ],
       buttonsOptions: { columns: 4 },
@@ -34,6 +35,24 @@ module.exports = {
         Food: /food/
       }
     })
+  },
+
+  actionConfirm (_, { bot }) {
+    bot.send({
+      text: 'do you need confirm?',
+      confirm: {
+        yes: 'ConfirmYes',
+        no: 'ConfirmNo'
+      }
+    })
+  },
+
+  actionConfirmYes (_, { bot }) {
+    bot.send('you select YES')
+  },
+
+  actionConfirmNo (_, { bot }) {
+    bot.send('you select NO')
   },
 
   actionBeer (_, { bot }) {

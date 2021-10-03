@@ -154,21 +154,40 @@ function formatMessage (reply, ctx) {
     ctx.session.actions = reply.actions
   }
 
+  if (reply.confirm) {
+    extra = Markup.inlineKeyboard([{ text: 'YES', callback_data: 'YES' }, { text: 'YES', callback_data: 'NO' }])
+    ctx.session.confirm = reply.confirm
+  }
+
   ctx.session.lastReply = reply
   return { text, photo, file, type, extra }
 }
 
 function matchMessage (functions, update, session = {}, ctx) {
-  if (session && session.actions && update.message) {
-    const action = matchAction(update.message, session.actions)
+  if (session) {
+    if (session.actions && update.message) {
+      const action = matchAction(update.message, session.actions)
+      delete session.actions
 
-    // No action will reply
-    if (!action) {
-      ctx.reply(sendMessage(ctx.session.lastReply, ctx))
-      return {}
+      // No action will reply
+      if (!action) {
+        ctx.reply(sendMessage(ctx.session.lastReply, ctx))
+        return {}
+      }
+
+      return { name: session.scene, action }
+    } else if (session.confirm && update.callback_query) {
+      const { yes, no } = session.confirm
+      delete session.confirm
+      if (update.callback_query.data === 'YES') {
+        return { name: session.scene, action: yes }
+      } else if (update.callback_query.data === 'NO') {
+        return { name: session.scene, action: no }
+      } else {
+        ctx.reply(sendMessage(ctx.session.lastReply, ctx))
+        return {}
+      }
     }
-
-    return { name: session.scene, action }
   }
 
   const { callback_query: callbackQuery, message } = update
