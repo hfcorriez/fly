@@ -12,6 +12,7 @@ module.exports = {
       buttons: [
         'Detail',
         { text: 'Google', url: 'https://www.google.com' },
+        'Photo',
         'Update',
         'Delete',
         { text: 'Data', action: 'data', data: { type: 'display' } },
@@ -36,6 +37,10 @@ module.exports = {
 
   data ({ data }, { bot }) {
     bot.send('data received ' + JSON.stringify(data))
+  },
+
+  photo (_, { bot }) {
+    bot.send({ photo: require('path').join(__dirname, '../../../docs/banner.png') })
   },
 
   beer (_, { bot }) {

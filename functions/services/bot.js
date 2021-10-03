@@ -1,4 +1,5 @@
 const { Telegraf, Markup, session } = require('telegraf')
+const fs = require('fs')
 const { lcfirst } = require('../../lib/utils')
 
 module.exports = {
@@ -80,14 +81,30 @@ function updateMessage (reply, ctx) {
 }
 
 function sendMessage (reply, ctx) {
-  const { text, extra } = formatMessage(reply, ctx)
-  return ctx.reply(text, extra)
+  let { text, photo, extra, type } = formatMessage(reply, ctx)
+  switch (type) {
+    case 'photo':
+      if (photo.startsWith('/') && fs.existsSync(photo)) {
+        photo = { source: photo }
+      }
+      return ctx.replyWithPhoto(photo, extra)
+    default:
+      return ctx.reply(text, extra)
+  }
 }
 
 function formatMessage (reply, ctx) {
   if (typeof reply === 'string') reply = { text: reply }
+
   let text = reply.text
   let extra = null
+  let photo = reply.photo
+  let type
+
+  if (photo) {
+    type = 'photo'
+  }
+
   if (reply.buttons) {
     const buttons = reply.buttons.map(button => {
       if (typeof button === 'string') {
@@ -114,7 +131,7 @@ function formatMessage (reply, ctx) {
   }
 
   ctx.session.lastReply = reply
-  return { text, extra }
+  return { text, photo, type, extra }
 }
 
 function matchMessage (functions, update, session = {}, ctx) {
