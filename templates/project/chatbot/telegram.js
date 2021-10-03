@@ -1,3 +1,5 @@
+const bot = require('../../../functions/services/bot')
+
 module.exports = {
   configBot: {
     name: 'telegram',
@@ -13,12 +15,31 @@ module.exports = {
         detail: 'Detail',
         update: 'Update',
         delete: 'Delete',
-        quote: 'Quote'
+        quote: 'Quote',
+        condition: 'Condition'
       },
       session: {
         id: 'aaaa'
       }
     })
+  },
+
+  condition (_, { bot }) {
+    bot.send({
+      text: 'which type do you want, beer or food?',
+      actions: {
+        beer: 'beer',
+        food: /food/
+      }
+    })
+  },
+
+  beer (_, { bot }) {
+    bot.send('ok give you beer')
+  },
+
+  food (_, { bot }) {
+    bot.send('food is ready')
   },
 
   detail ({ message, raw, session }, { bot }) {
