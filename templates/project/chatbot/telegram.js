@@ -17,6 +17,7 @@ module.exports = {
         { text: 'Data', action: 'data', data: { type: 'display' } },
         'Condition'
       ],
+      buttonsOptions: { columns: 2 },
       session: {
         test: 'aaaa'
       }

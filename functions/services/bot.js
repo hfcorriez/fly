@@ -100,7 +100,7 @@ function formatMessage (reply, ctx) {
       }
       return null
     }).filter(b => b)
-    extra = Markup.inlineKeyboard(buttons)
+    extra = Markup.inlineKeyboard(buttons, reply.buttonsOptions)
   }
 
   if (reply.session && typeof reply.session === 'object') {
