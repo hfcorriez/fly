@@ -56,6 +56,7 @@ module.exports = {
         } else {
           const [error, result] = await fly.method(name, `action${action}`, event, context)
           ctx.session.action = action
+          ctx.session.data = null
           console.log('fn method', error, result)
         }
       }
@@ -157,6 +158,10 @@ function formatMessage (reply, ctx) {
   if (reply.confirm) {
     extra = Markup.inlineKeyboard([{ text: 'YES', callback_data: 'YES' }, { text: 'YES', callback_data: 'NO' }])
     ctx.session.confirm = reply.confirm
+  }
+
+  if (reply.end) {
+    ctx.session = {}
   }
 
   ctx.session.lastReply = reply
