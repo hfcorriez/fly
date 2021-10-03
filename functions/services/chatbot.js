@@ -1,4 +1,4 @@
-const { Telegraf, Markup, session } = require('telegraf')
+const { Telegraf, session } = require('telegraf')
 const fs = require('fs')
 
 module.exports = {
@@ -51,6 +51,8 @@ module.exports = {
         if (!action) {
           const [error, result] = await fly.call(name, event, context)
           console.log('fn main', error, result)
+        } else if (action === '_back') {
+          updateMessage(ctx.session.lastReply, ctx)
         } else {
           const [error, result] = await fly.method(name, `action${action}`, event, context)
           ctx.session.action = action
@@ -79,8 +81,11 @@ function updateMessage (reply, ctx) {
 }
 
 function sendMessage (reply, ctx) {
-  const { text, photo, file, extra, type } = formatMessage(reply, ctx)
-  console.log('sendMessage', JSON.stringify({ text, photo }))
+  ctx.session.lastReply = reply
+
+  const message = formatMessage(reply, ctx)
+  const { text, photo, file, extra, type } = message
+
   switch (type) {
     case 'photo':
       return ctx.replyWithPhoto(photo, extra)
@@ -95,10 +100,10 @@ function formatMessage (reply, ctx) {
   if (typeof reply === 'string') reply = { text: reply }
 
   let text = reply.text
-  let extra = null
   let photo = reply.photo
   let file = reply.file
   let type
+  let extra = {}
 
   // Photo format
   if (photo) {
@@ -129,7 +134,7 @@ function formatMessage (reply, ctx) {
   }
 
   if (reply.buttons) {
-    const buttons = reply.buttons.map(button => {
+    let buttons = reply.buttons.map(button => {
       if (typeof button === 'string') {
         return { text: button, callback_data: button }
       } else if (button.action) {
@@ -140,7 +145,24 @@ function formatMessage (reply, ctx) {
       }
       return null
     }).filter(b => b)
-    extra = Markup.inlineKeyboard(buttons, reply.buttonsOptions)
+
+    const inlineKeyboard = []
+    // extra = Markup.inlineKeyboard(buttons, reply.buttonsOptions)
+    if (reply.buttonsOptions && reply.buttonsOptions.columns) {
+      let columns = reply.buttonsOptions.columns
+      for (let i = 0, j = buttons.length; i < j; i += columns) {
+        inlineKeyboard.push(buttons.slice(i, i + columns))
+      }
+    } else {
+      inlineKeyboard.push(buttons)
+    }
+
+    extra.reply_markup = { inline_keyboard: inlineKeyboard }
+  }
+
+  if (reply.markdown) {
+    text = reply.markdown
+    extra.parse_mode = 'MarkdownV2'
   }
 
   if (reply.session && typeof reply.session === 'object') {
@@ -154,7 +176,11 @@ function formatMessage (reply, ctx) {
   }
 
   if (reply.confirm) {
-    extra = Markup.inlineKeyboard([{ text: 'YES', callback_data: 'YES' }, { text: 'YES', callback_data: 'NO' }])
+    extra.reply_markup = {
+      inline_keyboard: [
+        [{ text: 'YES', callback_data: 'YES' }, { text: 'NO', callback_data: 'NO' }]
+      ]
+    }
     ctx.session.confirm = reply.confirm
   }
 
@@ -162,7 +188,6 @@ function formatMessage (reply, ctx) {
     ctx.session = {}
   }
 
-  ctx.session.lastReply = reply
   return { text, photo, file, type, extra }
 }
 

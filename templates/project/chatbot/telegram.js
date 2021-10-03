@@ -8,7 +8,7 @@ module.exports = {
 
   main ({ text, raw }, { chatbot }) {
     chatbot.send({
-      text: 'aaaa',
+      markdown: '*START* Please select feautre:',
       buttons: [
         'Detail',
         { text: 'Google', url: 'https://www.google.com' },
@@ -81,9 +81,9 @@ module.exports = {
 
   actionUpdate ({ message, raw, session }, { chatbot }) {
     return chatbot.update({
-      text: 'done ' + JSON.stringify(session),
+      markdown: '*done* ```javascript\n' + JSON.stringify(session) + '```',
       buttons: [
-        'Back'
+        { text: 'Back', action: '_back' }
       ]
     })
   },
