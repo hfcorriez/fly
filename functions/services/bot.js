@@ -29,7 +29,7 @@ module.exports = {
       console.log('ready to call', name, step)
       if (name) {
         if (!ctx.session) ctx.session = {}
-        ctx.session.name = name
+        ctx.session.scene = name
 
         const event = {
           raw: { update, botInfo },
@@ -105,15 +105,32 @@ module.exports = {
 
     function matchMessage (update, session = {}) {
       const { callback_query: callbackQuery, message } = update
+
+      const type = message ? 'text' : (callbackQuery ? 'callback' : null)
       const match = { from: message || (callbackQuery ? callbackQuery.message : null) }
 
-      if (!session.name) {
-        if (message && message.text) {
-          match.fn = flows.find(fn => fn.events.bot.entry === message.text)
+      if (type === 'text') {
+        match.fn = flows.find(fn => {
+          let entry = fn.events.bot.entry
+          if (typeof entry === 'string') entry = [entry]
+
+          return entry.some(et => {
+            if (typeof et === 'string') {
+              return et.startsWith('/') ? message.text.startsWith(et) : et === message.text
+            } else if (et instanceof RegExp) {
+              return et.test(message.text)
+            } else if (typeof et === 'function') {
+              return et(message.text)
+            }
+          })
+        })
+        if (match.fn && match.fn.name === session.scene) {
+          match.fn = null
+          console.log('duplicate session')
         }
-      } else {
-        if (callbackQuery && callbackQuery.data) {
-          match.name = session.name
+      } else if (type === 'callback') {
+        if (session.scene) {
+          match.name = session.scene
           match.step = callbackQuery.data
         }
       }

@@ -1,8 +1,8 @@
 module.exports = {
   configBot: {
     name: 'telegram',
-    entry: '/user',
-    steps: {
+    entry: ['/user', /nihao/],
+    actions: {
     }
   },
 
