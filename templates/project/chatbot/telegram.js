@@ -82,9 +82,9 @@ module.exports = {
   actionUpdate ({ message, raw, session }, { bot }) {
     return bot.update({
       text: 'done ' + JSON.stringify(session),
-      buttons: {
-        back: 'Back'
-      }
+      buttons: [
+        'Back'
+      ]
     })
   },
 
