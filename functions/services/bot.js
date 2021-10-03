@@ -204,7 +204,7 @@ function matchAction (reply, actions) {
 }
 
 function matchEntry (reply, entry) {
-  if (typeof entry === 'string') entry = [entry]
+  if (!Array.isArray(entry)) entry = [entry]
   return entry.some(et => {
     if (typeof et === 'string') {
       return et.startsWith('/') ? reply.text.startsWith(et) : et === reply.text

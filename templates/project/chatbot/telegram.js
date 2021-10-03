@@ -30,10 +30,18 @@ module.exports = {
     bot.send({
       text: 'which type do you want, beer or food?',
       actions: {
-        beer: 'beer',
-        food: /food/
+        Beer: 'beer',
+        Food: /food/
       }
     })
+  },
+
+  actionBeer (_, { bot }) {
+    bot.send('ok give you beer')
+  },
+
+  actionFood (_, { bot }) {
+    bot.send('food is ready')
   },
 
   actionData ({ data }, { bot }) {
@@ -46,14 +54,6 @@ module.exports = {
 
   actionFile (_, { bot }) {
     bot.send({ file: require('path').join(__dirname, '../../../README.md') })
-  },
-
-  actionBeer (_, { bot }) {
-    bot.send('ok give you beer')
-  },
-
-  actionFood (_, { bot }) {
-    bot.send('food is ready')
   },
 
   actionDetail ({ message, raw, session }, { bot }) {
