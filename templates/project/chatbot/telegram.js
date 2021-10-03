@@ -1,13 +1,13 @@
 module.exports = {
-  configBot: {
+  configChatbot: {
     name: 'telegram',
     entry: ['/user', /nihao/],
     actions: {
     }
   },
 
-  main ({ text, raw }, { bot }) {
-    bot.send({
+  main ({ text, raw }, { chatbot }) {
+    chatbot.send({
       text: 'aaaa',
       buttons: [
         'Detail',
@@ -27,8 +27,8 @@ module.exports = {
     })
   },
 
-  actionCondition (_, { bot }) {
-    bot.send({
+  actionCondition (_, { chatbot }) {
+    chatbot.send({
       text: 'which type do you want, beer or food?',
       actions: {
         Beer: 'beer',
@@ -37,8 +37,8 @@ module.exports = {
     })
   },
 
-  actionConfirm (_, { bot }) {
-    bot.send({
+  actionConfirm (_, { chatbot }) {
+    chatbot.send({
       text: 'do you need confirm?',
       confirm: {
         yes: 'ConfirmYes',
@@ -47,40 +47,40 @@ module.exports = {
     })
   },
 
-  actionConfirmYes (_, { bot }) {
-    bot.send('you select YES')
+  actionConfirmYes (_, { chatbot }) {
+    chatbot.send('you select YES')
   },
 
-  actionConfirmNo (_, { bot }) {
-    bot.send('you select NO')
+  actionConfirmNo (_, { chatbot }) {
+    chatbot.send('you select NO')
   },
 
-  actionBeer (_, { bot }) {
-    bot.send('ok give you beer')
+  actionBeer (_, { chatbot }) {
+    chatbot.send('ok give you beer')
   },
 
-  actionFood (_, { bot }) {
-    bot.send('food is ready')
+  actionFood (_, { chatbot }) {
+    chatbot.send('food is ready')
   },
 
-  actionData ({ data }, { bot }) {
-    bot.send('data received ' + JSON.stringify(data))
+  actionData ({ data }, { chatbot }) {
+    chatbot.send('data received ' + JSON.stringify(data))
   },
 
-  actionPhoto (_, { bot }) {
-    bot.send({ text: 'Banner', photo: require('path').join(__dirname, '../../../docs/banner.png') })
+  actionPhoto (_, { chatbot }) {
+    chatbot.send({ text: 'Banner', photo: require('path').join(__dirname, '../../../docs/banner.png') })
   },
 
-  actionFile (_, { bot }) {
-    bot.send({ file: require('path').join(__dirname, '../../../README.md') })
+  actionFile (_, { chatbot }) {
+    chatbot.send({ file: require('path').join(__dirname, '../../../README.md') })
   },
 
-  actionDetail ({ message, raw, session }, { bot }) {
-    bot.send('ok received ' + JSON.stringify(session))
+  actionDetail ({ message, raw, session }, { chatbot }) {
+    chatbot.send('ok received ' + JSON.stringify(session))
   },
 
-  actionUpdate ({ message, raw, session }, { bot }) {
-    return bot.update({
+  actionUpdate ({ message, raw, session }, { chatbot }) {
+    return chatbot.update({
       text: 'done ' + JSON.stringify(session),
       buttons: [
         'Back'
@@ -88,8 +88,8 @@ module.exports = {
     })
   },
 
-  async actionDelete ({ message, session }, { bot }) {
-    await bot.delete(message.message_id)
-    await bot.send('message deleted ' + JSON.stringify(message))
+  async actionDelete ({ message, session }, { chatbot }) {
+    await chatbot.delete(message.message_id)
+    await chatbot.send('message deleted ' + JSON.stringify(message))
   }
 }

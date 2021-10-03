@@ -11,7 +11,7 @@ module.exports = {
     const { type, config, name } = event
     const { fly } = ctx
 
-    const functions = fly.find('bot').filter(fn => fn.events.bot.name === name)
+    const functions = fly.find('chatbot').filter(fn => fn.events.chatbot.name === name)
     switch (type) {
       case 'telegram':
         this.runTelegram({ name, config, functions }, ctx)
@@ -20,11 +20,11 @@ module.exports = {
   },
 
   runTelegram ({ name, config, functions }, { fly }) {
-    const bot = new Telegraf(config.token)
+    const chatbot = new Telegraf(config.token)
 
-    bot.use(session())
-    bot.use(async (ctx, next) => {
-      const { update, botInfo, session } = ctx
+    chatbot.use(session())
+    chatbot.use(async (ctx, next) => {
+      const { update, session } = ctx
       console.log('update', update, session)
 
       const { name, action, data, message } = matchMessage(functions, update, session)
@@ -34,7 +34,6 @@ module.exports = {
         ctx.session.scene = name
 
         const event = {
-          raw: { update, botInfo },
           text: update.message && update.message.text,
           data,
           message,
@@ -42,9 +41,8 @@ module.exports = {
         }
 
         const context = {
-          botCtx: ctx,
-          eventType: 'bot',
-          bot: {
+          eventType: 'chatbot',
+          chatbot: {
             send: (message) => sendMessage(message, ctx),
             update: (message) => updateMessage(message, ctx),
             delete: (message) => deleteMessage(message, ctx)
@@ -63,11 +61,11 @@ module.exports = {
       await next()
     })
 
-    bot.launch()
+    chatbot.launch()
 
-    process.once('SIGINT', () => bot.stop('SIGINT'))
-    process.once('SIGTERM', () => bot.stop('SIGTERM'))
-    fly.info('bot launch', name)
+    process.once('SIGINT', () => chatbot.stop('SIGINT'))
+    process.once('SIGTERM', () => chatbot.stop('SIGTERM'))
+    fly.info('chatbot launch', name)
   }
 }
 
@@ -201,7 +199,7 @@ function matchMessage (functions, update, session = {}, ctx) {
   const match = { message: message || (callbackQuery ? callbackQuery.message : null) }
 
   if (type === 'text') {
-    match.fn = functions.find(fn => matchEntry(message, fn.events.bot.entry))
+    match.fn = functions.find(fn => matchEntry(message, fn.events.chatbot.entry))
     // Ignore duplicate entry (not useful)
     // if (match.fn && match.fn.name === session.scene && ) {
     //   match.fn = null
