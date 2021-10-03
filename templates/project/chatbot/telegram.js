@@ -13,19 +13,20 @@ module.exports = {
         'Detail',
         { text: 'Google', url: 'https://www.google.com' },
         'Photo',
+        'File',
         'Update',
         'Delete',
-        { text: 'Data', action: 'data', data: { type: 'display' } },
+        { text: 'Data', action: 'Data', data: { type: 'display' } },
         'Condition'
       ],
-      buttonsOptions: { columns: 2 },
+      buttonsOptions: { columns: 4 },
       session: {
         test: 'aaaa'
       }
     })
   },
 
-  condition (_, { bot }) {
+  actionCondition (_, { bot }) {
     bot.send({
       text: 'which type do you want, beer or food?',
       actions: {
@@ -35,27 +36,31 @@ module.exports = {
     })
   },
 
-  data ({ data }, { bot }) {
+  actionData ({ data }, { bot }) {
     bot.send('data received ' + JSON.stringify(data))
   },
 
-  photo (_, { bot }) {
+  actionPhoto (_, { bot }) {
     bot.send({ text: 'Banner', photo: require('path').join(__dirname, '../../../docs/banner.png') })
   },
 
-  beer (_, { bot }) {
+  actionFile (_, { bot }) {
+    bot.send({ file: require('path').join(__dirname, '../../../README.md') })
+  },
+
+  actionBeer (_, { bot }) {
     bot.send('ok give you beer')
   },
 
-  food (_, { bot }) {
+  actionFood (_, { bot }) {
     bot.send('food is ready')
   },
 
-  detail ({ message, raw, session }, { bot }) {
+  actionDetail ({ message, raw, session }, { bot }) {
     bot.send('ok received ' + JSON.stringify(session))
   },
 
-  update ({ message, raw, session }, { bot }) {
+  actionUpdate ({ message, raw, session }, { bot }) {
     return bot.update({
       text: 'done ' + JSON.stringify(session),
       buttons: {
@@ -64,7 +69,7 @@ module.exports = {
     })
   },
 
-  async delete ({ message, session }, { bot }) {
+  async actionDelete ({ message, session }, { bot }) {
     await bot.delete(message.message_id)
     await bot.send('message deleted ' + JSON.stringify(message))
   }

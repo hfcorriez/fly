@@ -1,6 +1,5 @@
 const { Telegraf, Markup, session } = require('telegraf')
 const fs = require('fs')
-const { lcfirst } = require('../../lib/utils')
 
 module.exports = {
   configService: {
@@ -55,7 +54,7 @@ module.exports = {
           const [error, result] = await fly.call(name, event, context)
           console.log('fn main', error, result)
         } else {
-          const [error, result] = await fly.method(name, action, event, context)
+          const [error, result] = await fly.method(name, `action${action}`, event, context)
           ctx.session.action = action
           console.log('fn method', error, result)
         }
@@ -81,11 +80,13 @@ function updateMessage (reply, ctx) {
 }
 
 function sendMessage (reply, ctx) {
-  const { text, photo, extra, type } = formatMessage(reply, ctx)
+  const { text, photo, file, extra, type } = formatMessage(reply, ctx)
   console.log('sendMessage', JSON.stringify({ text, photo }))
   switch (type) {
     case 'photo':
       return ctx.replyWithPhoto(photo, extra)
+    case 'file':
+      return ctx.replyWithDocument(file, extra)
     default:
       return ctx.reply(text, extra)
   }
@@ -97,6 +98,7 @@ function formatMessage (reply, ctx) {
   let text = reply.text
   let extra = null
   let photo = reply.photo
+  let file = reply.file
   let type
 
   // Photo format
@@ -114,12 +116,23 @@ function formatMessage (reply, ctx) {
     if (text && !photo.caption) {
       photo.caption = text
     }
+  } else if (file) {
+    type = 'file'
+    if (typeof file === 'string') {
+      if (file.startsWith('/') && fs.existsSync(file)) {
+        file = { source: file }
+      } else if (photo.startsWith('http')) {
+        file = { url: file }
+      } else {
+        type = null
+      }
+    }
   }
 
   if (reply.buttons) {
     const buttons = reply.buttons.map(button => {
       if (typeof button === 'string') {
-        return { text: button, callback_data: lcfirst(button) }
+        return { text: button, callback_data: button }
       } else if (button.action) {
         // callback data will be "action x=1&y=2" when button has data
         return { text: button.text, callback_data: button.action + (button.data ? ' ' + new URLSearchParams(button.data) : '') }
@@ -142,7 +155,7 @@ function formatMessage (reply, ctx) {
   }
 
   ctx.session.lastReply = reply
-  return { text, photo, type, extra }
+  return { text, photo, file, type, extra }
 }
 
 function matchMessage (functions, update, session = {}, ctx) {
