@@ -1,4 +1,5 @@
 const { Telegraf, Markup, session } = require('telegraf')
+const { lcfirst } = require('../../lib/utils')
 
 module.exports = {
   configService: {
@@ -26,7 +27,7 @@ module.exports = {
       const { update, botInfo, session } = ctx
       console.log('update', update, session)
 
-      const { name, action, message } = matchMessage(functions, update, session)
+      const { name, action, data, message } = matchMessage(functions, update, session)
       console.log('ready to call', name, action)
       if (name) {
         if (!ctx.session) ctx.session = {}
@@ -35,9 +36,11 @@ module.exports = {
         const event = {
           raw: { update, botInfo },
           text: update.message && update.message.text,
+          data,
           message,
           session: ctx.session || {}
         }
+
         const context = {
           botCtx: ctx,
           eventType: 'bot',
@@ -47,14 +50,14 @@ module.exports = {
             delete: (message) => deleteMessage(message, ctx)
           }
         }
-        let error, result
         if (!action) {
-          [error, result] = await fly.call(name, event, context)
+          const [error, result] = await fly.call(name, event, context)
+          console.log('fn main', error, result)
         } else {
-          [error, result] = await fly.method(name, action, event, context)
+          const [error, result] = await fly.method(name, action, event, context)
+          ctx.session.action = action
+          console.log('fn method', error, result)
         }
-
-        console.log('fn result', error, result)
       }
       await next()
     })
@@ -64,44 +67,39 @@ module.exports = {
     process.once('SIGINT', () => bot.stop('SIGINT'))
     process.once('SIGTERM', () => bot.stop('SIGTERM'))
     fly.info('bot launch', name)
-
-    function deleteMessage (id, ctx) {
-      return ctx.deleteMessage(id)
-    }
   }
 }
 
-function updateMessage (message, ctx) {
-  if (typeof message === 'string') message = { text: message }
-  let text = message.text
-  let extra = null
-  if (message.buttons) {
-    const buttons = []
-    for (let key in message.buttons) {
-      const button = message.buttons[key]
-      buttons.push({ text: button, callback_data: key })
-    }
-    extra = Markup.inlineKeyboard(buttons)
-  }
+function deleteMessage (id, ctx) {
+  return ctx.deleteMessage(id)
+}
 
-  if (message.session && typeof message.session === 'object') {
-    for (let key in message.session) {
-      ctx.session[key] = message.session[key]
-    }
-  }
+function updateMessage (reply, ctx) {
+  const { text, extra } = formatMessage(reply, ctx)
   return ctx.editMessageText(text, extra)
 }
 
 function sendMessage (reply, ctx) {
+  const { text, extra } = formatMessage(reply, ctx)
+  return ctx.reply(text, extra)
+}
+
+function formatMessage (reply, ctx) {
   if (typeof reply === 'string') reply = { text: reply }
   let text = reply.text
   let extra = null
   if (reply.buttons) {
-    const buttons = []
-    for (let key in reply.buttons) {
-      const button = reply.buttons[key]
-      buttons.push({ text: button, callback_data: key })
-    }
+    const buttons = reply.buttons.map(button => {
+      if (typeof button === 'string') {
+        return { text: button, callback_data: lcfirst(button) }
+      } else if (button.action) {
+        // callback data will be "action x=1&y=2" when button has data
+        return { text: button.text, callback_data: button.action + (button.data ? ' ' + new URLSearchParams(button.data) : '') }
+      } else if (button.url) {
+        return button
+      }
+      return null
+    }).filter(b => b)
     extra = Markup.inlineKeyboard(buttons)
   }
 
@@ -116,7 +114,7 @@ function sendMessage (reply, ctx) {
   }
 
   ctx.session.lastReply = reply
-  return ctx.reply(text, extra)
+  return { text, extra }
 }
 
 function matchMessage (functions, update, session = {}, ctx) {
@@ -139,13 +137,18 @@ function matchMessage (functions, update, session = {}, ctx) {
 
   if (type === 'text') {
     match.fn = functions.find(fn => matchEntry(message, fn.events.bot.entry))
-    if (match.fn && match.fn.name === session.scene) {
-      match.fn = null
-    }
+    // Ignore duplicate entry (not useful)
+    // if (match.fn && match.fn.name === session.scene && ) {
+    //   match.fn = null
+    // }
   } else if (type === 'callback') {
     if (session.scene) {
       match.name = session.scene
-      match.action = callbackQuery.data
+      const [action, query] = callbackQuery.data.split(' ')
+      match.action = action
+      if (query) {
+        match.data = Object.fromEntries(new URLSearchParams(query).entries())
+      }
     }
   } else {
     console.log('unknown type')
@@ -155,19 +158,19 @@ function matchMessage (functions, update, session = {}, ctx) {
   return match
 }
 
-function matchAction (message, actions) {
-  return Object.keys(actions).find(action => matchEntry(message, actions[action]))
+function matchAction (reply, actions) {
+  return Object.keys(actions).find(action => matchEntry(reply, actions[action]))
 }
 
-function matchEntry (message, entry) {
+function matchEntry (reply, entry) {
   if (typeof entry === 'string') entry = [entry]
   return entry.some(et => {
     if (typeof et === 'string') {
-      return et.startsWith('/') ? message.text.startsWith(et) : et === message.text
+      return et.startsWith('/') ? reply.text.startsWith(et) : et === reply.text
     } else if (et instanceof RegExp) {
-      return et.test(message.text)
+      return et.test(reply.text)
     } else if (typeof et === 'function') {
-      return et(message.text)
+      return et(reply.text)
     }
   })
 }

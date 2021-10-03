@@ -9,15 +9,16 @@ module.exports = {
   main ({ text, raw }, { bot }) {
     bot.send({
       text: 'aaaa',
-      buttons: {
-        detail: 'Detail',
-        update: 'Update',
-        delete: 'Delete',
-        quote: 'Quote',
-        condition: 'Condition'
-      },
+      buttons: [
+        'Detail',
+        { text: 'Google', url: 'https://www.google.com' },
+        'Update',
+        'Delete',
+        { text: 'Data', action: 'data', data: { type: 'display' } },
+        'Condition'
+      ],
       session: {
-        id: 'aaaa'
+        test: 'aaaa'
       }
     })
   },
@@ -30,6 +31,10 @@ module.exports = {
         food: /food/
       }
     })
+  },
+
+  data ({ data }, { bot }) {
+    bot.send('data received ' + JSON.stringify(data))
   },
 
   beer (_, { bot }) {
