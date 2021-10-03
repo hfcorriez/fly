@@ -25,17 +25,23 @@ module.exports = {
     bot.use(async (ctx, next) => {
       const { update, botInfo } = ctx
       console.log('update', update, ctx.session)
-      const { name, step } = matchMessage(update, ctx.session)
+      const { name, step, from } = matchMessage(update, ctx.session)
       console.log('ready to call', name, step)
       if (name) {
         if (!ctx.session) ctx.session = {}
         ctx.session.name = name
 
-        const event = { raw: { update, botInfo }, session: ctx.session || {} }
+        const event = {
+          raw: { update, botInfo },
+          text: update.message && update.message.text,
+          from,
+          session: ctx.session || {}
+        }
         const context = {
           botCtx: ctx,
           eventType: 'bot',
-          send: (message) => sendMessage(message, ctx)
+          send: (message) => sendMessage(message, ctx),
+          update: (message) => updateMessage(message, ctx)
         }
         let error, result
         if (!step) {
@@ -54,6 +60,27 @@ module.exports = {
     process.once('SIGINT', () => bot.stop('SIGINT'))
     process.once('SIGTERM', () => bot.stop('SIGTERM'))
     fly.info('bot launch', name)
+
+    function updateMessage (message, ctx) {
+      if (typeof message === 'string') message = { text: message }
+      let text = message.text
+      let extra = null
+      if (message.buttons) {
+        const buttons = []
+        for (let key in message.buttons) {
+          const button = message.buttons[key]
+          buttons.push({ text: button, callback_data: key })
+        }
+        extra = Markup.inlineKeyboard(buttons)
+      }
+
+      if (message.session && typeof message.session === 'object') {
+        for (let key in message.session) {
+          ctx.session[key] = message.session[key]
+        }
+      }
+      ctx.editMessageText(text, extra)
+    }
 
     function sendMessage (message, ctx) {
       if (typeof message === 'string') message = { text: message }
@@ -78,7 +105,7 @@ module.exports = {
 
     function matchMessage (update, session = {}) {
       const { callback_query: callbackQuery, message } = update
-      const match = {}
+      const match = { from: message || (callbackQuery ? callbackQuery.message : null) }
 
       if (!session.name) {
         if (message && message.text) {

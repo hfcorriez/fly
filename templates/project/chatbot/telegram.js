@@ -6,7 +6,7 @@ module.exports = {
     }
   },
 
-  main ({ raw }, { send }) {
+  main ({ text, raw }, { send }) {
     send({
       text: 'aaaa',
       buttons: {
@@ -21,7 +21,16 @@ module.exports = {
     })
   },
 
-  detail ({ raw, session }, { send }) {
-    send('ok received' + JSON.stringify(session))
+  detail ({ from, raw, session }, { send }) {
+    send('ok received ' + JSON.stringify(session))
+  },
+
+  update ({ from, raw, session }, { update }) {
+    update({
+      text: 'done ' + JSON.stringify(session),
+      buttons: {
+        back: 'Back'
+      }
+    })
   }
 }
