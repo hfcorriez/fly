@@ -6,14 +6,14 @@ module.exports = {
     }
   },
 
-  main ({ text, raw }, { send }) {
-    send({
+  main ({ text, raw }, { bot }) {
+    bot.send({
       text: 'aaaa',
       buttons: {
         detail: 'Detail',
-        buy: 'Plan',
-        plan: 'Detail',
-        update: 'Update'
+        update: 'Update',
+        delete: 'Delete',
+        quote: 'Quote'
       },
       session: {
         id: 'aaaa'
@@ -21,16 +21,21 @@ module.exports = {
     })
   },
 
-  detail ({ from, raw, session }, { send }) {
-    send('ok received ' + JSON.stringify(session))
+  detail ({ message, raw, session }, { bot }) {
+    bot.send('ok received ' + JSON.stringify(session))
   },
 
-  update ({ from, raw, session }, { update }) {
-    update({
+  update ({ message, raw, session }, { bot }) {
+    return bot.update({
       text: 'done ' + JSON.stringify(session),
       buttons: {
         back: 'Back'
       }
     })
+  },
+
+  async delete ({ message, session }, { bot }) {
+    await bot.delete(message.message_id)
+    await bot.send('message deleted ' + JSON.stringify(message))
   }
 }

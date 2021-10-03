@@ -25,7 +25,7 @@ module.exports = {
     bot.use(async (ctx, next) => {
       const { update, botInfo } = ctx
       console.log('update', update, ctx.session)
-      const { name, step, from } = matchMessage(update, ctx.session)
+      const { name, step, message } = matchMessage(update, ctx.session)
       console.log('ready to call', name, step)
       if (name) {
         if (!ctx.session) ctx.session = {}
@@ -34,14 +34,17 @@ module.exports = {
         const event = {
           raw: { update, botInfo },
           text: update.message && update.message.text,
-          from,
+          message,
           session: ctx.session || {}
         }
         const context = {
           botCtx: ctx,
           eventType: 'bot',
-          send: (message) => sendMessage(message, ctx),
-          update: (message) => updateMessage(message, ctx)
+          bot: {
+            send: (message) => sendMessage(message, ctx),
+            update: (message) => updateMessage(message, ctx),
+            delete: (message) => deleteMessage(message, ctx)
+          }
         }
         let error, result
         if (!step) {
@@ -61,6 +64,10 @@ module.exports = {
     process.once('SIGTERM', () => bot.stop('SIGTERM'))
     fly.info('bot launch', name)
 
+    function deleteMessage (id, ctx) {
+      return ctx.deleteMessage(id)
+    }
+
     function updateMessage (message, ctx) {
       if (typeof message === 'string') message = { text: message }
       let text = message.text
@@ -79,7 +86,7 @@ module.exports = {
           ctx.session[key] = message.session[key]
         }
       }
-      ctx.editMessageText(text, extra)
+      return ctx.editMessageText(text, extra)
     }
 
     function sendMessage (message, ctx) {
@@ -100,14 +107,14 @@ module.exports = {
           ctx.session[key] = message.session[key]
         }
       }
-      ctx.reply(text, extra)
+      return ctx.reply(text, extra)
     }
 
     function matchMessage (update, session = {}) {
       const { callback_query: callbackQuery, message } = update
 
       const type = message && message.text ? 'text' : (callbackQuery ? 'callback' : null)
-      const match = { from: message || (callbackQuery ? callbackQuery.message : null) }
+      const match = { message: message || (callbackQuery ? callbackQuery.message : null) }
 
       if (type === 'text') {
         match.fn = flows.find(fn => {
@@ -126,7 +133,6 @@ module.exports = {
         })
         if (match.fn && match.fn.name === session.scene) {
           match.fn = null
-          console.log('duplicate session')
         }
       } else if (type === 'callback') {
         if (session.scene) {
