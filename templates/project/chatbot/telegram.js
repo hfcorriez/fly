@@ -40,7 +40,7 @@ module.exports = {
   },
 
   photo (_, { bot }) {
-    bot.send({ photo: require('path').join(__dirname, '../../../docs/banner.png') })
+    bot.send({ text: 'Banner', photo: require('path').join(__dirname, '../../../docs/banner.png') })
   },
 
   beer (_, { bot }) {

@@ -81,12 +81,10 @@ function updateMessage (reply, ctx) {
 }
 
 function sendMessage (reply, ctx) {
-  let { text, photo, extra, type } = formatMessage(reply, ctx)
+  const { text, photo, extra, type } = formatMessage(reply, ctx)
+  console.log('sendMessage', JSON.stringify({ text, photo }))
   switch (type) {
     case 'photo':
-      if (photo.startsWith('/') && fs.existsSync(photo)) {
-        photo = { source: photo }
-      }
       return ctx.replyWithPhoto(photo, extra)
     default:
       return ctx.reply(text, extra)
@@ -101,8 +99,21 @@ function formatMessage (reply, ctx) {
   let photo = reply.photo
   let type
 
+  // Photo format
   if (photo) {
     type = 'photo'
+    if (typeof photo === 'string') {
+      if (photo.startsWith('/') && fs.existsSync(photo)) {
+        photo = { source: photo }
+      } else if (photo.startsWith('http')) {
+        photo = { url: photo }
+      } else {
+        type = null
+      }
+    }
+    if (text && !photo.caption) {
+      photo.caption = text
+    }
   }
 
   if (reply.buttons) {
