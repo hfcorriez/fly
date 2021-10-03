@@ -106,7 +106,7 @@ module.exports = {
     function matchMessage (update, session = {}) {
       const { callback_query: callbackQuery, message } = update
 
-      const type = message ? 'text' : (callbackQuery ? 'callback' : null)
+      const type = message && message.text ? 'text' : (callbackQuery ? 'callback' : null)
       const match = { from: message || (callbackQuery ? callbackQuery.message : null) }
 
       if (type === 'text') {
@@ -133,6 +133,8 @@ module.exports = {
           match.name = session.scene
           match.step = callbackQuery.data
         }
+      } else {
+        console.log('unknown type')
       }
 
       if (match.fn) match.name = match.fn.name
