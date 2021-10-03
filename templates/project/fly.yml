@@ -25,6 +25,14 @@ service:
   cron:
     fn: $cron
 
+  bot:
+    fn: $bot
+    name: telegram
+    type: telegram
+    config:
+      token: xxxxxxxxx
+      username: xxxxxxx
+
 http:
   login:
     path: /login
