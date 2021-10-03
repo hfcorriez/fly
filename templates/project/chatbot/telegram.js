@@ -1,5 +1,3 @@
-const bot = require('../../../functions/services/bot')
-
 module.exports = {
   configBot: {
     name: 'telegram',
