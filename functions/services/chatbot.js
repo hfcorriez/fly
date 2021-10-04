@@ -25,16 +25,15 @@ module.exports = {
     chatbot.use(session())
     chatbot.use(async (ctx, next) => {
       const { update, session } = ctx
-      console.log('update', update, session)
-
       const { name, action, data, message } = matchMessage(functions, update, session)
-      console.log('ready to call', name, action)
+      fly.info('update', message, session)
+      fly.info('ready to call', name, action)
       if (name) {
         if (!ctx.session) ctx.session = {}
         ctx.session.scene = name
 
         const event = {
-          raw: { update, session, bot: ctx.botInfo },
+          bot: ctx.botInfo,
           text: update.message && update.message.text,
           data,
           message,
@@ -51,14 +50,14 @@ module.exports = {
         }
         if (!action) {
           const [error, result] = await fly.call(name, event, context)
-          console.log('fn main', error, result)
+          fly.info('fn main', error, result)
         } else if (action === '_back') {
           updateMessage(ctx.session.lastReply, ctx)
         } else {
           const [error, result] = await fly.method(name, `action${action}`, event, context)
           ctx.session.action = action
           ctx.session.data = null
-          console.log('fn method', error, result)
+          fly.info('fn method', error, result)
         }
       }
       await next()
@@ -220,17 +219,10 @@ function matchMessage (functions, update, session = {}, ctx) {
   }
 
   const { callback_query: callbackQuery, message } = update
-
-  const type = message && message.text ? 'text' : (callbackQuery ? 'callback' : null)
+  const eventType = checkEventType(message)
   const match = { message: message || (callbackQuery ? callbackQuery.message : null) }
 
-  if (type === 'text') {
-    match.fn = functions.find(fn => matchEntry(message, fn.events.chatbot.entry))
-    // Ignore duplicate entry (not useful)
-    // if (match.fn && match.fn.name === session.scene && ) {
-    //   match.fn = null
-    // }
-  } else if (type === 'callback') {
+  if (eventType === 'button_click') {
     if (session.scene) {
       match.name = session.scene
       const [action, query] = callbackQuery.data.split(' ')
@@ -240,7 +232,11 @@ function matchMessage (functions, update, session = {}, ctx) {
       }
     }
   } else {
-    console.log('unknown type')
+    match.fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
+    // Ignore duplicate entry (not useful)
+    // if (match.fn && match.fn.name === session.scene && ) {
+    //   match.fn = null
+    // }
   }
 
   if (match.fn) match.name = match.fn.name
@@ -251,15 +247,28 @@ function matchAction (reply, actions) {
   return Object.keys(actions).find(action => matchEntry(reply, actions[action]))
 }
 
-function matchEntry (reply, entry) {
+function matchEntry (type, message, entry) {
   if (!Array.isArray(entry)) entry = [entry]
   return entry.some(et => {
     if (typeof et === 'string') {
-      return et.startsWith('/') ? reply.text.startsWith(et) : et === reply.text
+      if (et.startsWith(':')) {
+        return et.substring(1) === type
+      } else if (message.text) {
+        return et.startsWith('/') ? message.text.startsWith(et) : et === message.text
+      }
+      return false
     } else if (et instanceof RegExp) {
-      return et.test(reply.text)
+      return et.test(message.text)
     } else if (typeof et === 'function') {
-      return et(reply.text)
+      return et(message.text)
     }
   })
+}
+
+function checkEventType (message) {
+  if (message.callback_query) return 'button_click'
+  else if (message.new_chat_member) return 'member_join'
+  else if (message.left_chat_member) return 'member_left'
+  else if (message.new_chat_title || message.new_chat_photo || message.delete_chat_photo) return 'channel_update'
+  else return 'message_add'
 }

@@ -1,10 +1,10 @@
 module.exports = {
   configChatbot: {
     name: 'telegram',
-    entry: ['/info']
+    entry: ['/info', ':member_join']
   },
 
-  main ({ raw: { update: { message }, bot } }, { chatbot }) {
+  main ({ message, bot }, { chatbot }) {
     chatbot.send({
       markdown: `*SYSTEM INFO*
 Your ID: \`${message.from.id}\`
