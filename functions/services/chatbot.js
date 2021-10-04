@@ -34,6 +34,7 @@ module.exports = {
         ctx.session.scene = name
 
         const event = {
+          raw: { update, session, bot: ctx.botInfo },
           text: update.message && update.message.text,
           data,
           message,
