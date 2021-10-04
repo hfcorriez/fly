@@ -39,7 +39,7 @@ module.exports = {
         // Config allow_groups can work with bot
         if (config.allow_groups && ['group', 'supergroup'].includes(chat.type) && !String(config.allow_groups).includes(chat.id)) {
           fly.warn('not allow group:', chat.id, chat.title)
-          if (config.deny_invite && type !== 'bot_left') {
+          if (config.deny_invite && type === 'bot_join') {
             ctx.leaveChat()
             fly.warn('leave chat:', chat.id, chat.title)
           }
