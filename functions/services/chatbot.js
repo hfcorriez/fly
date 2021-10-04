@@ -20,13 +20,46 @@ module.exports = {
   },
 
   runTelegram ({ name, config, functions }, { fly }) {
+    fly.info('config', config)
     const chatbot = new Telegraf(config.token)
 
     chatbot.use(session())
+    chatbot.use((ctx, next) => {
+      const { update } = ctx
+      const { type, chat, from } = parseEvent(update)
+      fly.info('update', Object.keys(update), update.message, update.session)
+      const isAdmin = config.admins && String(config.admins).includes(from.id)
+
+      // Only allow_users can talk to bot
+      if (!isAdmin) {
+        if (config.allow_users && !String(config.allow_users).includes(from.id)) {
+          fly.warn('not auth user:', from.id, from.username)
+          return
+        }
+        // Config allow_groups can work with bot
+        if (config.allow_groups && ['group', 'supergroup'].includes(chat.type) && !String(config.allow_groups).includes(chat.id)) {
+          fly.warn('not allow group:', chat.id, chat.title)
+          if (config.deny_invite && type !== 'bot_left') {
+            ctx.leaveChat()
+            fly.warn('leave chat:', chat.id, chat.title)
+          }
+          return
+        }
+        // Deny private talk if needed
+        if (config.deny_private && chat.type === 'private') {
+          fly.warn('deny private:', from.id, from.username)
+          return
+        }
+      }
+
+      if (!ctx.session) ctx.session = { }
+      ctx.session.chatbotAdmin = isAdmin
+      return next()
+    })
     chatbot.use(async (ctx, next) => {
       const { update, session } = ctx
-      const { name, action, data, message } = matchMessage(functions, update, session)
-      fly.info('update', message, session)
+      const { message } = update
+      const { name, action, data } = matchMessage(functions, update, session, ctx)
       fly.info('ready to call', name, action)
       if (name) {
         if (!ctx.session) ctx.session = {}
@@ -219,7 +252,7 @@ function matchMessage (functions, update, session = {}, ctx) {
   }
 
   const { callback_query: callbackQuery, message } = update
-  const eventType = checkEventType(message)
+  const { type: eventType } = parseEvent(update)
   const match = { message: message || (callbackQuery ? callbackQuery.message : null) }
 
   if (eventType === 'button_click') {
@@ -253,22 +286,55 @@ function matchEntry (type, message, entry) {
     if (typeof et === 'string') {
       if (et.startsWith(':')) {
         return et.substring(1) === type
-      } else if (message.text) {
+      } else if (message && message.text) {
         return et.startsWith('/') ? message.text.startsWith(et) : et === message.text
       }
       return false
-    } else if (et instanceof RegExp) {
+    } else if (et instanceof RegExp && message) {
       return et.test(message.text)
-    } else if (typeof et === 'function') {
+    } else if (typeof et === 'function' && message) {
       return et(message.text)
     }
   })
 }
 
-function checkEventType (message) {
-  if (message.callback_query) return 'button_click'
-  else if (message.new_chat_member) return 'member_join'
-  else if (message.left_chat_member) return 'member_left'
-  else if (message.new_chat_title || message.new_chat_photo || message.delete_chat_photo) return 'channel_update'
-  else return 'message_add'
+function parseEvent (update) {
+  const message = update.message
+  let type, chat, from
+
+  if (update.callback_query) {
+    type = 'button_click'
+    chat = update.callback_query.message.chat
+    from = update.callback_query.from
+  } else if (update.my_chat_member) {
+    if (update.my_chat_member.new_chat_member.status === 'member') {
+      type = 'bot_join'
+    } else if (update.my_chat_member.new_chat_member.status === 'left') {
+      type = 'bot_left'
+    }
+    chat = update.my_chat_member.chat
+    from = update.my_chat_member.from
+  } else if (message.new_chat_member) {
+    type = 'member_join'
+    chat = message.chat
+    from = message.from
+  } else if (message.left_chat_member) {
+    type = 'member_left'
+    chat = message.chat
+    from = message.from
+  } else if (message.new_chat_title || message.new_chat_photo || message.delete_chat_photo) {
+    type = 'channel_update'
+    chat = message.chat
+    from = message.from
+  } else if (update.edited_message) {
+    type = 'message_edit'
+    chat = message.chat
+    from = message.from
+  } else {
+    type = 'message_add'
+    chat = message.chat
+    from = message.from
+  }
+
+  return { type, chat, from }
 }
