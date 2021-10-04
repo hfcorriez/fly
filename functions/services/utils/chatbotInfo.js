@@ -1,7 +1,7 @@
 module.exports = {
   configChatbot: {
     name: 'telegram',
-    entry: ['/info', ':member_join']
+    entry: ['/info']
   },
 
   main ({ message, bot }, { chatbot }) {
