@@ -4,7 +4,7 @@ module.exports = {
     entry: ['/user', /nihao/]
   },
 
-  main ({ text, raw }, { chatbot }) {
+  main (_, { chatbot }) {
     chatbot.send({
       markdown: '*START* Please select feautre:',
       buttons: [
@@ -73,11 +73,11 @@ module.exports = {
     chatbot.send({ file: require('path').join(__dirname, '../../../README.md') })
   },
 
-  actionDetail ({ message, raw, session }, { chatbot }) {
+  actionDetail ({ session }, { chatbot }) {
     chatbot.send('ok received ' + JSON.stringify(session))
   },
 
-  actionUpdate ({ message, raw, session }, { chatbot }) {
+  actionUpdate ({ session }, { chatbot }) {
     return chatbot.update({
       markdown: '*done* ```javascript\n' + JSON.stringify(session) + '```',
       buttons: [
@@ -86,7 +86,7 @@ module.exports = {
     })
   },
 
-  async actionDelete ({ message, session }, { chatbot }) {
+  async actionDelete ({ message }, { chatbot }) {
     await chatbot.delete(message.message_id)
     await chatbot.send('message deleted ' + JSON.stringify(message))
   }
