@@ -52,8 +52,12 @@ module.exports = {
         }
       }
 
-      if (!ctx.session) ctx.session = { }
+      // Init session
+      if (!ctx.session) ctx.session = { scene: null, action: null, history: {}, card: {} }
+
+      // Set admin permission
       ctx.session.chatbotAdmin = isAdmin
+
       return next()
     })
     chatbot.use(async (ctx, next) => {
@@ -62,7 +66,6 @@ module.exports = {
       const { name, action, data } = matchMessage(functions, update, session, ctx)
       fly.info('ready to call', name, action)
       if (name) {
-        if (!ctx.session) ctx.session = {}
         ctx.session.scene = name
 
         const event = {
@@ -85,7 +88,22 @@ module.exports = {
           const [error, result] = await fly.call(name, event, context)
           fly.info('fn main', error, result)
         } else if (action === '_back') {
-          updateMessage(ctx.session.lastReply, ctx)
+          // Back to previous state
+          const card = data.card
+          let message
+
+          const cardHisotry = ctx.session.history[card]
+
+          if (cardHisotry) {
+            cardHisotry.pop()
+            message = cardHisotry[cardHisotry.length - 1]
+          }
+
+          console.log('history message:', card, message)
+
+          if (message) {
+            updateTgMessage(message, ctx)
+          }
         } else {
           const [error, result] = await fly.method(name, `action${action}`, event, context)
           ctx.session.action = action
@@ -109,14 +127,48 @@ function deleteMessage (id, ctx) {
 }
 
 function updateMessage (reply, ctx) {
-  const { text, extra } = formatMessage(reply, ctx)
+  const message = formatMessage(reply, ctx)
+
+  // record message history for action
+  if (reply.card && ctx.session.history[reply.card]) {
+    console.log('record edited message for:', reply.card)
+    ctx.session.history[reply.card].push(message)
+  }
+
+  return updateTgMessage(message, ctx)
+}
+
+function updateTgMessage (message, ctx) {
+  const { text, extra, card } = message
+  if (card && ctx.session.card[card]) {
+    extra.message_id = ctx.session.card[card]
+  }
   return ctx.editMessageText(text, extra)
 }
 
-function sendMessage (reply, ctx) {
+async function sendMessage (reply, ctx) {
   ctx.session.lastReply = reply
 
   const message = formatMessage(reply, ctx)
+  const sentMessage = await sendTGMessage(message, ctx)
+
+  // record message history for action
+  if (reply.card && sentMessage) {
+    console.log('record new message for:', reply.card)
+    // Init history for card
+    if (!ctx.session.history[reply.card]) ctx.session.history[reply.card] = []
+
+    // Record history
+    ctx.session.history[reply.card].push(message)
+
+    // Save id map for card
+    ctx.session.card[reply.card] = sentMessage.message_id
+  }
+
+  return sentMessage
+}
+
+function sendTGMessage (message, ctx) {
   const { text, photo, file, extra, type } = message
 
   switch (type) {
@@ -221,7 +273,7 @@ function formatMessage (reply, ctx) {
     ctx.session = {}
   }
 
-  return { text, photo, file, type, extra }
+  return { text, photo, file, type, extra, card: reply.card }
 }
 
 function matchMessage (functions, update, session = {}, ctx) {
@@ -253,7 +305,9 @@ function matchMessage (functions, update, session = {}, ctx) {
 
   const { callback_query: callbackQuery, message } = update
   const { type: eventType } = parseEvent(update)
-  const match = { message: message || (callbackQuery ? callbackQuery.message : null) }
+  const match = {
+    message: message || (callbackQuery ? callbackQuery.message : null)
+  }
 
   if (eventType === 'button_click') {
     if (session.scene) {

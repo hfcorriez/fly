@@ -6,6 +6,7 @@ module.exports = {
 
   main (_, { chatbot }) {
     chatbot.send({
+      card: 'main',
       markdown: '*START* Please select feautre:',
       buttons: [
         'Detail',
@@ -79,9 +80,10 @@ module.exports = {
 
   actionUpdate ({ session }, { chatbot }) {
     return chatbot.update({
+      card: 'main',
       markdown: '*done* ```javascript\n' + JSON.stringify(session) + '```',
       buttons: [
-        { text: 'Back', action: '_back' }
+        { text: 'Back', action: '_back', data: { card: 'main' } }
       ]
     })
   },
