@@ -29,7 +29,7 @@ module.exports = {
   },
 
   // Main
-  async main (event, { eventId, db, user, dayjs, fly, handleHttp }) {
+  async main (event, { eventId, '/lib/db': db, user, dayjs, fly, handleHttp }) {
     fly.info('execute data:main')
     return {
       body: {

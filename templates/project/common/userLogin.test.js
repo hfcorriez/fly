@@ -12,8 +12,9 @@ module.exports = {
     {
       name: 'invalid username trigger validate error',
       event: { },
-      test (result) {
-        assert.ok(result instanceof Error && result.name === 'FlyValidateError')
+      test (result, err) {
+        assert.ok(result === null)
+        assert.ok(err instanceof Error && err.name === 'FlyValidateError')
       }
     }
   ]
