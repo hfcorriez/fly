@@ -1,5 +1,5 @@
 exports.create = function () {
   return {
-    db: 'mongodb5'
+    db: 'mongodb8'
   }
 }
