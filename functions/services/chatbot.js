@@ -68,6 +68,10 @@ module.exports = {
       fly.info('ready to call', name, action)
 
       if (name) {
+        if (!action) {
+          initSession(ctx)
+        }
+
         ctx.session.scene = name
         ctx.session.action = action || 'main'
 
@@ -287,6 +291,21 @@ function formatMessage (reply, ctx) {
   }
 
   return { text, photo, file, type, extra, card: reply.card }
+}
+
+function initSession (ctx) {
+  if (!ctx.session) ctx.session = {}
+
+  Object.assign(ctx.session, {
+    scene: null,
+    action: null,
+    actions: null,
+    confirm: null,
+    lastSent: null,
+    data: {},
+    history: {},
+    card: {}
+  })
 }
 
 function matchMessage (functions, update, session = {}, ctx) {
