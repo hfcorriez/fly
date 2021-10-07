@@ -12,10 +12,10 @@ module.exports = {
         'Detail',
         { text: 'Google', url: 'https://www.google.com' },
         'Photo',
-        'File',
+        'Upload',
         'Update',
         'Delete',
-        { text: 'Data', action: 'Data', data: { type: 'display' } },
+        { text: 'Data', action: 'data', data: { type: 'display' } },
         'Confirm',
         'Condition'
       ],
@@ -26,17 +26,25 @@ module.exports = {
     })
   },
 
-  actionCondition (_, { chatbot }) {
+  condition (_, { chatbot }) {
     chatbot.send({
       text: 'which type do you want, beer or food?',
-      actions: {
+      s: {
         Beer: 'beer',
         Food: /food/
       }
     })
   },
 
-  actionConfirm (_, { chatbot }) {
+  conditionBeer (_, { chatbot }) {
+    chatbot.send('ok give you beer')
+  },
+
+  conditionFood (_, { chatbot }) {
+    chatbot.send('food is ready')
+  },
+
+  confirm (_, { chatbot }) {
     chatbot.send({
       text: 'do you need confirm?',
       confirm: {
@@ -46,39 +54,32 @@ module.exports = {
     })
   },
 
-  actionConfirmYes (_, { chatbot }) {
+  confirmYes (_, { chatbot }) {
     chatbot.send('you select YES')
+    chatbot.delete()
   },
 
-  actionConfirmNo (_, { chatbot }) {
+  confirmNo (_, { chatbot }) {
     chatbot.send('you select NO')
   },
 
-  actionBeer (_, { chatbot }) {
-    chatbot.send('ok give you beer')
-  },
-
-  actionFood (_, { chatbot }) {
-    chatbot.send('food is ready')
-  },
-
-  actionData ({ data }, { chatbot }) {
+  data ({ data }, { chatbot }) {
     chatbot.send('data received ' + JSON.stringify(data))
   },
 
-  actionPhoto (_, { chatbot }) {
+  photo (_, { chatbot }) {
     chatbot.send({ text: 'Banner', photo: require('path').join(__dirname, '../../../docs/banner.png') })
   },
 
-  actionFile (_, { chatbot }) {
+  upload (_, { chatbot }) {
     chatbot.send({ file: require('path').join(__dirname, '../../../README.md') })
   },
 
-  actionDetail ({ session }, { chatbot }) {
+  detail ({ session }, { chatbot }) {
     chatbot.send('ok received ' + JSON.stringify(session))
   },
 
-  actionUpdate ({ session }, { chatbot }) {
+  update ({ session }, { chatbot }) {
     return chatbot.update({
       card: 'main',
       markdown: '*done* ```javascript\n' + JSON.stringify(session) + '```',
@@ -88,8 +89,8 @@ module.exports = {
     })
   },
 
-  async actionDelete ({ message }, { chatbot }) {
-    await chatbot.delete(message.message_id)
-    await chatbot.send('message deleted ' + JSON.stringify(message))
+  async delete ({ data, message }, { chatbot }) {
+    await chatbot.delete(data.from)
+    await chatbot.send('message delete: ' + JSON.stringify(message))
   }
 }

@@ -1,5 +1,6 @@
 const { Telegraf, session } = require('telegraf')
 const fs = require('fs')
+const { lcfirst } = require('../../lib/utils')
 
 module.exports = {
   configService: {
@@ -26,8 +27,9 @@ module.exports = {
     chatbot.use(session())
     chatbot.use((ctx, next) => {
       const { update } = ctx
-      const { type, chat, from } = parseEvent(update)
-      fly.info('update', Object.keys(update), update.message, update.session)
+      const { chat, from } = parseEvent(update)
+      fly.info('update', update)
+      fly.info('session', ctx.session)
       const isAdmin = config.admins && String(config.admins).includes(from.id)
 
       // Only allow_users can talk to bot
@@ -39,7 +41,7 @@ module.exports = {
         // Config allow_groups can work with bot
         if (config.allow_groups && ['group', 'supergroup'].includes(chat.type) && !String(config.allow_groups).includes(chat.id)) {
           fly.warn('not allow group:', chat.id, chat.title)
-          if (config.deny_invite && type === 'bot_join') {
+          if (config.deny_invite) {
             ctx.leaveChat()
             fly.warn('leave chat:', chat.id, chat.title)
           }
@@ -62,12 +64,13 @@ module.exports = {
     })
     chatbot.use(async (ctx, next) => {
       const { update, session } = ctx
-      const { message } = update
-      const { name, action, data } = matchMessage(functions, update, session, ctx)
+      const { name, message, action, data } = matchMessage(functions, update, session, ctx)
       fly.info('ready to call', name, action)
-      if (name) {
-        ctx.session.scene = name
 
+      ctx.session.scene = name
+      ctx.session.action = action || 'main'
+
+      if (name) {
         const event = {
           bot: ctx.botInfo,
           text: update.message && update.message.text,
@@ -79,9 +82,9 @@ module.exports = {
         const context = {
           eventType: 'chatbot',
           chatbot: {
-            send: (message) => sendMessage(message, ctx),
-            update: (message) => updateMessage(message, ctx),
-            delete: (message) => deleteMessage(message, ctx)
+            send: (reply) => sendMessage(reply, ctx),
+            update: (reply) => updateMessage(reply, ctx),
+            delete: (reply) => deleteMessage(reply, ctx)
           }
         }
         if (!action) {
@@ -90,23 +93,22 @@ module.exports = {
         } else if (action === '_back') {
           // Back to previous state
           const card = data.card
-          let message
+          let historyMessage
 
           const cardHisotry = ctx.session.history[card]
 
           if (cardHisotry) {
             cardHisotry.pop()
-            message = cardHisotry[cardHisotry.length - 1]
+            historyMessage = cardHisotry[cardHisotry.length - 1]
           }
 
-          console.log('history message:', card, message)
+          fly.info('history message:', card, historyMessage)
 
-          if (message) {
-            updateTgMessage(message, ctx)
+          if (historyMessage) {
+            updateTgMessage(historyMessage, ctx)
           }
         } else {
-          const [error, result] = await fly.method(name, `action${action}`, event, context)
-          ctx.session.action = action
+          const [error, result] = await fly.method(name, action, event, context)
           ctx.session.data = null
           fly.info('fn method', error, result)
         }
@@ -122,17 +124,26 @@ module.exports = {
   }
 }
 
-function deleteMessage (id, ctx) {
-  return ctx.deleteMessage(id)
+function deleteMessage (message, ctx) {
+  if (!message) return false
+  let messageId
+
+  if (message && message.message_id) messageId = message.message_id
+  else messageId = /^\d+$/.test(message) ? message : ctx.session.card[message]
+
+  if (!messageId) return false
+
+  return ctx.deleteMessage(messageId)
 }
 
 function updateMessage (reply, ctx) {
   const message = formatMessage(reply, ctx)
+  const card = message.card
 
   // record message history for action
-  if (reply.card && ctx.session.history[reply.card]) {
-    console.log('record edited message for:', reply.card)
-    ctx.session.history[reply.card].push(message)
+  if (card && ctx.session.history[card]) {
+    console.log('record edited message for:', card)
+    ctx.session.history[card].push(message)
   }
 
   return updateTgMessage(message, ctx)
@@ -150,19 +161,20 @@ async function sendMessage (reply, ctx) {
   ctx.session.lastReply = reply
 
   const message = formatMessage(reply, ctx)
+  const card = message.card
   const sentMessage = await sendTGMessage(message, ctx)
 
   // record message history for action
-  if (reply.card && sentMessage) {
-    console.log('record new message for:', reply.card)
+  if (card && sentMessage) {
+    console.log('record new message for:', card)
     // Init history for card
-    if (!ctx.session.history[reply.card]) ctx.session.history[reply.card] = []
+    if (!ctx.session.history[card]) ctx.session.history[card] = []
 
     // Record history
-    ctx.session.history[reply.card].push(message)
+    ctx.session.history[card].push(message)
 
     // Save id map for card
-    ctx.session.card[reply.card] = sentMessage.message_id
+    ctx.session.card[card] = sentMessage.message_id
   }
 
   return sentMessage
@@ -220,11 +232,12 @@ function formatMessage (reply, ctx) {
 
   if (reply.buttons) {
     let buttons = reply.buttons.map(button => {
+      const data = new URLSearchParams({ ...button.data, from: reply.card }).toString()
       if (typeof button === 'string') {
-        return { text: button, callback_data: button }
+        return { text: button, callback_data: lcfirst(button) + ' ' + data }
       } else if (button.action) {
         // callback data will be "action x=1&y=2" when button has data
-        return { text: button.text, callback_data: button.action + (button.data ? ' ' + new URLSearchParams(button.data) : '') }
+        return { text: button.text, callback_data: button.action + ' ' + data }
       } else if (button.url) {
         return button
       }
