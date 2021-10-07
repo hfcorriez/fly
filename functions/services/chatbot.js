@@ -67,10 +67,10 @@ module.exports = {
       const { name, message, action, data } = matchMessage(functions, update, session, ctx)
       fly.info('ready to call', name, action)
 
-      ctx.session.scene = name
-      ctx.session.action = action || 'main'
-
       if (name) {
+        ctx.session.scene = name
+        ctx.session.action = action || 'main'
+
         const event = {
           bot: ctx.botInfo,
           text: update.message && update.message.text,
@@ -158,8 +158,6 @@ function updateTgMessage (message, ctx) {
 }
 
 async function sendMessage (reply, ctx) {
-  ctx.session.lastReply = reply
-
   const message = formatMessage(reply, ctx)
   const card = message.card
   const sentMessage = await sendTGMessage(message, ctx)
@@ -176,6 +174,8 @@ async function sendMessage (reply, ctx) {
     // Save id map for card
     ctx.session.card[card] = sentMessage.message_id
   }
+
+  ctx.session.lastSent = message
 
   return sentMessage
 }
@@ -297,7 +297,7 @@ function matchMessage (functions, update, session = {}, ctx) {
 
       // No action will reply
       if (!action) {
-        ctx.reply(sendMessage(ctx.session.lastReply, ctx))
+        ctx.reply(sendTGMessage(ctx.session.lastSent, ctx))
         return {}
       }
 
@@ -310,7 +310,7 @@ function matchMessage (functions, update, session = {}, ctx) {
       } else if (update.callback_query.data === 'NO') {
         return { name: session.scene, action: no }
       } else {
-        ctx.reply(sendMessage(ctx.session.lastReply, ctx))
+        ctx.reply(sendTGMessage(ctx.session.lastSent, ctx))
         return {}
       }
     }
@@ -343,8 +343,8 @@ function matchMessage (functions, update, session = {}, ctx) {
   return match
 }
 
-function matchAction (reply, actions) {
-  return Object.keys(actions).find(action => matchEntry(reply, actions[action]))
+function matchAction (message, actions) {
+  return Object.keys(actions).find(action => matchEntry('message_add', message, actions[action]))
 }
 
 function matchEntry (type, message, entry) {

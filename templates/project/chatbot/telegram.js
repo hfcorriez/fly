@@ -29,9 +29,9 @@ module.exports = {
   condition (_, { chatbot }) {
     chatbot.send({
       text: 'which type do you want, beer or food?',
-      s: {
-        Beer: 'beer',
-        Food: /food/
+      actions: {
+        conditionBeer: 'beer',
+        conditionFood: /food/
       }
     })
   },
