@@ -20,14 +20,14 @@ module.exports = {
         console.log(colors.bold(`◼︎ test ready [${testCount}]`))
         console.log(colors.gray('  ----------------------------------------------------------------'))
         for (let fn of functions) {
-          const passed = await this.runTest(fly, fn.name, functions.indexOf(fn) + 1)
+          const passed = await this.test(fly, fn.name, functions.indexOf(fn) + 1)
           if (passed) passCount++
         }
       } else {
         testCount = 1
         console.log(`◼︎ test ready [${testCount}]`)
         console.log(colors.gray('  ----------------------------------------------------------------'))
-        passCount = (await this.runTest(fly, name)) ? 1 : 0
+        passCount = (await this.test(fly, name)) ? 1 : 0
       }
 
       if (passCount === testCount) {
@@ -46,7 +46,7 @@ module.exports = {
     }
   },
 
-  async runTest (fly, name, id) {
+  async test (fly, name, id) {
     id = id || 1
     const fn = fly.get(name)
 
@@ -68,13 +68,7 @@ module.exports = {
       test.startTime = Date.now()
 
       try {
-        let result, err
-        try {
-          [result, err] = await fly.call(fn, test.event, context)
-        } catch (e) {
-          err = e
-        }
-
+        const [result, err] = await fly.call(fn, test.event, context)
         await test.test(result, err)
         test.ok = true
       } catch (err) {
