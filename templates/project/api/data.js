@@ -10,7 +10,7 @@
  */
 
 module.exports = {
-  extends: 'handleHttp',
+  decorator: 'api',
 
   // Http default config
   configHttp: {
@@ -21,28 +21,29 @@ module.exports = {
   async beforeHttp (event, ctx) {
     const { fly, hook } = ctx
     fly.info('execute data:beforeHttp')
-    fly.super(event)
-    hook('main', (r) => fly.info('log:', r.body.id))
+    hook('main', (r) => fly.info('log:', r.id))
     fly.info('ctx from super:', ctx.user)
     event.data = true
     return event
   },
 
   // Main
-  async main (event, { eventId, '/lib/db': db, user, dayjs, fly, handleHttp }) {
+  async main (event, {
+    eventId, user, fly, handleHttp,
+    '/lib/db': db,
+    '@dayjs': dayjs
+  }) {
     fly.info('execute data:main')
     return {
-      body: {
-        id: eventId,
-        ctx: {
-          handleHttp,
-          user,
-          db: db.create()
-        },
-        event,
-        date: dayjs().format('YYYY-MM-DD'),
-        env: process.env
-      }
+      id: eventId,
+      ctx: {
+        handleHttp,
+        user,
+        db: db.create()
+      },
+      event,
+      date: dayjs().format('YYYY-MM-DD'),
+      env: process.env
     }
   }
 }

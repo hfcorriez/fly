@@ -1,7 +1,9 @@
 project:
-  import:
-    db: ./lib/db
-    dayjs: dayjs
+  decorator:
+    api:
+      beforeHttp: ['loadDB', 'apiInput', 'apiRateLimit']
+      afterHttp: apiOutput
+      catchHttp: apiError
 
 service:
   http:
