@@ -10,6 +10,8 @@
  */
 
 module.exports = {
+  decorator: 'api',
+
   configHttp: {
     path: '/login'
   },
@@ -22,8 +24,6 @@ module.exports = {
       throw new Error('random value is greater than 0.5')
     }
     fly.info('some one login ok')
-    return {
-      body: ret
-    }
+    return ret
   }
 }
