@@ -16,8 +16,16 @@ module.exports = {
     path: '/login'
   },
 
+  beforeHttp (event) {
+    event.username = 'abc'
+    return event
+  },
+
   // Main
-  async main (_, { fly, userLogin }) {
+  async main ({ username }, { fly, userLogin }) {
+    username = fly.validate(username, { required: true })
+    console.log('username', username)
+
     let ret = await userLogin({ username: 'test', password: 'test' })
     fly.info('some one start login')
     if (Math.random() > 0.5) {
