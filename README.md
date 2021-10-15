@@ -519,13 +519,11 @@ Define validate `props` to validate event, throw `FlyValidateError` if validate 
 > Define properties in `props`
 
 ```yaml
-type: String,                       # Support: email, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii, validator
+type: String,                       # Support: email, phone, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii
 
 # Pre transform options
 pretrim: Boolean                    # Pre trim
 before: Function                    # Before filter
-
-validate: Function                  # Custom validator with (input, definition)
 
 # String options
 lowercase: Boolean                  # Auto convert lowercase, default is false
@@ -539,7 +537,7 @@ algorithm: String                   # Support: md5, sha1, sha256, sha512
 enum: Array[String]                 # Enum options
 
 # Date options
-format: String                      # Support: date, datetime, unix, value, ios, [YY-MM-DD]
+format: String                      # Support: date, datetime, unix, value, iso, [YY-MM-DD]
 
 # After transform options
 after: Function                     # After transform options

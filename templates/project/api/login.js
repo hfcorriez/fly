@@ -21,8 +21,13 @@ module.exports = {
     return event
   },
 
+  props: {
+    password: input => !input
+  },
+
   // Main
-  async main ({ username }, { fly, userLogin }) {
+  async main ({ username }, { fly, callee, userLogin }) {
+    console.log('fly', callee)
     username = fly.validate(username, { required: true })
     console.log('username', username)
 
