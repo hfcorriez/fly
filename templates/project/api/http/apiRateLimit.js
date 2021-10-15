@@ -5,6 +5,6 @@ module.exports = (event, ctx) => {
   if (!cache[ip]) cache[ip] = 0
   cache[ip]++
 
-  if (cache[ip] > 4) throw new Error(`api limit 2: <${ctx.callee.name}> ${ip} (${cache[ip]})`)
+  if (cache[ip] > 4) throw new Error(`api limit: <${ctx.callee.name}> ${ip} (${cache[ip]})`)
   return event
 }
