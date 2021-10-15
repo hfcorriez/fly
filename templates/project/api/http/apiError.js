@@ -1,7 +1,8 @@
 module.exports = (err, ctx) => {
   return {
     body: {
-      error: err.message
+      ok: false,
+      message: err.message
     }
   }
 }

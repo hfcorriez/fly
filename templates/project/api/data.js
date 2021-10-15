@@ -22,7 +22,6 @@ module.exports = {
     const { fly, hook } = ctx
     fly.info('execute data:beforeHttp')
     hook('main', (r) => fly.info('log:', r.id))
-    fly.info('ctx from super:', ctx.user)
     event.data = true
     return event
   },
@@ -30,7 +29,7 @@ module.exports = {
   // Main
   async main (event, {
     eventId, user, fly, handleHttp,
-    '/lib/db': db,
+    '@lib/db': db,
     '@dayjs': dayjs
   }) {
     fly.info('execute data:main')

@@ -1,6 +1,10 @@
 module.exports = (event, ctx) => {
-  console.log('apioutput', event)
+  // console.log('apioutput', event)
   return {
-    body: event
+    body: {
+      ok: true,
+      message: null,
+      data: event
+    }
   }
 }
