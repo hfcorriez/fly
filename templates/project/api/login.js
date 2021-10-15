@@ -22,7 +22,7 @@ module.exports = {
   },
 
   props: {
-    password: input => !input
+    password: /^\w+$/
   },
 
   // Main
