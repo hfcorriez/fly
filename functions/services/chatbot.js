@@ -64,8 +64,18 @@ module.exports = {
     })
     chatbot.use(async (ctx, next) => {
       const { update, session } = ctx
+
+      // Match message to decide how to do next
       const { name, message, action, data } = matchMessage(functions, update, session, ctx)
-      fly.info('ready to call', name, action)
+      fly.info('ready to call', name, action, JSON.stringify(data))
+
+      const fn = fly.get(name)
+
+      // Check fn exists and is chatbot fn
+      if (!fn || !fn.events.chatbot) {
+        // @todo need send error log
+        return
+      }
 
       if (name) {
         if (!action) {
@@ -73,7 +83,7 @@ module.exports = {
         }
 
         ctx.session.scene = name
-        ctx.session.action = action || 'main'
+        ctx.session.step = action || 'main'
 
         const event = {
           bot: ctx.botInfo,
@@ -236,14 +246,21 @@ function formatMessage (reply, ctx) {
 
   if (reply.buttons) {
     let buttons = reply.buttons.map(button => {
-      const data = new URLSearchParams({ ...button.data, from: reply.card }).toString()
+      const data = new URLSearchParams({
+        ...button.data,
+        scene: ctx.session.scene,
+        step: reply.card
+      }).toString()
+
       if (typeof button === 'string') {
         return { text: button, callback_data: lcfirst(button) + ' ' + data }
-      } else if (button.action) {
+      } else if (button.step) {
         // callback data will be "action x=1&y=2" when button has data
-        return { text: button.text, callback_data: button.action + ' ' + data }
+        return { text: button.text, callback_data: button.step + ' ' + data }
       } else if (button.url) {
         return button
+      } else if (button.scene) {
+        return { text: button.text, callback_data: '[s]' + button.scene + ' ' + data }
       }
       return null
     }).filter(b => b)
@@ -342,14 +359,16 @@ function matchMessage (functions, update, session = {}, ctx) {
   }
 
   if (eventType === 'button_click') {
-    if (session.scene) {
+    const [action, query] = callbackQuery.data.split(' ')
+    const data = query ? Object.fromEntries(new URLSearchParams(query).entries()) : {}
+
+    if (action.startsWith('[s]')) {
+      match.name = String(action.substr(3)).trim()
+    } else if (session.scene) {
       match.name = session.scene
-      const [action, query] = callbackQuery.data.split(' ')
-      match.action = action
-      if (query) {
-        match.data = Object.fromEntries(new URLSearchParams(query).entries())
-      }
+      match.step = action
     }
+    match.data = data
   } else {
     match.fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
     // Ignore duplicate entry (not useful)

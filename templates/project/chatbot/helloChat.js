@@ -1,7 +1,7 @@
 module.exports = {
   configChatbot: {
     name: 'telegram',
-    entry: ['/user', /nihao/]
+    entry: ['/hello', /nihao/]
   },
 
   main (_, { chatbot }) {
@@ -15,9 +15,10 @@ module.exports = {
         'Upload',
         'Update',
         'Delete',
-        { text: 'Data', action: 'data', data: { type: 'display' } },
+        { text: 'Data', step: 'data', data: { type: 'display' } },
         'Confirm',
-        'Condition'
+        'Condition',
+        { text: 'Redirect', scene: 'redirectChat', data: { test: 1 } }
       ],
       buttonsOptions: { columns: 4 },
       session: {
