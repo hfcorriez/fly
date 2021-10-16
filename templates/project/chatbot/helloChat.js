@@ -20,7 +20,7 @@ module.exports = {
         'Condition',
         { text: 'Redirect', scene: 'redirectChat', data: { test: 1 } }
       ],
-      buttonsOptions: { columns: 4 },
+      buttonsColumns: 4,
       session: {
         test: 'aaaa'
       }

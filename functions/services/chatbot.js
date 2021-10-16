@@ -253,8 +253,8 @@ function formatMessage (reply, ctx) {
       let buttons = reply.buttons.map(b => buildButton(b, ctx, reply)).filter(b => b)
 
       // extra = Markup.inlineKeyboard(buttons, reply.buttonsOptions)
-      if (reply.buttonsOptions && reply.buttonsOptions.columns) {
-        let columns = reply.buttonsOptions.columns
+      if (reply.buttonsColumns) {
+        let columns = parseInt(reply.buttonsColumns)
         for (let i = 0, j = buttons.length; i < j; i += columns) {
           inlineKeyboard.push(buttons.slice(i, i + columns))
         }
