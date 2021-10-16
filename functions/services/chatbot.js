@@ -66,13 +66,16 @@ module.exports = {
       const { update, session } = ctx
 
       // Match message to decide how to do next
-      const { name, message, action, data } = matchMessage(functions, update, session, ctx)
+      const { name, message, action, data, type } = matchMessage(functions, update, session, ctx)
       const fn = fly.get(name)
 
       // Check fn exists and is chatbot fn
-      if (!fn || !fn.events.chatbot || (action && !fn[action])) {
+      if (!fn) {
         // @todo need send error log
-        fly.info('ignore action', name, action)
+        fly.info('no fn exists', name, action)
+        return
+      } else if (type !== 'fn' && (!fn.events.chatbot || (action && !fn[action]))) {
+        fly.info('not chatbot fn', name, action)
         return
       }
 
@@ -304,6 +307,7 @@ function formatMessage (reply, ctx) {
 function buildButton (button, ctx, reply) {
   const data = new URLSearchParams({
     ...button.data,
+    ...button.event,
     scene: ctx.session.scene,
     step: reply.card
   }).toString()
@@ -317,6 +321,8 @@ function buildButton (button, ctx, reply) {
     return button
   } else if (button.scene) {
     return { text: button.text, callback_data: '[s]' + button.scene + ' ' + data }
+  } else if (button.fn) {
+    return { text: button.text, callback_data: '[f]' + button.fn + ' ' + data }
   }
   return null
 }
@@ -375,20 +381,23 @@ function matchMessage (functions, update, session = {}, ctx) {
 
     if (action.startsWith('[s]')) {
       match.name = String(action.substr(3)).trim()
+    } else if (action.startsWith('[f]')) {
+      match.name = String(action.substr(3)).trim()
+      match.type = 'fn'
     } else if (session.scene) {
       match.name = session.scene
       match.action = action
     }
     match.data = data
   } else {
-    match.fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
+    const fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
+    if (fn) match.name = fn.name
     // Ignore duplicate entry (not useful)
     // if (match.fn && match.fn.name === session.scene && ) {
     //   match.fn = null
     // }
   }
 
-  if (match.fn) match.name = match.fn.name
   return match
 }
 

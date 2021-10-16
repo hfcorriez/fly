@@ -10,7 +10,7 @@ module.exports = {
       text: '*NEW* redirect ok ' + JSON.stringify(data),
       buttons: [
         ['Button 1a', 'Button 1b', 'Button 1c'],
-        ['Button 2']
+        ['Button 2', { fn: 'buttonAction', text: 'FN button' }]
       ]
     })
   },
