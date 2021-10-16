@@ -67,15 +67,16 @@ module.exports = {
 
       // Match message to decide how to do next
       const { name, message, action, data } = matchMessage(functions, update, session, ctx)
-      fly.info('ready to call', name, action, JSON.stringify(data))
-
       const fn = fly.get(name)
 
       // Check fn exists and is chatbot fn
-      if (!fn || !fn.events.chatbot) {
+      if (!fn || !fn.events.chatbot || (action && !fn[action])) {
         // @todo need send error log
+        fly.info('ignore action', name, action)
         return
       }
+
+      fly.info('ready to call', name, action, JSON.stringify(data))
 
       if (name) {
         if (!action) {
@@ -366,7 +367,7 @@ function matchMessage (functions, update, session = {}, ctx) {
       match.name = String(action.substr(3)).trim()
     } else if (session.scene) {
       match.name = session.scene
-      match.step = action
+      match.action = action
     }
     match.data = data
   } else {
