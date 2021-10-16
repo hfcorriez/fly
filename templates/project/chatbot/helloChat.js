@@ -1,6 +1,6 @@
 module.exports = {
   configChatbot: {
-    name: 'telegram',
+    service: 'chatbot',
     entry: ['/hello', /nihao/]
   },
 

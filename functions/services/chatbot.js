@@ -9,18 +9,18 @@ module.exports = {
   },
 
   async main (event, ctx) {
-    const { type, config, name } = event
+    const { type, service } = event
     const { fly } = ctx
 
-    const functions = fly.find('chatbot').filter(fn => fn.events.chatbot.name === name)
+    const functions = fly.find('chatbot').filter(fn => fn.events.chatbot.service === service)
     switch (type) {
       case 'telegram':
-        this.runTelegram({ name, config, functions }, ctx)
+        this.runTelegram({ config: event, functions }, ctx)
         break
     }
   },
 
-  runTelegram ({ name, config, functions }, { fly }) {
+  runTelegram ({ config, functions }, { fly }) {
     fly.info('config', config)
     const chatbot = new Telegraf(config.token)
 
@@ -134,7 +134,7 @@ module.exports = {
 
     process.once('SIGINT', () => chatbot.stop('SIGINT'))
     process.once('SIGTERM', () => chatbot.stop('SIGTERM'))
-    fly.info('chatbot launch', name)
+    fly.info('chatbot launch', config.service)
   }
 }
 
