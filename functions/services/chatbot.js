@@ -246,35 +246,25 @@ function formatMessage (reply, ctx) {
   }
 
   if (reply.buttons) {
-    let buttons = reply.buttons.map(button => {
-      const data = new URLSearchParams({
-        ...button.data,
-        scene: ctx.session.scene,
-        step: reply.card
-      }).toString()
-
-      if (typeof button === 'string') {
-        return { text: button, callback_data: lcfirst(button) + ' ' + data }
-      } else if (button.step) {
-        // callback data will be "action x=1&y=2" when button has data
-        return { text: button.text, callback_data: button.step + ' ' + data }
-      } else if (button.url) {
-        return button
-      } else if (button.scene) {
-        return { text: button.text, callback_data: '[s]' + button.scene + ' ' + data }
-      }
-      return null
-    }).filter(b => b)
-
+    const isButtonGrid = Array.isArray(reply.buttons[0])
     const inlineKeyboard = []
-    // extra = Markup.inlineKeyboard(buttons, reply.buttonsOptions)
-    if (reply.buttonsOptions && reply.buttonsOptions.columns) {
-      let columns = reply.buttonsOptions.columns
-      for (let i = 0, j = buttons.length; i < j; i += columns) {
-        inlineKeyboard.push(buttons.slice(i, i + columns))
+
+    if (!isButtonGrid) {
+      let buttons = reply.buttons.map(b => buildButton(b, ctx, reply)).filter(b => b)
+
+      // extra = Markup.inlineKeyboard(buttons, reply.buttonsOptions)
+      if (reply.buttonsOptions && reply.buttonsOptions.columns) {
+        let columns = reply.buttonsOptions.columns
+        for (let i = 0, j = buttons.length; i < j; i += columns) {
+          inlineKeyboard.push(buttons.slice(i, i + columns))
+        }
+      } else {
+        inlineKeyboard.push(buttons)
       }
     } else {
-      inlineKeyboard.push(buttons)
+      reply.buttons.forEach(buttonLine => {
+        inlineKeyboard.push(buttonLine.map(b => buildButton(b, ctx, reply)).filter(b => b))
+      })
     }
 
     extra.reply_markup = { inline_keyboard: inlineKeyboard }
@@ -309,6 +299,26 @@ function formatMessage (reply, ctx) {
   }
 
   return { text, photo, file, type, extra, card: reply.card }
+}
+
+function buildButton (button, ctx, reply) {
+  const data = new URLSearchParams({
+    ...button.data,
+    scene: ctx.session.scene,
+    step: reply.card
+  }).toString()
+
+  if (typeof button === 'string') {
+    return { text: button, callback_data: lcfirst(button) + ' ' + data }
+  } else if (button.step) {
+    // callback data will be "action x=1&y=2" when button has data
+    return { text: button.text, callback_data: button.step + ' ' + data }
+  } else if (button.url) {
+    return button
+  } else if (button.scene) {
+    return { text: button.text, callback_data: '[s]' + button.scene + ' ' + data }
+  }
+  return null
 }
 
 function initSession (ctx) {

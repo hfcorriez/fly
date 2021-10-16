@@ -7,7 +7,11 @@ module.exports = {
   main ({ data }, { chatbot }) {
     chatbot.send({
       card: 'main',
-      text: '*NEW* redirect ok ' + JSON.stringify(data)
+      text: '*NEW* redirect ok ' + JSON.stringify(data),
+      buttons: [
+        ['Button 1a', 'Button 1b', 'Button 1c'],
+        ['Button 2']
+      ]
     })
   },
 
