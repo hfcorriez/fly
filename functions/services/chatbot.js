@@ -12,7 +12,7 @@ module.exports = {
     const { type, service } = event
     const { fly } = ctx
 
-    const functions = fly.find('chatbot').filter(fn => fn.events.chatbot.service === service)
+    const functions = fly.find('chatbot').filter(fn => [service, '*'].includes(fn.events.chatbot.service))
     switch (type) {
       case 'telegram':
         this.runTelegram({ config: event, functions }, ctx)
@@ -389,9 +389,16 @@ function matchMessage (functions, update, session = {}, ctx) {
       match.action = action
     }
     match.data = data
-  } else {
+  }
+
+  if (!match.name) {
     const fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
-    if (fn) match.name = fn.name
+    if (fn) {
+      match.name = fn.name
+      if (callbackQuery && callbackQuery.data) {
+        match.data = callbackQuery.data
+      }
+    }
     // Ignore duplicate entry (not useful)
     // if (match.fn && match.fn.name === session.scene && ) {
     //   match.fn = null
@@ -407,6 +414,7 @@ function matchAction (message, actions) {
 
 function matchEntry (type, message, entry) {
   if (!Array.isArray(entry)) entry = [entry]
+  console.log('matchEntry', type, message, entry)
   return entry.some(et => {
     if (typeof et === 'string') {
       if (et.startsWith(':')) {

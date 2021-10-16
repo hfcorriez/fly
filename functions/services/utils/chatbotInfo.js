@@ -1,6 +1,6 @@
 module.exports = {
   configChatbot: {
-    service: 'chatbot',
+    service: '*',
     entry: ['/info']
   },
 
