@@ -75,7 +75,7 @@ module.exports = {
         fly.info('no fn exists', name, action)
         return
       } else if (type !== 'fn' && (!fn.events.chatbot || (action && !fn[action]))) {
-        fly.info('not chatbot fn', name, action)
+        fly.info('not chatbot fn:', name, action, fn)
         return
       }
 
@@ -384,7 +384,9 @@ function matchMessage (functions, update, session = {}, ctx) {
     } else if (action.startsWith('[f]')) {
       match.name = String(action.substr(3)).trim()
       match.type = 'fn'
-    } else if (session.scene) {
+    } else if (session.scene &&
+      // Not action with [x]
+      !/^\[[a-z]\]/.test(action)) {
       match.name = session.scene
       match.action = action
     }
@@ -414,7 +416,6 @@ function matchAction (message, actions) {
 
 function matchEntry (type, message, entry) {
   if (!Array.isArray(entry)) entry = [entry]
-  console.log('matchEntry', type, message, entry)
   return entry.some(et => {
     if (typeof et === 'string') {
       if (et.startsWith(':')) {
