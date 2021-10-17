@@ -67,8 +67,27 @@ module.exports = {
 
       // Match message to decide how to do next
       const { name, message, action, data, type } = matchMessage(functions, update, session, ctx)
-      const fn = fly.get(name)
 
+      /**
+       * Support card action
+       */
+      if (type === 'card') {
+        switch (name) {
+          case 'delete':
+            ctx.deleteMessage(message.message_id)
+            break
+          case 'freeze':
+            ctx.editMessageText(message.text, {
+              message_id: message.message_id,
+              entities: message.entities,
+              reply_markup: {}
+            })
+            break
+        }
+        return
+      }
+
+      const fn = fly.get(name)
       // Check fn exists and is chatbot fn
       if (!fn) {
         // @todo need send error log
@@ -328,6 +347,8 @@ function buildButton (button, ctx, reply) {
     return { text: button.text, callback_data: '[s]' + button.scene + ' ' + data }
   } else if (button.fn) {
     return { text: button.text, callback_data: '[f]' + button.fn + ' ' + data }
+  } else if (button.card) {
+    return { text: button.text, callback_data: '[c]' + button.card + ' ' + data }
   }
   return null
 }
@@ -389,6 +410,9 @@ function matchMessage (functions, update, session = {}, ctx) {
     } else if (action.startsWith('[f]')) {
       match.name = String(action.substr(3)).trim()
       match.type = 'fn'
+    } else if (action.startsWith('[c]')) {
+      match.name = String(action.substr(3)).trim()
+      match.type = 'card'
     } else if (session.scene &&
       // Not action with [x]
       !/^\[[a-z]\]/.test(action)) {
