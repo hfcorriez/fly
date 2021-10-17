@@ -15,12 +15,12 @@ module.exports = {
     const functions = fly.find('chatbot').filter(fn => [service, '*'].includes(fn.events.chatbot.service))
     switch (type) {
       case 'telegram':
-        this.runTelegram({ config: event, functions }, ctx)
+        this.runTelegram({ service, config: event, functions }, ctx)
         break
     }
   },
 
-  runTelegram ({ config, functions }, { fly }) {
+  runTelegram ({ service, config, functions }, { fly, $chatbotApi }) {
     fly.info('config', config)
     const chatbot = new Telegraf(config.token)
 
@@ -100,6 +100,7 @@ module.exports = {
         const context = {
           eventType: 'chatbot',
           chatbot: {
+            api: (name, data) => $chatbotApi(service, name, data),
             send: (reply) => sendMessage(reply, ctx),
             update: (reply) => updateMessage(reply, ctx),
             delete: (reply) => deleteMessage(reply, ctx)
@@ -295,6 +296,10 @@ function formatMessage (reply, ctx) {
       ]
     }
     ctx.session.confirm = reply.confirm
+  }
+
+  if (reply.entities) {
+    extra.entities = reply.entities
   }
 
   if (reply.end) {
