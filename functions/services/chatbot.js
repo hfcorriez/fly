@@ -321,6 +321,11 @@ function formatMessage (reply, ctx) {
     extra.entities = reply.entities
   }
 
+  // reply to quote message
+  if (reply.reply_to) {
+    extra.reply_to_message_id = reply.reply_to
+  }
+
   if (reply.end) {
     ctx.session = {}
   }
