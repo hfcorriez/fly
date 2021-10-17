@@ -180,7 +180,6 @@ function updateMessage (reply, ctx) {
 
   // record message history for action
   if (card && ctx.session.history[card]) {
-    console.log('record edited message for:', card)
     ctx.session.history[card].push(message)
   }
 
@@ -202,7 +201,6 @@ async function sendMessage (reply, ctx) {
 
   // record message history for action
   if (card && sentMessage) {
-    console.log('record new message for:', card)
     // Init history for card
     if (!ctx.session.history[card]) ctx.session.history[card] = []
 
