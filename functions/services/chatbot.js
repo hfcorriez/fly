@@ -113,7 +113,8 @@ module.exports = {
           text: update.message && update.message.text,
           data,
           message,
-          session: ctx.session || {}
+          session: ctx.session || {},
+          service
         }
 
         const context = {

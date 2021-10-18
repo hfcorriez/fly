@@ -5,13 +5,14 @@ module.exports = {
   },
 
   main ({ message, bot }, { chatbot }) {
+    const pkg = require('../../../package.json')
+
     chatbot.send({
       markdown: `*SYSTEM INFO*
-Your ID: \`${message.from.id}\`
-Chat ID: \`${message.chat.id}\`
-Chat Type: ${message.chat.type}
-Bot ID: \`${bot.id}\`
-`
+\\[Your ID\\]  \`${message.from.id}\`
+\\[Chat ID\\]  \`${message.chat.id}\`
+\\[Bot   ID\\]  \`${bot.id}\`
+\\[Version\\]  \`${pkg.version}\``
     })
   }
 }
