@@ -26,6 +26,7 @@ $ yarn add fly
 
 ```bash
 $ cd exampleb
+```
 
 ### Write Simple function
 
