@@ -157,6 +157,7 @@ Usage:
 
 Commands:
 
+  help                           Show help
   call <fn>                      Call function
     <fn>                         Function name to call
     --type string                Set event type: such as http
@@ -168,30 +169,24 @@ Commands:
     --filter,-f string
   get <fn>                       Get function info
     <fn>                         Function name
-  help                           Show help
   list [type]                    List functions
   log [service]                  Show service log
   new [dir]                      Create new fly project
     [dir]                        Dir name
     --force                      Force create when dir exists
     --source,-s string           Select source to create. support: http (default), project
-  reload [service]               Reload service
-  restart [service]              Restart service
   run [service]                  Run service in foregroud
     --instance,-i number         The instance number
     --bind,-b string             Bind address
     --port,-p number             Bind port
   start [service]                Start service as daemon
-    --instance,-i number         The instance number
-    --bind,-b string             Bind address
-    --port,-p number             Bind port
-    --cron-restart string        Schedule time to restart with cron pattern
   status [service]               Show service status
   stop [service]                 Stop service
+  reload [service]               Reload service
+  restart [service]              Restart service
   test [fn]                      Test functions
     <fn>                         Function name
     --timeout number
-    --error,-e                   Show full error
 ```
 
 > Event can be anything, but must can be JSONify

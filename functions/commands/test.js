@@ -109,8 +109,7 @@ module.exports = {
     },
     descriptions: {
       '_': 'Test functions',
-      '<fn>': 'Function name',
-      '--error': 'Show full error'
+      '<fn>': 'Function name'
     }
   }
 }
