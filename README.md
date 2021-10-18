@@ -150,7 +150,7 @@ props: Object                       # Nested props definetions
 ### Command Usage
 
 ```bash
-❏ FLY 4.1.0
+❏ FLY 4.3.0
 Usage:
 
   fly <command> [--options]
