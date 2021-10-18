@@ -5,12 +5,6 @@ const utils = require('../../lib/utils')
 module.exports = {
   async main (event, { fly, getServiceConfig }) {
     const { args, params: { service } } = event
-    const { config } = await getServiceConfig({ service, args })
-    const { bind, port, 'cron-restart': cronRestart, 'max-memory': maxMemory } = config
-    const commandArgs = ['run', service]
-
-    if (config.verbose) commandArgs.push('-v')
-    else if (config.debug) commandArgs.push('-vv')
 
     // Hot reload
     const pm = new PM({
@@ -18,19 +12,36 @@ module.exports = {
       path: process.argv[1]
     })
 
-    await pm.start({
-      name: service,
-      args: commandArgs,
-      cronRestart,
-      maxMemory,
-      env: {
-        BIND: bind,
-        PORT: port
-      },
-      instance: config.singleton ? 1 : config.instance
-    })
+    if (service !== 'all') {
+      await start(service)
+    } else {
+      for (const s in fly.service) {
+        await start(s)
+      }
+    }
 
-    return pm.status(service)
+    return pm.status()
+
+    async function start (s) {
+      const { config } = await getServiceConfig({ service: s, args })
+      const { bind, port, 'cron-restart': cronRestart, 'max-memory': maxMemory } = config
+      const commandArgs = ['run', s]
+
+      if (config.verbose) commandArgs.push('-v')
+      else if (config.debug) commandArgs.push('-vv')
+
+      await pm.start({
+        name: s,
+        args: commandArgs,
+        cronRestart,
+        maxMemory,
+        env: {
+          BIND: bind,
+          PORT: port
+        },
+        instance: config.singleton ? 1 : config.instance
+      })
+    }
   },
 
   catch (error) {
