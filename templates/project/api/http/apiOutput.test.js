@@ -10,7 +10,7 @@ module.exports = {
       },
       test (result) {
         assert.ok(typeof result === 'object')
-        assert.strictEqual(result.code, 0)
+        assert.strictEqual(result.body.ok, true)
       }
     }
   ]

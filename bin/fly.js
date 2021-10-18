@@ -14,7 +14,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
  * Run compile with another process to avoid fly runtime waste boostrap memory
  */
   if (process.argv.includes('compile')) {
-    const fly = new Fly({ ignoreCache: process.argv.includes('-f') })
+    const fly = new Fly({ ignoreCache: true })
     await fly.bootstrap()
     console.log('compile ok:', fly.loader.cache.path())
     return process.exit()
@@ -47,7 +47,9 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
   }
 
   // Call compile force to avoid load functions in memory
-  execSync(`DEBUG=no ${process.argv[0]} ${__filename} compile`)
+  if (process.stdin.isTTY) {
+    execSync(`DEBUG=no ${process.argv[0]} ${__filename} compile`)
+  }
 
   const fly = new Fly({ useCache: true, verbose })
   await fly.bootstrap()
