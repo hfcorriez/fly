@@ -22,12 +22,6 @@ $ yarn add fly
 
 ## Quick start
 
-### Create project
-
-```bash
-$ cd exampleb
-```
-
 ### Write Simple function
 
 > `index.js`
