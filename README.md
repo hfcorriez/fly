@@ -17,7 +17,7 @@
 
 ```bash
 ## Yarn
-$ yarn global add fly
+$ yarn add fly
 ```
 
 ## Quick start
@@ -25,9 +25,7 @@ $ yarn global add fly
 ### Create project
 
 ```bash
-$ fly new example
-$ cd example
-```
+$ cd exampleb
 
 ### Write Simple function
 
