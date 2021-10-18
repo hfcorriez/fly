@@ -1,16 +1,15 @@
 ![fly-banner](https://user-images.githubusercontent.com/119550/74084844-019c3200-4aae-11ea-963a-4c2a13461809.png)
 
-`FLY` is a library for back-end development.
+`FLY`, a serverless framwork for back-end development.
 
-- **Functional**:  Everything is function
-- **Lightweight**: One file can be served
-- **Yare**: Very flexible
-
+- **Functional**: Everything is function
+- **Lightweight**: Write service in one file
+- **Yielding**: Very flexible
 ## Features
 
-- **Hot Reload**: Develop functions or native js with hot-reload for back-end development
-- **Injection**: Call functions without path, inject anything to context
-- **Online Debug**: Online debug withot restart tto solve problem quickly
+- **Hot Reload**: Develop back-end with hot-reload
+- **Simple Inject**: Call functions without path. Inject function, module and files
+- **Live Debug**: Live debug withot restart tto solve problem quickly
 
 ## Installation
 
@@ -68,6 +67,7 @@ ADDRESS:  http://127.0.0.1:5000
 
 > If you change index.js, the function will hot reload without restart. this feature will disabled when NODE_ENV is not `<empty>` or `development`
 
+## Events
 ### Command Usage
 
 ```bash
