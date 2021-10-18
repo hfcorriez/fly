@@ -30,7 +30,8 @@ module.exports = {
   async main (event, {
     eventId, user, fly, handleHttp,
     '@lib/db': db,
-    '@dayjs': dayjs
+    '@dayjs': dayjs,
+    '@package.json': pkg
   }) {
     fly.info('execute data:main')
     return {
@@ -42,6 +43,7 @@ module.exports = {
       },
       event,
       date: dayjs().format('YYYY-MM-DD'),
+      pkg,
       env: process.env
     }
   }
