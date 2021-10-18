@@ -67,7 +67,93 @@ ADDRESS:  http://127.0.0.1:5000
 
 > If you change index.js, the function will hot reload without restart. this feature will disabled when NODE_ENV is not `<empty>` or `development`
 
-## Events
+## Basic
+
+### Function
+
+```javascript
+module.exports = {
+  // Config function as a event
+  config<Event>: {
+    // config here
+  },
+
+  // Before function run with event type, can be a filter function or other function
+  before<Event>: Function / String,
+
+  // After function run with event type, can be a filter function or other function
+  before<Event>: Function / String,
+
+  // Define props to validate, see validation below
+  props: Object,
+
+  /**
+   * @prop event The data passed to function
+   * @prop context The context in the execution, use injector here
+   */
+  main (event, context) {
+    // logic here
+  }
+}
+```
+
+### Context
+
+```yaml
+eventId: String                       # Event ID
+eventType: String                     # Event Type：http, command, null is internal
+originalEvent: Event                  # OriginalEvent
+parentEvent: Event                    # Parent Event
+fly:
+  call: Function                      # Call function
+  find: Function                      # List functions
+  get: Function                       # Get function
+  info: Function                      # Log info
+  warn: Function                      # Log warn
+  error: Function                     # log error
+@module:                              # Moudle inject, support @package, @lib/abc (project), @config/abc.conf as file
+<function>: Function                  # The fly function you want import
+```
+
+### Validate
+
+Define validate `props` to validate event, throw `FlyValidateError` if validate failed.
+
+**Define**
+
+> Define properties in `props`
+
+```yaml
+type: String,                       # Support: email, phone, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii
+pretrim: Boolean                    # Pre trim
+before: Function                    # Before filter
+lowercase: Boolean                  # Auto convert lowercase, default is false
+uppercase: Boolean                  # Auto convert uppercase, default is false
+trim: Boolean                       # Trim
+algorithm: String                   # Support: md5, sha1, sha256, sha512
+enum: Array[String]                 # Enum options
+format: String                      # Support: date, datetime, unix, value, iso, [YY-MM-DD]
+after: Function                     # After transform options
+default: String                     # Default value if not exists
+message: String                     # Message will throw as FlyValidateError(message),
+props: Object                       # Nested props definetions
+```
+
+**FlyValidateError**
+
+```javascript
+{
+  name: "FlyValidateError",
+  message: "validate failed: filed1, filed2",
+  errors: [
+    {
+      name: "filed1",
+      type: "string",
+      message: "filed1 validate error"
+    }
+  ]
+}
+```
 ### Command Usage
 
 ```bash
@@ -115,9 +201,9 @@ Commands:
     --error,-e                   Show full error
 ```
 
-## Events
-
 > Event can be anything, but must can be JSONify
+
+## Events
 
 ### HTTP
 
@@ -491,80 +577,6 @@ props<Event>: Object                    # Props definetions for event
 }
 ```
 
-### Context Definition
-
-```yaml
-eventId: String                       # Event ID
-eventType: String                     # Event Type：http, command, null is internal
-originalEvent: Event                  # OriginalEvent
-parentEvent: Event                    # Parent Event
-fly:
-  call: Function                      # Call function
-  find: Function                      # List functions
-  get: Function                       # Get function
-  info: Function                      # Log info
-  warn: Function                      # Log warn
-  error: Function                     # log error
-  super: Function                     # Call parent method when extend other
-<function>: Function                  # The functions imported
-<module>: Mixed                       # Module imported with require
-```
-
-### Validate
-
-Define validate `props` to validate event, throw `FlyValidateError` if validate failed.
-
-**Define**
-
-> Define properties in `props`
-
-```yaml
-type: String,                       # Support: email, phone, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii
-
-# Pre transform options
-pretrim: Boolean                    # Pre trim
-before: Function                    # Before filter
-
-# String options
-lowercase: Boolean                  # Auto convert lowercase, default is false
-uppercase: Boolean                  # Auto convert uppercase, default is false
-trim: Boolean                       # Trim
-
-# Hash options
-algorithm: String                   # Support: md5, sha1, sha256, sha512
-
-# Pattern options
-enum: Array[String]                 # Enum options
-
-# Date options
-format: String                      # Support: date, datetime, unix, value, iso, [YY-MM-DD]
-
-# After transform options
-after: Function                     # After transform options
-
-# Global options
-default: String                     # Default value if not exists
-message: String                     # Message will throw as FlyValidateError(message),
-
-# Nested options
-props: Object                       # Nested props definetions
-```
-
-**FlyValidateError**
-
-```javascript
-{
-  name: "FlyValidateError",
-  message: "validate failed: filed1, filed2",
-  errors: [
-    {
-      name: "filed1",
-      type: "string",
-      message: "filed1 validate error"
-    }
-  ]
-}
-```
 
 ## LICENSE
 
