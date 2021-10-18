@@ -1,7 +1,10 @@
 const colors = require('colors/safe')
+const debug = require('debug')
 
 module.exports = {
   async main (event, { fly }) {
+    debug.disable()
+
     const { args, params } = event
     const name = params[0]
     if (args.timeout && typeof args.timeout === 'number') {
