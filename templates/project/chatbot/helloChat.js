@@ -49,8 +49,8 @@ module.exports = {
     chatbot.send({
       text: 'do you need confirm?',
       confirm: {
-        yes: 'ConfirmYes',
-        no: 'ConfirmNo'
+        yes: 'confirmYes',
+        no: 'confirmNo'
       }
     })
   },
