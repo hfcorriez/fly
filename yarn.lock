@@ -338,10 +338,10 @@ avvio@^7.1.2:
     fastq "^1.6.1"
     queue-microtask "^1.1.2"
 
-awesome-phonenumber@^2.63.0:
-  version "2.63.0"
-  resolved "https://registry.yarnpkg.com/awesome-phonenumber/-/awesome-phonenumber-2.63.0.tgz#de088b4254ed86062b940314d4bf4d0e1083f73c"
-  integrity sha512-TdnsVNDsukBME05gWqH2w9eW3ZxG55H/gjzP3kK08VJq9VSOkj/awzcsglULTAkany++itq/0ffzEfriDZLI9Q==
+awesome-phonenumber@2.51.1:
+  version "2.51.1"
+  resolved "https://registry.yarnpkg.com/awesome-phonenumber/-/awesome-phonenumber-2.51.1.tgz#d3a897e36692371c7646fad6155d49ad077b3e60"
+  integrity sha512-rsL/qNmINyQUZUsV/9iDmFCzhk3O7Fajtp/ny/lw8RFW+laXShH1iJ4G0jFIYaimfdjEY7LfRURmNSL+yXWCzg==
 
 axios@^0.21.0:
   version "0.21.1"
