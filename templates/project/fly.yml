@@ -27,6 +27,17 @@ service:
   cron:
     fn: $cron
 
+  chatbot:
+    fn: $chatbot
+    type: telegram
+    token: .TG_TOKEN
+    username: .TG_USERNAME
+    admins: .TG_ADMINS
+    allow_users: .TG_ALLOW_USERS # Allow user ids
+    allow_groups: .TG_ALLOW_GROUPS # Allow user ids
+    deny_private: false
+    deny_invite: true # Allow other join group
+
 http:
   login:
     path: /login
