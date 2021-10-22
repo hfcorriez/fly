@@ -66,7 +66,7 @@ module.exports = {
       const { update, session } = ctx
 
       // Match message to decide how to do next
-      const { name, message, action, data, type } = matchMessage(functions, update, session, ctx)
+      const { name, message, action, data, type, from } = matchMessage(functions, update, session, ctx)
 
       /**
        * Support card action
@@ -112,6 +112,7 @@ module.exports = {
           bot: ctx.botInfo,
           text: update.message && update.message.text,
           data,
+          from,
           message,
           session: ctx.session || {},
           service
@@ -402,7 +403,8 @@ function matchMessage (functions, update, session = {}, ctx) {
   const { callback_query: callbackQuery, message } = update
   const { type: eventType } = parseEvent(update)
   const match = {
-    message: message || (callbackQuery ? callbackQuery.message : null)
+    message: message || (callbackQuery ? callbackQuery.message : null),
+    from: message ? message.from : (callbackQuery ? callbackQuery.from : null)
   }
 
   if (eventType === 'button_click') {
