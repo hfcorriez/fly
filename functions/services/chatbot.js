@@ -1,6 +1,6 @@
 const { Telegraf, session } = require('telegraf')
 const fs = require('fs')
-const { lcfirst } = require('../../lib/utils')
+const { lcfirst, fromEntries } = require('../../lib/utils')
 
 module.exports = {
   configService: {
@@ -407,7 +407,7 @@ function matchMessage (functions, update, session = {}, ctx) {
 
   if (eventType === 'button_click') {
     const [action, query] = callbackQuery.data.split(' ')
-    const data = query ? Object.fromEntries(new URLSearchParams(query).entries()) : {}
+    const data = query ? fromEntries(new URLSearchParams(query).entries()) : {}
 
     if (action.startsWith('[s]')) {
       match.name = String(action.substr(3)).trim()
