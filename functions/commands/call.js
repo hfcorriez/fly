@@ -1,6 +1,6 @@
-const querystring = require('querystring')
 const colors = require('colors/safe')
 const path = require('path')
+const { parseObjArg } = require('../../lib/utils')
 
 const sleep = seconds => new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
 
@@ -12,7 +12,7 @@ module.exports = {
     let evt
 
     if (data) {
-      evt = this.parseData(data)
+      evt = parseObjArg(data)
       if (!evt) {
         fly.warn('error event', 'Event data parse failed')
         return
@@ -20,7 +20,7 @@ module.exports = {
     }
 
     if (context) {
-      context = this.parseData(context)
+      context = parseObjArg(context)
       if (!context) {
         fly.warn('error context', 'Context data parse failed')
         return
@@ -53,16 +53,6 @@ module.exports = {
     } while (true)
   },
 
-  parseData (data) {
-    let ret
-    try {
-      ret = JSON.parse(data)
-    } catch (err) {
-      if (data.includes('=')) ret = querystring.parse(data.replace(/\+/g, '%2B'))
-    }
-    return ret
-  },
-
   getStdin () {
     const stdin = process.stdin
     let ret = ''
@@ -83,14 +73,12 @@ module.exports = {
     args: {
       '--type': String,
       '--data': String,
-      '--context': String,
       '--timeout': Number,
       '--error': Boolean,
       '--interval': Number
     },
     alias: {
       '--data': '-d',
-      '--context': '-c',
       '--timeout': '-t',
       '--error': '-e',
       '--interval': '-i'
@@ -100,7 +88,6 @@ module.exports = {
       '<fn>': 'Function name to call',
       '--type': 'Set event type: such as http',
       '--data': 'Event data, support JSON and URL-QUERY-ENCODED',
-      '--context': 'Context data, support JSON and URL-QUERY-ENCODED',
       '--timeout': 'Execution timeout',
       '--error': 'Show full error',
       '--interval': 'Run function every seconds'

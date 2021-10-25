@@ -1,16 +1,19 @@
 const arg = require('arg')
 const colors = require('colors/safe')
-const utils = require('../../lib/utils')
+const { invert, parseObjArg } = require('../../lib/utils')
 
 module.exports = {
   config: {
     args: {
+      '--context': String,
       '--help': Boolean
     },
     alias: {
+      '--context': '-c',
       '--help': '-h'
     },
     descriptions: {
+      '--context': 'Set context',
       '--help': 'Show help'
     }
   },
@@ -57,9 +60,11 @@ module.exports = {
     evt.args.verbose = verbose
 
     try {
+      const context = evt.args.context ? parseObjArg(evt.args.context) : null
       const [result, err] = await fly.call(fn, evt, {
         eventId: evt.args['event-id'] || eventId,
-        eventType: 'command'
+        eventType: 'command',
+        ...context
       }, true)
       if (err) throw err
 
@@ -97,8 +102,8 @@ module.exports = {
     const args = arg(
       Object.assign(
         {}, this.config.args, target.args || {},
-        this.config.alias ? utils.invert(this.config.alias) : {},
-        target.alias ? utils.invert(target.alias) : {}
+        this.config.alias ? invert(this.config.alias) : {},
+        target.alias ? invert(target.alias) : {}
       ),
       {
         permissive: true,
