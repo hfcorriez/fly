@@ -13,14 +13,18 @@ module.exports = {
     const { getServiceConfig } = ctx
     const { args, params: { service } } = event
 
-    if (service === 'all') {
-      for (const s in ctx.fly.service) {
-        const { config, fn } = await getServiceConfig({ service: s, args })
+    try {
+      if (service === 'all') {
+        for (const s in ctx.fly.service) {
+          const { config, fn } = await getServiceConfig({ service: s, args })
+          await this.run(fn, config, ctx)
+        }
+      } else {
+        const { config, fn } = await getServiceConfig({ service, args })
         await this.run(fn, config, ctx)
       }
-    } else {
-      const { config, fn } = await getServiceConfig({ service, args })
-      await this.run(fn, config, ctx)
+    } catch (e) {
+      return
     }
 
     return { wait: true }
