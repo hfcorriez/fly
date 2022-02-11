@@ -29,7 +29,7 @@
     "debug": "^3.1.0",
     "fastify": "^2.12.1",
     "fastify-formbody": "^3.1.0",
-    "fastify-multipart": "^0.7.0",
+    "fastify-multipart": "^5.3.1",
     "fastify-static": "^2.6.0",
     "fastify-xml-body-parser": "^1.1.0",
     "form-data": "^2.3.3",
