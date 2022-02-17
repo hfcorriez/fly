@@ -483,15 +483,15 @@ function parseEvent (update) {
     }
     chat = update.my_chat_member.chat
     from = update.my_chat_member.from
-  } else if (message.new_chat_member) {
+  } else if (message && message.new_chat_member) {
     type = 'member_join'
     chat = message.chat
     from = message.from
-  } else if (message.left_chat_member) {
+  } else if (message && message.left_chat_member) {
     type = 'member_left'
     chat = message.chat
     from = message.from
-  } else if (message.new_chat_title || message.new_chat_photo || message.delete_chat_photo) {
+  } else if (message && (message.new_chat_title || message.new_chat_photo || message.delete_chat_photo)) {
     type = 'channel_update'
     chat = message.chat
     from = message.from
