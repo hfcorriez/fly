@@ -30,8 +30,10 @@ module.exports = {
       const { chat, from } = parseEvent(update)
       fly.info('update', update)
       fly.info('session', ctx.session)
-      const isAdmin = config.admins && String(config.admins).includes(from.id)
 
+      if (!from) return
+
+      const isAdmin = config.admins && String(config.admins).includes(from.id)
       // Only allow_users can talk to bot
       if (!isAdmin) {
         if (config.allow_users && !String(config.allow_users).includes(from.id)) {
