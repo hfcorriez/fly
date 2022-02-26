@@ -31,19 +31,21 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
   }
 
   if (!process.env.DEBUG) {
-    const VERBOSE_LEVELS = ['-v', '-vv']
-    const VERBOSE_STRS = ['*<*>,-*debug*<_*>', '*<*>']
-    const verboseArg = process.argv.find(arg => VERBOSE_LEVELS.includes(arg))
-
-    verbose = VERBOSE_LEVELS.indexOf(verboseArg) + 1
-    argv = process.argv.slice(2).filter(i => !VERBOSE_LEVELS.includes(i))
+    verbose = process.argv.some(arg => arg === '-v')
+    if (verbose) {
+      argv = process.argv.slice(2).filter(i => i !== '-v')
+    }
+    let verbosePattern = null
 
     if (verbose) {
-      debug.enable(VERBOSE_STRS[verbose - 1])
-      console.log(colors.gray(`(verbose mode: ${VERBOSE_STRS[verbose - 1]})`))
+      verbosePattern = '*<*>'
+    } else if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+      verbosePattern = '*<*>,-*debug*<_*>'
     } else {
-      debug.enable('*error*<*>,*warn*<*>,*info*<*>,-*debug*<_*>')
+      verbosePattern = '*error*<*>,*warn*<*>,*info*<*>,-*<_*>,-*<\\$*>'
     }
+    console.log(colors.gray(`(verbose mode: ${verbosePattern})`))
+    debug.enable(verbosePattern)
   }
 
   // Call compile force to avoid load functions in memory
