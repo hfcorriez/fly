@@ -18,7 +18,7 @@ module.exports = {
   configService: {
     singleton: false,
     name: 'Http Server',
-    port: parseInt(process.env.PORT || 5000, 10),
+    port: parseInt(process.env.PORT || 3000, 10),
     address: '127.0.0.1'
   },
 
