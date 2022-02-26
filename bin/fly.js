@@ -31,7 +31,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
   }
 
   if (!process.env.DEBUG) {
-    verbose = process.argv.some(arg => arg === '-v')
+    verbose = process.argv.includes('-v')
     if (verbose) {
       argv = process.argv.slice(2).filter(i => i !== '-v')
     }
