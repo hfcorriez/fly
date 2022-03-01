@@ -40,7 +40,7 @@ console.log(colors.green(`❏ FLY ${pkg.version}`))
     if (verbose) {
       verbosePattern = '*\\(*\\)'
     } else if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-      verbosePattern = '*\\(*\\),-*debug*\\(_*\\)'
+      verbosePattern = '*\\(*\\),-*debug*\\(_*\\),-*debug*\\(\\$*\\)'
     } else {
       verbosePattern = '*error*\\(*\\),*warn*\\(*\\),*info*\\(*\\),-*\\(_*\\),-*\\(\\$*\\)'
     }
