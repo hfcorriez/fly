@@ -123,13 +123,13 @@ type: String,                       # Support:
   # encode: md5, sha1, sha256, sha512, base32, base64, uppercase, lowercase, hash
   # string: alpha, alphanumeric
   # other: enum
-before: Function                    # Before filter
-empty: Boolean                      # Allow empty for string, array, object
+pre: Function                       # Pre process value
+empty: Boolean                      # Default is true, Allow empty for string, array, object
 lowercase: Boolean                  # Allow lowercase for string
-lowercase: Boolean                  # Allow uppwercase for string
+uppercase: Boolean                  # Allow uppercase for string
 trim: Boolean                       # Trim text to validate
 enum: Array[String]                 # Enum options
-format:
+format: String | Array | Function
   # For date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
   # For number: int, float
   # For string: uppercase, lowercase, trim
