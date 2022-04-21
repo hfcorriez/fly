@@ -117,16 +117,22 @@ Define validate `props` to validate event, throw `FlyValidateError` if validate 
 > Define properties in `props`
 
 ```yaml
-type: String,                       # Support: email, phone, date, alpha, alphanumeric, base64, base32, enum, float, number, ip, json, md5, phonenumber, port, url, uppercase, lowercase, macaddress, hexcolor, locale, hex, hash, fadn, ascii
-pretrim: Boolean                    # Pre trim
+type: String,                       # Support:
+  # tech: email, phone, date, ip, phonenumber, port, url, macaddress, hexcolor, locale, fqdn, mimetype, jwt
+  # types: int, string, array, object, float, json, hex, ascii
+  # encode: md5, sha1, sha256, sha512, base32, base64, uppercase, lowercase, hash
+  # string: alpha, alphanumeric
+  # other: enum
 before: Function                    # Before filter
-lowercase: Boolean                  # Auto convert lowercase, default is false
-uppercase: Boolean                  # Auto convert uppercase, default is false
-trim: Boolean                       # Trim
-algorithm: String                   # Support: md5, sha1, sha256, sha512
+empty: Boolean                      # Allow empty for string, array, object
+lowercase: Boolean                  # Allow lowercase for string
+lowercase: Boolean                  # Allow uppwercase for string
+trim: Boolean                       # Trim text to validate
 enum: Array[String]                 # Enum options
-format: String                      # Support: date, datetime, unix, value, iso, [YY-MM-DD]
-after: Function                     # After transform options
+format:
+  # For date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
+  # For number: int, float
+  # For string: uppercase, lowercase, trim
 default: String                     # Default value if not exists
 message: String                     # Message will throw as FlyValidateError(message),
 props: Object                       # Nested props definetions
