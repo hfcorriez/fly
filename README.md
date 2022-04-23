@@ -22,26 +22,38 @@ $ yarn add fly
 
 ## Quick start
 
-### Write Simple function
+### Example
 
-> `index.js`
+`loginUser.js`
 
 ```javascript
 module.exports = {
-  main: (event, ctx) => {
-    return {
-      status: 200,
-      body: 'hello from fly'
-    }
+  // Config as http function
+  configHttp: {
+    method: 'post',
+    path: '/api/login'
   },
 
-  configHttp: {
-    path: '/'
+  /**
+   * Main logic
+   */
+  async main ({ body }, { db, config, fly }) {
+    fly.info(`user login: ${body.user}`)
+
+    // login logic here
+    const user = await db.query('login query')
+
+    return {
+      status: 200,
+      body: user
+    }
   }
 }
 ```
 
 ### Run with fly
+
+*Run with HTTP service*
 
 ```bash
 $ fly run http↙
@@ -58,36 +70,31 @@ ADDRESS:  http://127.0.0.1:5000
     ENV:  development
 ```
 
-> If you change index.js, the function will hot reload without restart. this feature will disabled when NODE_ENV is not `<empty>` or `development`
+*Direct call in CLI*
 
-## Basic
+```bash
+$ fly call login -d 'user=xx&pass=xx'
+```
+
+
+## Definitions
 
 ### Function
 
-```javascript
-module.exports = {
-  // Config function as a event
-  config<Event>: {
-    // config here
-  },
+**Function Definition**
 
-  // Before function run with event type, can be a filter function or other function
-  before<Event>: Function / String,
-
-  // After function run with event type, can be a filter function or other function
-  before<Event>: Function / String,
-
-  // Define props to validate, see validation below
-  props: Object,
-
-  /**
-   * @prop event The data passed to function
-   * @prop context The context in the execution, use injector here
-   */
-  main (event, context) {
-    // logic here
-  }
-}
+```yaml
+extends: String                             # Extends from function, start with @ indicate the parent fly
+decorator: String                           # Decorate the function
+main: Function                              # Main call -> (event, ctx)
+props:                                      # Props validate definitions
+validate: Function                          # Validate
+config<Event>: Object | Boolean | Function  # Startup event
+before<Event>: Function | String | Array    # Before filter
+after<Event>: Function | String | Array     # After filter
+validate<Event>: Function                   # Validate event
+catch<Event>: Function | String | Array     # Error catch
+props<Event>: Object                        # Props definitions for event
 ```
 
 ### Context
@@ -135,7 +142,7 @@ format: String | Array | Function
   # For string: uppercase, lowercase, trim
 default: String                     # Default value if not exists
 message: String                     # Message will throw as FlyValidateError(message),
-props: Object                       # Nested props definetions
+props: Object                       # Nested props Definitions
 ```
 
 **FlyValidateError**
@@ -153,7 +160,7 @@ props: Object                       # Nested props definetions
   ]
 }
 ```
-### Command Usage
+## Command Usage
 
 ```bash
 ❏ FLY 4.3.0
@@ -445,132 +452,6 @@ const Fly = require('node-fly')
 const fly = new Fly('/dir')
 await fly.call('test', {host: 'api.com'})
 ```
-## Definitions
-
-### Function
-
-**Function Definition**
-
-```yaml
-extends: String                          # Extends from function, start with @ indicate the parent fly
-main: Function                          # Main call -> (event, ctx)
-props:                                  # Props validate definitions
-validate: Function                      # Validate
-before: Function                        # Before filter
-after: Function                         # After filter
-catch: Function                         # Error catch
-config<Event>: Object|Boolean|Function  # Startup event
-before<Event>: Function                 # Before filter
-after<Event>: Function                  # After filter
-validate<Event>: Function               # Validate event
-catch<Event>: Function                  # Error catch
-props<Event>: Object                    # Props definetions for event
-  # same as props, but only for given event
-```
-
-**Example**
-
-**createUser.js**
-
-> Create user with info
-
-```javascript
-{
-  /**
-   * Define event types
-   */
-  props: {
-    id: Number,
-    email: {
-      type: 'email',
-      lowercase: true,
-      message: 'Email invalid'
-    },
-    name: {
-      type: String,
-      default: 'User'
-    },
-    avatar: {
-      type: String,
-      default: 'User'
-    },
-    bornDate: {
-      type: Date,
-      format: 'value'
-    },
-    info: {
-      type: 'Object',
-      props: {
-        title: String,
-      }
-    }
-  },
-
-  // Extends from appbase for initial functions
-  extends: 'authHttpUser',
-
-  /**
-   * Main function
-   */
-  main(event) {
-    const db = this.db()
-    db.collections('user').insertOne(event)
-  },
-
-  /**
-   * Config before http
-   */
-  beforeHttp(event) {
-    // Transform query or body to main
-    return event.query || event.body
-  },
-
-  /**
-   * Config after http
-   */
-  afterHttp(event) {
-    return {
-      code: 0,
-      data: event
-    }
-  },
-
-  /**
-   * Config before command
-   */
-  beforeCommand(event) {
-    return event.args
-  },
-
-  /**
-   * Config after command
-   */
-  afterCommand(event) {
-    Object.keys(event).forEach(name => console.log(`${name}: ${event[name]}`))
-  },
-
-  /**
-   * Config http event
-   */
-  configHttp: {
-    method: 'post',
-    path: '/api/createUser'
-  },
-
-  /**
-   * Config command event
-   */
-  configCommand: {
-    _: 'create',
-    args: {
-      '--name': String,
-      '--email': String,
-      '--id': Number
-    }
-  }
-}
-```
-
 
 ## LICENSE
 
