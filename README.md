@@ -24,7 +24,7 @@ $ yarn add fly
 
 ### Example
 
-`loginUser.js`
+`login.js`
 
 ```javascript
 module.exports = {
@@ -84,8 +84,8 @@ $ fly call login -d 'user=xx&pass=xx'
 **Function Definition**
 
 ```yaml
-extends: String                             # Extends from function, start with @ indicate the parent fly
-decorator: String                           # Decorate the function
+extends: String                             # Extends from function
+decorator: String                           # Decorate with other function
 main: Function                              # Main call -> (event, ctx)
 props:                                      # Props validate definitions
 validate: Function                          # Validate
