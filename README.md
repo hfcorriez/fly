@@ -125,22 +125,22 @@ Define validate `props` or `propsHttp` to validate specified main event or http 
 
 ```yaml
 type: String,                       # Support:
-  # system types: String, Number, Array, Object, Boolean
-  # tech: email, phone, date, ip, phonenumber, port, url, macaddress, hexcolor, locale, fqdn, mimetype, jwt
-  # types: int, string, array, object, float, json, hex, ascii, pattern
-  # encode: md5, sha1, sha256, sha512, base32, base64, uppercase, lowercase, hash
-  # string: alpha, alphanumeric
-  # other: enum
-  # Regexp: set regexp patter for pattern validate only
+                                    # system types: String, Number, Array, Object, Boolean
+                                    # tech: email, phone, date, ip, phonenumber, port, url, macaddress, hexcolor, locale, fqdn, mimetype, jwt
+                                    # types: int, string, array, object, float, json, hex, ascii, pattern
+                                    # encode: md5, sha1, sha256, sha512, base32, base64, uppercase, lowercase, hash
+                                    # string: alpha, alphanumeric
+                                    # other: enum
+                                    # Regexp: set regexp patter for pattern validate only
 array: Boolean                      # For nested array validate
 props: Object                       # For nested object validate
 empty: Boolean                      # Default is true, Allow empty for string, array, object
 pattern: Regexp                     # For pattern
 enum: Array[String]                 # Enum options
-format: String | Array | Function
-  # For date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
-  # For number: int, float
-  # For string: uppercase, lowercase, trim
+format: String | Array | Function   # Output format
+                                    # date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
+                                    # number: int, float
+                                    # string: uppercase, lowercase, trim
 default: String                     # Default value if not exists
 message: String                     # Message will throw as FlyValidateError(message)
 ```
