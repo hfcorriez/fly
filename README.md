@@ -113,7 +113,7 @@ fly:
   error: Function                     # log error
   env: String                         # Env name, default is "development", same as "NODE_ENV"
 @module:                              # Moudle inject, support @package, @lib/abc (project), @config/abc.conf as file
-<function>: Function                  # The fly function you want import
+$function: Function                   # The fly function you want use
 ```
 
 ### Validate
