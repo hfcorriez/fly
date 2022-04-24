@@ -117,11 +117,9 @@ fly:
 
 ### Validate
 
-Define validate `props` to validate event, throw `FlyValidateError` if validate failed.
+Define validate `props` or `propsHttp` to validate specified main event or http event, throw `FlyValidateError` if validate failed.
 
-**Define**
-
-> Define properties in `props`
+*Config*
 
 ```yaml
 type: String,                       # Support:
