@@ -133,6 +133,7 @@ type: String,                       # Support:
   # Regexp: set regexp patter for pattern validate only
 empty: Boolean                      # Default is true, Allow empty for string, array, object
 pattern: Regexp                     # For pattern
+array: Boolean                      # For nested array validate
 enum: Array[String]                 # Enum options
 format: String | Array | Function
   # For date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
