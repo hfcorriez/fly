@@ -130,6 +130,7 @@ type: String,                       # Support:
   # encode: md5, sha1, sha256, sha512, base32, base64, uppercase, lowercase, hash
   # string: alpha, alphanumeric
   # other: enum
+  # Regexp: set regexp patter for pattern validate only
 empty: Boolean                      # Default is true, Allow empty for string, array, object
 pattern: Regexp                     # For pattern
 enum: Array[String]                 # Enum options
