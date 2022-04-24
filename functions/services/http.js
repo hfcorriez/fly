@@ -53,7 +53,7 @@ module.exports = {
           ip: String(request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || request.raw.socket.remoteAddress).split(',').shift(),
           headers: request.headers || {},
           body: request.body || {},
-          query: request.query || {},
+          query: { ...request.query },
           search: urlObj.search,
           cookies: {}
         }
