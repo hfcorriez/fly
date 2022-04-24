@@ -142,7 +142,6 @@ format: String | Array | Function
   # For string: uppercase, lowercase, trim
 default: String                     # Default value if not exists
 message: String                     # Message will throw as FlyValidateError(message)
-props: Object                       # Nested props Definitions
 ```
 
 > Also support "<name>: <type>" as simple one-line validate for optional validate
