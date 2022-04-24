@@ -125,6 +125,7 @@ Define validate `props` to validate event, throw `FlyValidateError` if validate 
 
 ```yaml
 type: String,                       # Support:
+  # system types: String, Number, Array, Object, Boolean
   # tech: email, phone, date, ip, phonenumber, port, url, macaddress, hexcolor, locale, fqdn, mimetype, jwt
   # types: int, string, array, object, float, json, hex, ascii, pattern
   # encode: md5, sha1, sha256, sha512, base32, base64, uppercase, lowercase, hash
@@ -144,7 +145,7 @@ default: String                     # Default value if not exists
 message: String                     # Message will throw as FlyValidateError(message)
 ```
 
-> Also support "<name>: <type>" as simple one-line validate for optional validate
+> Also support `name: type` as simple one-line validate for optional validate
 
 **FlyValidateError**
 
