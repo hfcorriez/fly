@@ -131,9 +131,10 @@ type: String,                       # Support:
   # string: alpha, alphanumeric
   # other: enum
   # Regexp: set regexp patter for pattern validate only
+array: Boolean                      # For nested array validate
+props: Object                       # For nested object validate
 empty: Boolean                      # Default is true, Allow empty for string, array, object
 pattern: Regexp                     # For pattern
-array: Boolean                      # For nested array validate
 enum: Array[String]                 # Enum options
 format: String | Array | Function
   # For date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
@@ -144,17 +145,21 @@ message: String                     # Message will throw as FlyValidateError(mes
 props: Object                       # Nested props Definitions
 ```
 
+> Also support "<name>: <type>" as simple one-line validate for optional validate
+
 **FlyValidateError**
 
 ```javascript
 {
   name: "FlyValidateError",
-  message: "validate failed: filed1, filed2",
+  message: "validate failed: message1, message2",
+  isValidateError: true,
   errors: [
     {
       name: "filed1",
+      input: "input value",
       type: "string",
-      message: "filed1 validate error"
+      message: "filed1 invalid"
     }
   ]
 }
