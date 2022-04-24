@@ -126,22 +126,19 @@ Define validate `props` to validate event, throw `FlyValidateError` if validate 
 ```yaml
 type: String,                       # Support:
   # tech: email, phone, date, ip, phonenumber, port, url, macaddress, hexcolor, locale, fqdn, mimetype, jwt
-  # types: int, string, array, object, float, json, hex, ascii
+  # types: int, string, array, object, float, json, hex, ascii, pattern
   # encode: md5, sha1, sha256, sha512, base32, base64, uppercase, lowercase, hash
   # string: alpha, alphanumeric
   # other: enum
-pre: Function                       # Pre process value
 empty: Boolean                      # Default is true, Allow empty for string, array, object
-lowercase: Boolean                  # Allow lowercase for string
-uppercase: Boolean                  # Allow uppercase for string
-trim: Boolean                       # Trim text to validate
+pattern: Regexp                     # For pattern
 enum: Array[String]                 # Enum options
 format: String | Array | Function
   # For date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
   # For number: int, float
   # For string: uppercase, lowercase, trim
 default: String                     # Default value if not exists
-message: String                     # Message will throw as FlyValidateError(message),
+message: String                     # Message will throw as FlyValidateError(message)
 props: Object                       # Nested props Definitions
 ```
 
