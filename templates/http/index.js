@@ -2,7 +2,7 @@ const fn = {
   main (event, { project, service, originalEvent }) {
     return {
       body: {
-        message: '❏ FLY is ready!',
+        message: '◻️ FLY is ready!',
         originalEvent
         // event
       }

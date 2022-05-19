@@ -167,7 +167,7 @@ message: String                     # Message will throw as FlyValidateError(mes
 ## Command Usage
 
 ```bash
-❏ FLY 4.3.0
+◻️ FLY 4.3.0
 Usage:
 
   fly <command> [--options]
