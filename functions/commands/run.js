@@ -12,7 +12,6 @@ module.exports = {
   async main (event, ctx) {
     const { getServiceConfig } = ctx
     const { args, params: { service } } = event
-
     try {
       if (service === 'all') {
         for (const s in ctx.fly.service) {
@@ -24,6 +23,7 @@ module.exports = {
         await this.run(fn, config, ctx)
       }
     } catch (e) {
+      console.log('not found', e)
       return
     }
 

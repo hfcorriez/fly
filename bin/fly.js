@@ -7,7 +7,7 @@ const { execSync } = require('child_process')
 const pkg = require('../package.json')
 const Fly = require('../lib/fly')
 
-console.log(colors.green(`◻️ FLY ${pkg.version}`))
+console.log(colors.green(`◻︎ FLY ${pkg.version}`))
 
 ;(async () => {
 /**
@@ -40,9 +40,9 @@ console.log(colors.green(`◻️ FLY ${pkg.version}`))
     if (verbose) {
       verbosePattern = '*\\(*\\)'
     } else if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-      verbosePattern = '*\\(*\\),-*debug*\\(◻️*\\),-*debug*\\(\\$*\\)'
+      verbosePattern = '*\\(*\\),-*debug*\\(◻︎*\\),-*debug*\\(\\$*\\)'
     } else {
-      verbosePattern = '*error*\\(*\\),*warn*\\(*\\),*info*\\(*\\),-*\\(◻️*\\),-*\\(\\$*\\)'
+      verbosePattern = '*error*\\(*\\),*warn*\\(*\\),*info*\\(*\\),-*\\(◻︎*\\),-*\\(\\$*\\)'
     }
     console.log(colors.gray(`(verbose mode: ${verbosePattern})`))
     debug.enable(verbosePattern)

@@ -24,7 +24,7 @@ module.exports = {
       dependencies: {}
     }, null, 2))
 
-    console.log(`◻️ FLY project ready: ${dst}`)
+    console.log(`◻︎ FLY project ready: ${dst}`)
   },
 
   configCommand: {

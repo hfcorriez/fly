@@ -1,4 +1,4 @@
-`◻️ FLY`, a serverless framwork for back-end development.
+`◻︎ FLY`, a serverless framwork for back-end development.
 
 - **Functional**: Everything is function
 - **Lightweight**: Write service in one file
@@ -165,7 +165,7 @@ message: String                     # Message will throw as FlyValidateError(mes
 ## Command Usage
 
 ```bash
-◻️ FLY 4.x.x
+◻︎ FLY 4.x.x
 Usage:
 
   fly <command> [--options]
