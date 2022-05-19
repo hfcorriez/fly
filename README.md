@@ -1,6 +1,4 @@
-![fly-banner](https://user-images.githubusercontent.com/119550/74084844-019c3200-4aae-11ea-963a-4c2a13461809.png)
-
-`FLY`, a serverless framwork for back-end development.
+`◻️ FLY`, a serverless framwork for back-end development.
 
 - **Functional**: Everything is function
 - **Lightweight**: Write service in one file
@@ -13,7 +11,7 @@
 
 ## Installation
 
-> Require `node >= 8`
+> Require `node >= 10`
 
 ```bash
 ## Yarn
