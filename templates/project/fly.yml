@@ -8,7 +8,7 @@ project:
 service:
   http:
     fn: $http
-    port: .PORT/5000
+    port: .PORT/3000
     cors: true
     instance: 1
     static:

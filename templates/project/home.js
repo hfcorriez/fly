@@ -1,10 +1,7 @@
 const path = require('path')
 
 const Func = {
-  main (event, { fly }) {
-    // console.log(ctx)
-    fly.info('log: home index')
-    fly.error('log: home error')
+  main (_, { fly }) {
     return { file: path.join(__dirname, '/index.html') }
   },
 
