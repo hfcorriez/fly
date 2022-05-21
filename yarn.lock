@@ -2903,6 +2903,11 @@ typegram@^3.1.5:
   resolved "https://registry.yarnpkg.com/typegram/-/typegram-3.4.3.tgz#a1e212beaf6b43079a3774457b40d6eab1a93acf"
   integrity sha512-pH0TQJzCWM2+7y6yiBoQVNt7PO9ZvAu/lQukVx4sm68FIBBZEBWI+2MzuMcdbwrD5mD5NrEMAyml9N6DupUZag==
 
+uglify-js@^3.15.5:
+  version "3.15.5"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.15.5.tgz#2b10f9e0bfb3f5c15a8e8404393b6361eaeb33b3"
+  integrity sha512-hNM5q5GbBRB5xB+PMqVRcgYe4c8jbyZ1pzZhS6jbq54/4F2gFK869ZheiE5A8/t+W5jtTNpWef/5Q9zk639FNQ==
+
 universalify@^0.1.0:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/universalify/-/universalify-0.1.2.tgz#b646f69be3942dabcecc9d6639c80dc105efaa66"

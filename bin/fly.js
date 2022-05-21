@@ -13,7 +13,7 @@ console.log(colors.green(`▶ FLY ${pkg.version}`))
 /**
  * Run compile with another process to avoid fly runtime waste boostrap memory
  */
-  if (process.argv.includes('compile')) {
+  if (process.argv[2] === 'compile') {
     const fly = new Fly({ ignoreCache: true })
     await fly.bootstrap()
     console.log('compile ok:', fly.loader.cache.path())
