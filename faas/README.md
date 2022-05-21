@@ -16,3 +16,36 @@
   - Native nodejs env support
 - v5.2: aws
 
+# Example
+
+## Cloudflare
+
+*fly.yml*
+
+```yaml
+cloudflare:
+  name: my-fn
+  route: abc.com/*
+```
+
+*lookupIp.js*
+
+```js
+module.exports = {
+  configHttp: {
+    method: 'get',
+    path: '/api/lookupIp'
+  },
+
+  main ({ query: {ip} }, { ipip }) {
+    const ipInfo = ipip.lookup(ip)
+    return {
+      body: ipInfo
+    }
+  }
+}
+```
+
+```bash
+# yarn fly deploy cloudflare
+```
