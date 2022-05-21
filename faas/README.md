@@ -47,5 +47,5 @@ module.exports = {
 ```
 
 ```bash
-# yarn fly deploy cloudflare
+$ yarn fly deploy cloudflare
 ```
