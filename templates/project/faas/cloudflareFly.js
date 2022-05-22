@@ -8,7 +8,9 @@ module.exports = {
     worker: 'fly-test'
   },
 
-  main (_, { '@lib/utils': utils, cloudflareLib }) {
+  main (_, { '@lib/utils': utils, cloudflareLib, set }) {
+    set('name', 'fly-test')
+
     return {
       body: {
         padding: utils.padding('Pading this left'),

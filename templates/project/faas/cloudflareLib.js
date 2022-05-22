@@ -1,3 +1,3 @@
-module.exports = (event) => {
-  return event
+module.exports = (event, { name }) => {
+  return { event, context: { name } }
 }

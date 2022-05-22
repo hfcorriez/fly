@@ -39,8 +39,21 @@ class Context {
         }
     }
     if (FLY_STORE[key]) {
+      if (FLY_STORE[key].main) {
+        return (event) => {
+          return FLY_STORE[key].main(event, this.proxy)
+        }
+      }
       return FLY_STORE[key]
     }
+
+    /**
+     * Call context self
+     */
+    if (this[key] && typeof this[key] === 'function') {
+      return this[key].bind(this)
+    }
+
     return this.data[key]
   }
   set (key, value) {
@@ -87,7 +100,6 @@ async function main (request) {
 
   const ctx = new Context().toProxy()
   const chain = buildChain(fn)
-  console.log('chain', chain)
 
   try {
     for (let key of Object.keys(chain)) {

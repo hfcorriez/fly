@@ -179,7 +179,7 @@ function loadCode (fn, fly, codes = {}) {
         loadCode(name, fly, codes)
       } else {
         const fn = fly.get(name)
-        !fn && console.log('fn', name)
+        if (!fn) return
         loadCode(fn, fly, codes)
       }
     })
