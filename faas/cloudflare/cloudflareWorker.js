@@ -57,6 +57,18 @@ async function main (request) {
   const fn = matchEvent(event)
   if (!fn) return ['404 not found', { status: '404' }]
 
+  if (fn === 204) {
+    return ['', {
+      headers: {
+        'access-control-allow-origin': event.headers['origin'] || '*',
+        'access-control-allow-methods': event.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        'access-control-allow-credentials': 'true',
+        'access-control-allow-headers': event.headers['access-control-request-headers'] || '*'
+      },
+      status: 204
+    }]
+  }
+
   const context = new Context().toProxy()
   const res = await fn.main(event, context)
   let body = res.body
@@ -75,9 +87,13 @@ function matchEvent (event) {
     const fn = functions[key]()
     if (!fn.configHttp) continue
     const { path: targetPath, method: targetMethod = 'get' } = fn.configHttp
-    if (targetMethod === method) {
+    if (method === 'options' || targetMethod === method || targetMethod === '*') {
       if (path === targetPath) {
-        matchedFn = fn
+        if (method === 'options') {
+          matchedFn = 204
+        } else {
+          matchedFn = fn
+        }
         break
       } else if (targetPath.includes(':')) {
         const pathRegexp = new RegExp(['^',
