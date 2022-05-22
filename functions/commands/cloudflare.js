@@ -2,6 +2,12 @@ const fs = require('fs')
 const path = require('path')
 const root = path.join(__dirname, '../../')
 const uglify = require('uglify-js')
+const { resolve } = require('path')
+const { readdir } = require('fs').promises
+const mime = require('mime-types')
+
+const EXT_TXT = ['js', 'json', 'txt', 'text', 'html', 'html', 'mustache', 'vue', 'react', 'jsx', 'conf', 'ini', 'css', 'scss', 'less', 'md', 'markdown', 'shtml']
+const EXT_BIN = ['png', 'jpg', 'gif', 'jpeg', 'svg', 'ico', 'appicon']
 
 module.exports = {
   configCommand: {
@@ -30,10 +36,14 @@ module.exports = {
       if (!workers[workerConfig.worker]) {
         workers[workerConfig.worker] = {
           compileFile: `${flyCacheDir}/cloudflare-${workerConfig.worker}.js`,
-          functions: []
+          functions: [],
+          mounts: []
         }
       }
       workers[workerConfig.worker].functions.push(fn)
+      if (workerConfig.mount) {
+        workers[workerConfig.worker].mounts.push(workerConfig.mount)
+      }
     }
 
     console.log('▶ Cloudflare ' + action)
@@ -45,18 +55,49 @@ module.exports = {
           const workerFns = worker.functions
           const workerCode = fs.readFileSync(path.join(root, 'faas/cloudflare/cloudflareWorker.js'), 'utf8')
           workerFns.forEach(fn => loadCode(fn, fly, codes))
+          for (const mount of worker.mounts) {
+            const files = await getFiles(path.join(fly.root, mount))
+            for (const file of files) {
+              const ext = file.split('.').pop()
+              const fileName = file.replace(fly.root, '')
+              let fileCode = ''
+              const contentType = mime.lookup(ext)
+
+              if (EXT_TXT.includes(ext)) {
+                fileCode = fs.readFileSync(file, 'base64')
+              } else if (EXT_BIN.includes(ext)) {
+                fileCode = fs.readFileSync(file, 'base64')
+              }
+
+              if (fileCode && fileCode.length > 300000) {
+                console.warn('[warn] ignore ' + fileName + ' because it is over 100k')
+                continue
+              }
+
+              if (fileCode) {
+                codes[fileName] = `'${contentType}:${fileCode}'`
+              }
+            }
+          }
+
           const workerFnCode = 'const FLY_STORE = {\n' + Object.keys(codes).map(key => {
             return `'${key}': ${codes[key]},\n`
           }).join('\n') + '\n}'
 
-          console.log('Functions:', Object.keys(codes))
+          console.log('Files:', Object.keys(codes))
 
           try {
             const buildFile = worker.compileFile.replace('.js', '.orig.js')
-            const code = workerCode.replace('const FLY_STORE = {}', workerFnCode)
-            fs.writeFileSync(buildFile, code)
+            const origCode = workerCode.replace('const FLY_STORE = {}', workerFnCode)
+            fs.writeFileSync(buildFile, origCode)
+            const compileCode = uglify.minify(origCode)
             console.log('Build File: ', buildFile)
-            const compileCode = uglify.minify(code)
+            if (!compileCode.code) {
+              throw new Error(compileCode)
+            }
+            if (compileCode.code.length > 1000000) {
+              throw new Error('deploy file is too large:', compileCode.code.length)
+            }
             fs.writeFileSync(worker.compileFile, compileCode.code)
             console.log('Compile File: ', worker.compileFile)
           } catch (err) {
@@ -146,4 +187,13 @@ function loadCode (fn, fly, codes = {}) {
       .replace(/\n\s+configCloudflare:\s*{[\s\S+]+?},\n/m, '')
   }}()`
   return codes
+}
+
+async function getFiles (dir) {
+  const dirents = await readdir(dir, { withFileTypes: true })
+  const files = await Promise.all(dirents.map((dirent) => {
+    const res = resolve(dir, dirent.name)
+    return dirent.isDirectory() ? getFiles(res) : res
+  }))
+  return Array.prototype.concat(...files)
 }

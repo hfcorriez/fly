@@ -5,7 +5,8 @@ module.exports = {
   },
 
   configCloudflare: {
-    worker: 'fly-test'
+    worker: 'fly-test',
+    static: 'static'
   },
 
   async main (event, { cloudflare }) {

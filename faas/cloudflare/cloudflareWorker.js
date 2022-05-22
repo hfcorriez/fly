@@ -80,6 +80,14 @@ async function main (request) {
   if (typeof body === 'object') {
     body = JSON.stringify(res.body)
     headers['content-type'] = 'text/json'
+  } else if (res.file) {
+    const file = FLY_STORE['/' + res.file]
+    if (!file) {
+      return ['404 not found', { status: 404 }]
+    }
+    const [type, data] = file.split(':')
+    headers['content-type'] = type
+    body = Uint8Array.from(atob(data), c => c.charCodeAt(0))
   }
   return [body, { headers, status: res.status || 200 }]
 }

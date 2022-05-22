@@ -37,6 +37,7 @@
     "md5-file": "^5.0.0",
     "micromatch": "^4.0.4",
     "mime": "^2.5.2",
+    "mime-types": "^2.1.35",
     "node-ipc": "^9.1.1",
     "path-to-regexp": "^6.2.0",
     "pm2": "^5.2.0",

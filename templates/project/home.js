@@ -2,7 +2,7 @@ const path = require('path')
 
 const Func = {
   main (_, { fly }) {
-    return { file: path.join(__dirname, '/index.html') }
+    return { file: path.join(__dirname, '/static/index.html') }
   },
 
   catchHttp (err) {
