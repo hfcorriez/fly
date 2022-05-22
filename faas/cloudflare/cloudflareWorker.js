@@ -6,9 +6,8 @@ addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
 
-async function handleRequest (request) {
-  const res = await main(request)
-  return new Response(res[0], res[1])
+function handleRequest (request) {
+  return main(request)
 }
 
 const Handler = {
@@ -55,10 +54,10 @@ class Context {
 async function main (request) {
   const event = convertEvent(request)
   let fn = matchEvent(event)
-  if (!fn) return ['404 not found', { status: '404' }]
+  if (!fn) return new Response('404 not found', { status: '404' })
 
   if (fn === 204) {
-    return ['', {
+    return new Response('', {
       headers: {
         'access-control-allow-origin': event.headers['origin'] || '*',
         'access-control-allow-methods': event.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -66,7 +65,7 @@ async function main (request) {
         'access-control-allow-headers': event.headers['access-control-request-headers'] || '*'
       },
       status: 204
-    }]
+    })
   }
 
   if (typeof fn === 'function') {
@@ -83,13 +82,26 @@ async function main (request) {
   } else if (res.file) {
     const file = FLY_STORE['/' + res.file]
     if (!file) {
-      return ['404 not found', { status: 404 }]
+      return new Response('404 not found', { status: 404 })
     }
     const [type, data] = file.split(':')
     headers['content-type'] = type
     body = Uint8Array.from(atob(data), c => c.charCodeAt(0))
+  } else if (res.redirect) {
+    const url = urlResolve(event.url, res.redirect)
+    return Response.redirect(url, 301)
   }
-  return [body, { headers, status: res.status || 200 }]
+  return new Response(body, { headers, status: res.status || 200 })
+}
+
+function urlResolve (from, to) {
+  const resolvedUrl = new URL(to, new URL(from, 'resolve://'))
+  if (resolvedUrl.protocol === 'resolve:') {
+    // `from` is a relative URL.
+    const { pathname, search, hash } = resolvedUrl
+    return pathname + search + hash
+  }
+  return resolvedUrl.toString()
 }
 
 function matchEvent (event) {
