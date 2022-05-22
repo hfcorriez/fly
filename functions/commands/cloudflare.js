@@ -106,20 +106,20 @@ module.exports = {
         }
         break
       case 'deploy':
-        const res = await callCloudflareApi({
-          account: config.id,
-          email: config.email,
-          key: config.key,
-          method: 'get',
-          path: `/workers/subdomain`
-        })
+        try {
+          const res = await callCloudflareApi({
+            account: config.id,
+            email: config.email,
+            key: config.key,
+            method: 'get',
+            path: `/workers/subdomain`
+          })
 
-        const domain = res.subdomain + '.workers.dev'
+          const domain = res.subdomain + '.workers.dev'
 
-        for (const name in workers) {
-          const worker = workers[name]
+          for (const name in workers) {
+            const worker = workers[name]
 
-          try {
             const data = fs.readFileSync(worker.compileFile)
             await callCloudflareApi({
               account: config.id,
@@ -131,13 +131,13 @@ module.exports = {
               path: `/workers/scripts/${name}`
             })
             console.log('URL:', `https://${name}.${domain}`)
-            console.log('Functions:', worker.functions.map(fn => 'http:' + fn.events.http.path + ' > ' + fn.name))
+            console.log('Functions:', worker.functions.map(fn => (fn.events.http ? 'http:' + fn.events.http.path + ' > ' : '') + fn.name))
             console.log('Size:', data.length)
 
             console.log('(PS: if you create a new worker, please setup route and wait a few minutes for the worker to be ready', `https://dash.cloudflare.com/${config.id}/workers/services/view/${name}/production/triggers`, ')')
-          } catch (err) {
-            console.error(name, 'deploy error', err)
           }
+        } catch (err) {
+          console.error('deploy error', err)
         }
     }
   }
@@ -164,21 +164,26 @@ function loadCode (fn, fly, codes = {}) {
   const fnCode = fs.readFileSync(fn.file, 'utf8')
   const contextRegex = /,\s*\{([\S\s]+?)\}/m
   const contextMatched = contextRegex.exec(fnCode)
-  if (contextMatched) {
-    contextMatched[1].split(',')
-      .map(p => p.trim().split(':').shift().trim().replace(/('|")/g, ''))
-      .filter(k => !['cloudflare', 'fly'].includes(k))
-      .forEach(name => {
-        if (codes[name]) return
-        if (name.startsWith('@')) {
-          loadCode(name, fly, codes)
-        } else {
-          const fn = fly.get(name)
-          !fn && console.log('fn', name)
-          loadCode(fn, fly, codes)
-        }
-      })
+  const loadNames = contextMatched ? contextMatched[1].split(',')
+    .map(p => p.trim().split(':').shift().trim().replace(/('|")/g, ''))
+    .filter(k => !['cloudflare', 'fly'].includes(k)) : []
+
+  if (fn.decorator) {
+    loadNames.push(fn.decorator)
   }
+
+  loadNames
+    .forEach(name => {
+      if (codes[name]) return
+      if (name.startsWith('@')) {
+        loadCode(name, fly, codes)
+      } else {
+        const fn = fly.get(name)
+        !fn && console.log('fn', name)
+        loadCode(fn, fly, codes)
+      }
+    })
+
   codes[fn.name] = `function() {${
     fnCode
     // change module to return

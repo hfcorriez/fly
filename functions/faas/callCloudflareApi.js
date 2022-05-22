@@ -13,4 +13,10 @@ module.exports = ({ account, zone, method = 'get', path, email, key, type, data 
     data
   })
     .then(res => res.data.result)
+    .catch(err => {
+      if (err.response && err.response.data) {
+        throw new Error(err.response.data.errors[0].message)
+      }
+      throw err
+    })
 }
