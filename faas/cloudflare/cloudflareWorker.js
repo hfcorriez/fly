@@ -11,26 +11,46 @@ async function handleRequest (request) {
   return new Response(res[0], res[1])
 }
 
+const Handler = {
+  get (obj, prop) {
+    return obj.get(prop)
+  },
+
+  set (obj, prop, value) {
+    obj.set(prop, value)
+    return true
+  }
+}
 class Context {
   get (key) {
+    switch (key) {
+      case 'cloudflare':
+        return globalThis
+    }
     return functions[key]()
+  }
+  toProxy () {
+    if (!this.proxy) {
+      this.proxy = new Proxy(this, Handler)
+    }
+    return this.proxy
   }
 }
 
 async function main (request) {
   const event = convertEvent(request)
   const fn = matchEvent(event)
-  if (!fn) return ['404 not found']
+  if (!fn) return ['404 not found', { status: '404' }]
 
-  const context = new Context()
+  const context = new Context().toProxy()
   const res = await fn.main(event, context)
-  let body = ''
+  let body = res.body
   let headers = {}
-  if (typeof res.body === 'object') {
+  if (typeof body === 'object') {
     body = JSON.stringify(res.body)
     headers['content-type'] = 'text/json'
   }
-  return [body, { headers }]
+  return [body, { headers, status: res.status || 200 }]
 }
 
 function matchEvent (event) {

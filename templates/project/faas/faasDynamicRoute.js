@@ -1,7 +1,7 @@
 module.exports = {
   configHttp: {
     method: 'get',
-    path: '/test/:name'
+    path: '/route/:name'
   },
 
   configCloudflare: {

@@ -75,17 +75,22 @@ module.exports = {
           const worker = workers[name]
 
           try {
+            const data = fs.readFileSync(worker.compileFile)
             await callCloudflareApi({
               account: config.id,
               email: config.email,
               key: config.key,
               method: 'put',
               type: 'application/javascript',
-              data: fs.readFileSync(worker.compileFile),
+              data,
               path: `/workers/scripts/${name}`
             })
-            console.log(name, 'deploy to:', `https://${name}.${domain}`)
-            console.log('if you create a new worker, please setup route and wait a few minutes for the worker to be ready', `https://dash.cloudflare.com/${config.id}/workers/services/view/${name}/production/triggers`)
+            console.log('▶ Cloudflare')
+            console.log('URL:', `https://${name}.${domain}`)
+            console.log('Functions:', worker.functions.map(fn => 'http:' + fn.events.http.path + ' > ' + fn.name))
+            console.log('Size:', data.length)
+
+            console.log('(PS: if you create a new worker, please setup route and wait a few minutes for the worker to be ready', `https://dash.cloudflare.com/${config.id}/workers/services/view/${name}/production/triggers`, ')')
           } catch (err) {
             console.error(name, 'deploy error', err)
           }
