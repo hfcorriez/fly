@@ -22,12 +22,27 @@ const Handler = {
   }
 }
 class Context {
+  constructor (data) {
+    this.data = data || {}
+  }
   get (key) {
     switch (key) {
       case 'cloudflare':
         return globalThis
+      case 'fly':
+        return {
+          info: (...args) => console.log(...args),
+          error: (...args) => console.error(...args),
+          warn: (...args) => console.warn(...args)
+        }
     }
-    return functions[key]()
+    if (functions[key]) {
+      return functions[key]()
+    }
+    return this.data[key]
+  }
+  set (key, value) {
+    this.data[key] = value
   }
   toProxy () {
     if (!this.proxy) {
