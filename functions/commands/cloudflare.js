@@ -45,7 +45,7 @@ module.exports = {
           const workerFns = worker.functions
           const workerCode = fs.readFileSync(path.join(root, 'faas/cloudflare/cloudflareWorker.js'), 'utf8')
           workerFns.forEach(fn => loadCode(fn, fly, codes))
-          const workerFnCode = 'const functions = {\n' + Object.keys(codes).map(key => {
+          const workerFnCode = 'const FLY_STORE = {\n' + Object.keys(codes).map(key => {
             return `'${key}': ${codes[key]},\n`
           }).join('\n') + '\n}'
 
@@ -53,10 +53,10 @@ module.exports = {
 
           try {
             const buildFile = worker.compileFile.replace('.js', '.orig.js')
-            const code = workerCode.replace('const functions = {}', workerFnCode)
+            const code = workerCode.replace('const FLY_STORE = {}', workerFnCode)
             fs.writeFileSync(buildFile, code)
             console.log('Build File: ', buildFile)
-            const compileCode = uglify.minify(workerCode.replace('const functions = {}', workerFnCode))
+            const compileCode = uglify.minify(code)
             fs.writeFileSync(worker.compileFile, compileCode.code)
             console.log('Compile File: ', worker.compileFile)
           } catch (err) {

@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 
-const functions = {}
+const FLY_STORE = {}
 
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
@@ -36,8 +36,8 @@ class Context {
           warn: (...args) => console.warn(...args)
         }
     }
-    if (functions[key]) {
-      return functions[key]
+    if (FLY_STORE[key]) {
+      return FLY_STORE[key]
     }
     return this.data[key]
   }
@@ -87,8 +87,8 @@ async function main (request) {
 function matchEvent (event) {
   const { method, path } = event
   let matchedFn = null
-  for (const key of Object.keys(functions)) {
-    const fn = functions[key]
+  for (const key of Object.keys(FLY_STORE)) {
+    const fn = FLY_STORE[key]
     if (!fn.configHttp) continue
     const { path: targetPath, method: targetMethod = 'get' } = fn.configHttp
     if (method === 'options' || targetMethod === method || targetMethod === '*') {
