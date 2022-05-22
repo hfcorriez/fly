@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 
 const FLY_STORE = {}
-const FNS_BEFORE_HTTP = ['beforeCloudflare', 'beforeHttp', 'before']
+const FNS_BEFORE_HTTP = ['beforeCloudflare', 'beforeHttp', 'propsHttp', 'before', 'props']
 const FNS_AFTER_HTTP = ['after', 'afterHttp', 'afterCloudflare']
 const FNS_ALL_HTTP = [...FNS_BEFORE_HTTP, 'main', ...FNS_AFTER_HTTP]
+
+const cloudflare = this
 
 addEventListener('fetch', event => {
   event.respondWith(new CFRuntime().run(event.request))
@@ -16,9 +18,14 @@ class CFContext {
   get (key) {
     switch (key) {
       case 'cloudflare':
-        return globalThis
+        return cloudflare
       case 'fly':
         return {
+          validate: (input, definition, message = true) => {
+            const res = cloudflare.validator.validateOne(input, definition)
+            if (message && res.errors && res.errors.length) throw new Error(typeof message === 'string' ? message : 'validate failed')
+            return res.value
+          },
           info: (...args) => console.log(...args),
           error: (...args) => console.error(...args),
           warn: (...args) => console.warn(...args)
@@ -94,6 +101,10 @@ class CFRuntime {
     try {
       for (let key of Object.keys(chain)) {
         if (key === 'catch') continue
+
+        if (key.startsWith('props')) {
+          cloudflare.validator.validateEvent(event, chain[key])
+        }
 
         const [name, method] = chain[key]
         const chainFn = FLY_STORE[name]

@@ -5,6 +5,7 @@ const uglify = require('uglify-js')
 const { resolve } = require('path')
 const { readdir } = require('fs').promises
 const mime = require('mime-types')
+const browserify = require('browserify')
 
 const EXT_TXT = ['js', 'json', 'txt', 'text', 'html', 'html', 'mustache', 'vue', 'react', 'jsx', 'conf', 'ini', 'css', 'scss', 'less', 'md', 'markdown', 'shtml']
 const EXT_BIN = ['png', 'jpg', 'gif', 'jpeg', 'svg', 'ico', 'appicon']
@@ -80,6 +81,14 @@ module.exports = {
             }
           }
 
+          const validatorClient = browserify(path.join(root, 'lib/validator.js'), { standalone: 'validator' })
+          const validatorCode = await new Promise((resolve, reject) => {
+            validatorClient.bundle((err, stream) => {
+              if (err) return reject(err)
+              resolve(String(stream))
+            })
+          })
+
           const workerFnCode = 'const FLY_STORE = {\n' + Object.keys(codes).map(key => {
             return `'${key}': ${codes[key]},\n`
           }).join('\n') + '\n}'
@@ -88,7 +97,7 @@ module.exports = {
 
           try {
             const buildFile = worker.compileFile.replace('.js', '.orig.js')
-            const origCode = workerCode.replace('const FLY_STORE = {}', workerFnCode)
+            const origCode = workerCode.replace('const FLY_STORE = {}', workerFnCode) + '\n' + validatorCode
             fs.writeFileSync(buildFile, origCode)
             const compileCode = uglify.minify(origCode)
             console.log('Build File: ', buildFile)
