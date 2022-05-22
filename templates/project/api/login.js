@@ -22,9 +22,9 @@ module.exports = {
   },
 
   // Main
-  async main ({ username }, { fly, callee, userLogin }) {
-    username = fly.validate(username, { required: true })
-    fly.log('username', username)
+  async main ({ username }, { fly, callee, userLogin, set }) {
+    fly.log('login', username)
+    set('login', username)
 
     let ret = await userLogin({ username: 'test', password: 'test' })
     fly.info('some one start login')

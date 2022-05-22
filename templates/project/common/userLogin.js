@@ -6,12 +6,13 @@ module.exports = {
     }
   },
 
-  main ({ username, password }, { fly }) {
+  main ({ username, password }, { fly, login }) {
     fly.info('someone call login for:', username)
     return {
       username,
       password,
-      status: 1
+      status: 1,
+      context: { login }
     }
   }
 }
