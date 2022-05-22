@@ -17,21 +17,6 @@ class Context {
   }
 }
 
-function matchEvent (event) {
-  const { method, path } = event
-  let matchedFn = null
-  for (const key of Object.keys(functions)) {
-    const fn = functions[key]()
-    if (!fn.configHttp) continue
-    const { path: targetPath, method: targetMethod } = fn.configHttp
-    if (path === targetPath && targetMethod === method) {
-      matchedFn = fn
-      break
-    }
-  }
-  return matchedFn
-}
-
 async function main (request) {
   const event = convertEvent(request)
   const fn = matchEvent(event)
@@ -46,6 +31,35 @@ async function main (request) {
     headers['content-type'] = 'text/json'
   }
   return [body, { headers }]
+}
+
+function matchEvent (event) {
+  const { method, path } = event
+  let matchedFn = null
+  for (const key of Object.keys(functions)) {
+    const fn = functions[key]()
+    if (!fn.configHttp) continue
+    const { path: targetPath, method: targetMethod = 'get' } = fn.configHttp
+    if (targetMethod === method) {
+      if (path === targetPath) {
+        matchedFn = fn
+        break
+      } else if (targetPath.includes(':')) {
+        const pathRegexp = new RegExp(['^',
+          targetPath
+            .replace(/\./g, '\\.')
+            .replace(/:([^/]+)/g, '(?<$1>[^/]+)'),
+          '$'].join(''))
+        const pathMatched = pathRegexp.exec(path)
+        if (pathMatched) {
+          matchedFn = fn
+          event.params = pathMatched.groups
+          break
+        }
+      }
+    }
+  }
+  return matchedFn
 }
 
 function convertEvent (request) {
