@@ -36,25 +36,29 @@ module.exports = {
       workers[workerConfig.worker].functions.push(fn)
     }
 
+    console.log('▶ Cloudflare ' + action)
     switch (action) {
       case 'compile':
         for (const name in workers) {
+          const codes = {}
           const worker = workers[name]
           const workerFns = worker.functions
           const workerCode = fs.readFileSync(path.join(root, 'faas/cloudflare/cloudflareWorker.js'), 'utf8')
-          const workerFnCode = 'const functions = {\n' + workerFns.map(fn => {
-            return `${fn.name}: function() {${fs.readFileSync(fn.file, 'utf8')
-              // change module to return
-              .replace(/module.exports =/, '\nreturn')
-              // remove configcloudflare
-              .replace(/\n\s+configCloudflare:\s*{[\s\S+]+?},\n/m, '')
-            }},`
+          workerFns.forEach(fn => loadCode(fn, fly, codes))
+          const workerFnCode = 'const functions = {\n' + Object.keys(codes).map(key => {
+            return `'${key}': ${codes[key]},\n`
           }).join('\n') + '\n}'
 
+          console.log('Functions:', Object.keys(codes))
+
           try {
+            const buildFile = worker.compileFile.replace('.js', '.orig.js')
+            const code = workerCode.replace('const functions = {}', workerFnCode)
+            fs.writeFileSync(buildFile, code)
+            console.log('Build File: ', buildFile)
             const compileCode = uglify.minify(workerCode.replace('const functions = {}', workerFnCode))
             fs.writeFileSync(worker.compileFile, compileCode.code)
-            console.log('compile to: ', worker.compileFile)
+            console.log('Compile File: ', worker.compileFile)
           } catch (err) {
             console.error('compile error', err)
           }
@@ -85,7 +89,6 @@ module.exports = {
               data,
               path: `/workers/scripts/${name}`
             })
-            console.log('▶ Cloudflare')
             console.log('URL:', `https://${name}.${domain}`)
             console.log('Functions:', worker.functions.map(fn => 'http:' + fn.events.http.path + ' > ' + fn.name))
             console.log('Size:', data.length)
@@ -97,4 +100,50 @@ module.exports = {
         }
     }
   }
+}
+
+function loadCode (fn, fly, codes = {}) {
+  if (typeof fn === 'string' && fn.startsWith('@')) {
+    let moduleCode = fs.readFileSync(path.join(fly.root, fn.substring(1) + '.js'), 'utf8')
+
+    if (!moduleCode.includes('module.exports =')) {
+      moduleCode += '\nreturn exports'
+    }
+
+    codes[fn] = `function() {${
+      moduleCode
+      // change module to return
+        .replace(/module.exports =/, '\nreturn')
+      // remove configcloudflare
+        .replace(/\n\s+configCloudflare:\s*{[\s\S+]+?},\n/m, '')
+    }}()`
+    return codes
+  }
+
+  const fnCode = fs.readFileSync(fn.file, 'utf8')
+  const contextRegex = /,\s*\{([\S\s]+?)\}/m
+  const contextMatched = contextRegex.exec(fnCode)
+  if (contextMatched) {
+    contextMatched[1].split(',')
+      .map(p => p.trim().split(':').shift().trim().replace(/('|")/g, ''))
+      .filter(k => !['cloudflare', 'fly'].includes(k))
+      .forEach(name => {
+        if (codes[name]) return
+        if (name.startsWith('@')) {
+          loadCode(name, fly, codes)
+        } else {
+          const fn = fly.get(name)
+          !fn && console.log('fn', name)
+          loadCode(fn, fly, codes)
+        }
+      })
+  }
+  codes[fn.name] = `function() {${
+    fnCode
+    // change module to return
+      .replace(/module.exports =/, '\nreturn')
+    // remove configcloudflare
+      .replace(/\n\s+configCloudflare:\s*{[\s\S+]+?},\n/m, '')
+  }}()`
+  return codes
 }

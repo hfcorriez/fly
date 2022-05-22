@@ -37,7 +37,7 @@ class Context {
         }
     }
     if (functions[key]) {
-      return functions[key]()
+      return functions[key]
     }
     return this.data[key]
   }
@@ -54,7 +54,7 @@ class Context {
 
 async function main (request) {
   const event = convertEvent(request)
-  const fn = matchEvent(event)
+  let fn = matchEvent(event)
   if (!fn) return ['404 not found', { status: '404' }]
 
   if (fn === 204) {
@@ -67,6 +67,10 @@ async function main (request) {
       },
       status: 204
     }]
+  }
+
+  if (typeof fn === 'function') {
+    fn = { main: fn }
   }
 
   const context = new Context().toProxy()
@@ -84,7 +88,7 @@ function matchEvent (event) {
   const { method, path } = event
   let matchedFn = null
   for (const key of Object.keys(functions)) {
-    const fn = functions[key]()
+    const fn = functions[key]
     if (!fn.configHttp) continue
     const { path: targetPath, method: targetMethod = 'get' } = fn.configHttp
     if (method === 'options' || targetMethod === method || targetMethod === '*') {
