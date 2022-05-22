@@ -2,7 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const root = path.join(__dirname, '../../')
 const uglify = require('uglify-js')
-const axios = require('axios')
 
 module.exports = {
   configCommand: {
@@ -15,7 +14,7 @@ module.exports = {
     }
   },
 
-  async main ({ params: { action } }, { fly }) {
+  async main ({ params: { action } }, { fly, callCloudflareApi }) {
     const config = fly.project.cloudflare
     if (!config) throw new Error('project.cloudflare config not found')
 
@@ -62,27 +61,33 @@ module.exports = {
         }
         break
       case 'deploy':
+        const res = await callCloudflareApi({
+          account: config.id,
+          email: config.email,
+          key: config.key,
+          method: 'get',
+          path: `/workers/subdomain`
+        })
+
+        const domain = res.subdomain + '.workers.dev'
+
         for (const name in workers) {
           const worker = workers[name]
 
           try {
-            await axios({
-              url: `https://api.cloudflare.com/client/v4/accounts/${config.id}/workers/scripts/${name}`,
+            await callCloudflareApi({
+              account: config.id,
+              email: config.email,
+              key: config.key,
               method: 'put',
-              headers: {
-                'X-Auth-Email': config.email,
-                'X-Auth-Key': config.key,
-                'Content-Type': 'application/javascript'
-              },
-              data: fs.readFileSync(worker.compileFile)
+              type: 'application/javascript',
+              data: fs.readFileSync(worker.compileFile),
+              path: `/workers/scripts/${name}`
             })
-
-            console.log(name, 'deploy ok')
+            console.log(name, 'deploy to:', `https://${name}.${domain}`)
+            console.log('if you create a new worker, please setup route and wait a few minutes for the worker to be ready', `https://dash.cloudflare.com/${config.id}/workers/services/view/${name}/production/triggers`)
           } catch (err) {
             console.error(name, 'deploy error', err)
-            if (err.response && err.response.data) {
-              console.error(err.response.data.errors[0])
-            }
           }
         }
     }
