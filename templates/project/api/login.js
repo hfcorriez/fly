@@ -18,12 +18,25 @@ module.exports = {
 
   beforeHttp (event) {
     event.username = 'abc'
+    event.password = 'abc'
     return event
   },
 
+  props: {
+    username: {
+      type: String,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
+    }
+  },
+
   // Main
-  async main ({ username }, { fly, callee, userLogin, set }) {
+  async main ({ username, password }, { fly, userLogin, set }) {
     fly.log('login', username)
+    // fly.validate('www.google.com', 'url', 'url valid failed')
     set('login', username)
 
     let ret = await userLogin({ username: 'test', password: 'test' })
