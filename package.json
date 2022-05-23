@@ -1,6 +1,6 @@
 {
   "name": "fly",
-  "version": "4.3.12",
+  "version": "4.3.13",
   "description": "For back-end development",
   "main": "lib/index.js",
   "bin": {
@@ -21,6 +21,7 @@
   "dependencies": {
     "@fastify/formbody": "^6.0.0",
     "@fastify/multipart": "^6.0.0",
+    "@fastify/static": "^5.0.2",
     "arg": "^5.0.1",
     "caller-id": "^0.1.0",
     "chokidar": "^3.5.2",
