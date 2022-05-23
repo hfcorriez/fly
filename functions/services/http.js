@@ -6,8 +6,8 @@ const path = require('path')
 const fastify = require('fastify')()
 const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
 
-fastify.register(require('fastify-multipart'))
-fastify.register(require('fastify-formbody'))
+fastify.register(require('@fastify/multipart'))
+fastify.register(require('@fastify/formbody'))
 
 module.exports = {
   errors: {

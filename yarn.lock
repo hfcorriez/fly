@@ -32,6 +32,32 @@
   dependencies:
     text-decoding "^1.0.0"
 
+"@fastify/error@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@fastify/error/-/error-2.0.0.tgz#a9f94af56eb934f0ab1ce4ef9f0ced6ebf2319dc"
+  integrity sha512-wI3fpfDT0t7p8E6dA2eTECzzOd+bZsZCJ2Hcv+Onn2b7ZwK3RwD27uW2QDaMtQhAfWQQP+WNK7nKf0twLsBf9w==
+
+"@fastify/formbody@^6.0.0":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@fastify/formbody/-/formbody-6.0.1.tgz#13d7c5454489a5015c119725f0adda50dcf9fddf"
+  integrity sha512-yIwCitoES4Sh0tPc6v+uHBqZEKw3CooSZ4kUvO9NC8Y7oRBCW+aC+pTgUZ8M3r2DOzRkNO+Pq0jMQkyL2k8jZQ==
+  dependencies:
+    fastify-plugin "^3.0.0"
+
+"@fastify/multipart@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@fastify/multipart/-/multipart-6.0.0.tgz#da7e80b589b3874b3964145ec6e13fd69bd7e6cf"
+  integrity sha512-TwxPH9jE3bEaCdMD1Xqm2YS1aelgJxcNmA/uYAPCzqnVEylDiKCmxCstGulb1W5WdMoyqD5LBGm7AoqDwWTCWQ==
+  dependencies:
+    "@fastify/busboy" "^1.0.0"
+    "@fastify/error" "^2.0.0"
+    deepmerge "^4.2.2"
+    end-of-stream "^1.4.4"
+    fastify-plugin "^3.0.0"
+    hexoid "^1.0.0"
+    secure-json-parse "^2.4.0"
+    stream-wormhole "^1.1.0"
+
 "@opencensus/core@0.0.9":
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/@opencensus/core/-/core-0.0.9.tgz#b16f775435ee309433e4126af194d37313fc93b3"
@@ -1071,13 +1097,6 @@ fastify-error@^0.3.0:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/fastify-error/-/fastify-error-0.3.1.tgz#8eb993e15e3cf57f0357fc452af9290f1c1278d2"
   integrity sha512-oCfpcsDndgnDVgiI7bwFKAun2dO+4h84vBlkWsWnz/OUK9Reff5UFoFl241xTiLeHWX/vU9zkDVXqYUxjOwHcQ==
-
-fastify-formbody@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/fastify-formbody/-/fastify-formbody-5.1.0.tgz#65cccf9792aac1a638927f7150cd1ea30908d8dc"
-  integrity sha512-dLFQ8gMQeLuV45J72svDbrp6CZ3hxsaiK2dd3vzoiCs9wEmCSbbJV+/afQl1cfvf19+NfCIzYVQIg1r4yO4Epw==
-  dependencies:
-    fastify-plugin "^3.0.0"
 
 fastify-multipart@5.3:
   version "5.3.1"
