@@ -4,6 +4,10 @@ project:
       beforeHttp: ['loadDB', 'apiInput', 'apiRateLimit']
       afterHttp: apiOutput
       catchHttp: apiError
+  cloudflare:
+    id: .CF_ID
+    email: .CF_EMAIL
+    key: .CF_KEY
 
 service:
   http:
