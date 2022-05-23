@@ -86,7 +86,7 @@ module.exports = {
       if (evt.args.verbose) {
         console.error(err)
       } else {
-        console.error(colors.red(`✖︎ [${err.name}] ${err.message}`))
+        console.error(colors.red(`✖︎ [${err.name}] ${err.stack}`))
       }
       process.exit(err.code || 1)
     }
