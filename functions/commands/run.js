@@ -12,6 +12,12 @@ module.exports = {
   async main (event, ctx) {
     const { getServiceConfig } = ctx
     const { args, params: { service } } = event
+
+    if (!service) {
+      console.log('no service specified')
+      return
+    }
+
     try {
       if (service === 'all') {
         for (const s in ctx.fly.service) {
