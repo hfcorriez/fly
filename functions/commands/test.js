@@ -61,7 +61,6 @@ module.exports = {
       throw new Error('no test file')
     }
 
-    const context = {}
     const testConfig = require(fn.testFile)
     if (!testConfig.tests) {
       throw new Error('no tests')
@@ -71,7 +70,7 @@ module.exports = {
       test.startTime = Date.now()
 
       try {
-        const [result, err] = await fly.call(fn, test.event, context)
+        const [result, err] = await fly.call(fn, test.event, { eventType: test.type })
         await test.test(result, err)
         test.ok = true
       } catch (err) {
