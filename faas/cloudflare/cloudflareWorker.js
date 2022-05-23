@@ -95,19 +95,22 @@ class CFRuntime {
       })
     }
 
-    const ctx = new CFContext().toProxy()
-    const chain = this.buildChain(fn)
+    const eventType = 'http'
+    const ctx = new CFContext({ eventType }).toProxy()
+    const chain = this.buildChain(fn, eventType)
 
     try {
-      for (let key of Object.keys(chain)) {
+      for (const key in chain) {
         if (key === 'catch') continue
-
-        if (key.startsWith('props')) {
-          cloudflare.validator.validateEvent(event, chain[key])
-        }
 
         const [name, method] = chain[key]
         const chainFn = FLY_STORE[name]
+
+        if (method.startsWith('props')) {
+          event = cloudflare.validator.validateEvent(event, chainFn[key])
+          continue
+        }
+
         event = await chainFn[method](event, ctx)
         if (event && event.$end) {
           event = event.$end

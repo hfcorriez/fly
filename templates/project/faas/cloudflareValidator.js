@@ -1,4 +1,6 @@
 module.exports = {
+  decorator: 'cloudflareApiBase',
+
   configHttp: {
     method: 'get',
     path: '/validator'
@@ -8,13 +10,15 @@ module.exports = {
     worker: 'fly-test'
   },
 
-  main ({ query }, { fly }) {
-    try {
-      fly.validate(query.name, 'string', 'name is required')
-    } catch (err) {
-      return { body: err.message }
+  props: {
+    query: {
+      props: {
+        name: String
+      }
     }
+  },
 
+  main (event, { fly }) {
     return {
       body: {
         valid: true
