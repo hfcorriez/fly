@@ -29,9 +29,9 @@ module.exports = {
   // Main
   async main (event, {
     eventId, user, fly, handleHttp,
-    'lib/db': db,
+    '@lib/db': db,
     dayjs,
-    'package.json': pkg
+    '@package.json': pkg
   }) {
     fly.info('execute data:main')
     return {
