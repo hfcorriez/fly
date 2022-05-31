@@ -194,8 +194,8 @@ module.exports = {
           reply.redirect(result.status || 302, result.redirect)
         } else if (result.file) {
           // return file
-          fs.stat(result.file, (err) => {
-            if (err) {
+          fs.stat(result.file, (err, stats) => {
+            if (err || !stats || !stats.isFile()) {
               fly.warn('file read error:', result.file)
               reply.type('text/html').code(404).send(this.errors['404'])
             } else {
