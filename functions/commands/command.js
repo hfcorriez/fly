@@ -71,12 +71,12 @@ module.exports = {
       let code = 0
       let wait = false
 
-      if (typeof result === 'object' && !Array.isArray(result)) {
+      if (result && typeof result === 'object' && !Array.isArray(result)) {
         result.stdout && console.log(result.stdout)
         result.stderr && console.error(result.stderr)
         if (typeof result.code === 'number') code = result.code
         wait = result.wait
-      } else if (['string', 'number', 'boolean', 'array'].includes(typeof result)) {
+      } else {
         console.log(result)
       }
       if (code || !wait) {
