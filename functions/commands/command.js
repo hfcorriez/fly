@@ -76,7 +76,7 @@ module.exports = {
         result.stderr && console.error(result.stderr)
         if (typeof result.code === 'number') code = result.code
         wait = result.wait
-      } else {
+      } else if (['string', 'number', 'boolean', 'array'].includes(typeof result)) {
         console.log(result)
       }
       if (code || !wait) {
