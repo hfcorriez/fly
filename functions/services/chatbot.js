@@ -20,7 +20,8 @@ module.exports = {
     }
   },
 
-  runTelegram ({ service, config, functions }, { fly, $chatbotApi }) {
+  runTelegram ({ service, config, functions }, ctx) {
+    const { fly, $chatbotApi } = ctx
     fly.info('config', config)
     const chatbot = new Telegraf(config.token)
 
@@ -121,6 +122,7 @@ module.exports = {
         }
 
         const context = {
+          ...ctx.toData(),
           eventType: 'chatbot',
           chatbot: {
             api: (name, data) => $chatbotApi(service, name, data),
