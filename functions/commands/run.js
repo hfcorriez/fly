@@ -56,7 +56,7 @@ module.exports = {
     process.on('SIGUSR2', _ => this.startDebug(fly))
     EXIT_SIGNALS.forEach(status => process.on(status, status => this.stopServer(status, fly)))
 
-    const [ret, err] = await fly.call(fn, { ...fnConfig, ...config }, { eventType: 'service', ...config.context }, true)
+    const [ret, err] = await fly.call(fn, { ...fnConfig, ...config }, { ...ctx.toData(), eventType: 'service', ...config.context }, true)
     if (err) throw err
 
     if (typeof ret === 'object') {

@@ -22,7 +22,8 @@ module.exports = {
     address: '127.0.0.1'
   },
 
-  main (event, { fly, matchHttp }) {
+  main (event, ctx) {
+    const { fly, matchHttp } = ctx
     const { bind, port, cors, static: staticConfigs, context } = event
 
     if (staticConfigs && staticConfigs.length) {
@@ -142,8 +143,9 @@ module.exports = {
               files = evt.files = uploadData.files
             }
 
+            console.log('data', ctx.toData());
             // Normal and fallback
-            [result, err] = await fly.call(name, evt, { eventId, eventType: 'http', ...context }, true)
+            [result, err] = await fly.call(name, evt, { ...ctx.toData(), eventId, eventType: 'http', ...context }, true)
             if (err) throw err
 
             // delete upload files after used
