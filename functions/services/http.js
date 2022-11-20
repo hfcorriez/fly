@@ -143,7 +143,6 @@ module.exports = {
               files = evt.files = uploadData.files
             }
 
-            console.log('data', ctx.toData());
             // Normal and fallback
             [result, err] = await fly.call(name, evt, { ...ctx.toData(), eventId, eventType: 'http', ...context }, true)
             if (err) throw err

@@ -40,7 +40,6 @@ module.exports = {
 
     await fly.emit('startup', { service: '$call' })
 
-    console.log('ctx.toData()', ctx.toData())
     let no = 1
     do {
       const [result, err] = await fly.call(name, evt, { ...ctx.toData(), eventType: null, ...context }, true)
