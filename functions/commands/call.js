@@ -5,7 +5,8 @@ const { parseObjArg } = require('../../lib/utils')
 const sleep = seconds => new Promise((resolve, reject) => setTimeout(resolve, seconds * 1000))
 
 module.exports = {
-  async main (event, { fly }) {
+  async main (event, ctx) {
+    const { fly } = ctx
     let { context, timeout, data, interval } = event.args
     data = data || (await this.getStdin())
     let name = event.params[0]
@@ -37,9 +38,12 @@ module.exports = {
       name = name[0] !== '/' ? path.join(process.cwd(), name) : name
     }
 
+    await fly.emit('startup', { service: '$call' })
+
+    console.log('ctx.toData()', ctx.toData())
     let no = 1
     do {
-      const [result, err] = await fly.call(name, evt, { eventType: null, ...context }, true)
+      const [result, err] = await fly.call(name, evt, { ...ctx.toData(), eventType: null, ...context }, true)
       if (err) throw err
       console.warn(colors.green([`#${no}`, '⇲', name, '(', JSON.stringify(evt || {}), ')'].join(' ')))
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
