@@ -48,6 +48,7 @@ module.exports = {
       console.log(result ? JSON.stringify(result, null, 4) : '<EMPTY>')
 
       if (!interval) {
+        await fly.emit('shutdown', { service: '$call' })
         return result && result.$command
       }
 
