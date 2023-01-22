@@ -39,7 +39,8 @@ module.exports = {
           BIND: bind,
           PORT: port
         },
-        instance: config.singleton ? 1 : config.instance
+        instance: config.singleton ? 1 : config.instance,
+        cluster: config.cluster
       })
     }
   },
