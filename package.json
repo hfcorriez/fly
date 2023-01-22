@@ -16,7 +16,7 @@
   "license": "MIT",
   "author": "hfcorriez <hfcorriez@gmail.com>",
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "dependencies": {
     "@fastify/formbody": "^6.0.0",
