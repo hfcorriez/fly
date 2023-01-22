@@ -130,15 +130,16 @@ type: String,                       # Support:
                                     # string: alpha, alphanumeric
                                     # other: enum
                                     # Regexp: set regexp patter for pattern validate only
+before: String | Function           # Pre transform
 array: Boolean                      # For nested array validate
 props: Object                       # For nested object validate
 empty: Boolean                      # Default is true, Allow empty for string, array, object
 pattern: Regexp                     # For pattern
 enum: Array[String]                 # Enum options
-format: String | Array | Function   # Output format
-                                    # date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
-                                    # number: int, float
-                                    # string: uppercase, lowercase, trim
+date: "YYYY-MM-DD"                  # date: date, datetime, seconds, millseconds, iso, custom format [YY-MM-DD]
+number: String                      # number: int, float
+string: String                      # string: uppercase, lowercase, trim
+after: String | Function            # Post transform
 default: String                     # Default value if not exists
 message: String                     # Message will throw as FlyValidateError(message)
 ```

@@ -11,6 +11,11 @@ const Fly = require('../lib/fly')
 console.log(colors.green(`▶ FLY ${pkg.version}`))
 console.log(colors.gray('> ' + Object.keys(process.versions).map(key => `${key}(${process.versions[key]})`).join(' | ')))
 
+// Call compile force to avoid load functions in memory
+if (process.stdin.isTTY) {
+  execSync(`DEBUG=no ${process.argv[0]} ${__filename} compile`)
+}
+
 /**
  * Run compile with another process to avoid fly runtime waste boostrap memory
  */
@@ -19,8 +24,8 @@ if (process.argv.includes('compile')) {
     const fly = new Fly({ ignoreCache: true })
     await fly.bootstrap()
     console.log('compile ok:', fly.loader.cache.path())
+    process.exit()
   })()
-  process.exit()
 }
 
 /**
@@ -49,11 +54,6 @@ if (!process.env.DEBUG) {
   }
   console.log(colors.gray(`(verbose mode: ${verbosePattern})`))
   debug.enable(verbosePattern)
-}
-
-// Call compile force to avoid load functions in memory
-if (process.stdin.isTTY) {
-  execSync(`DEBUG=no ${process.argv[0]} ${__filename} compile`)
 }
 
 const clusterCount = process.env.CLUSTER === 'max' ? require('os').cpus().length : parseInt(process.env.CLUSTER || '1', 10)
