@@ -20,9 +20,7 @@ module.exports = {
     }
   },
 
-  runTelegram ({ service, config, functions }, ctx) {
-    const { fly, $chatbotApi } = ctx
-    fly.info('config', config)
+  runTelegram ({ service, config, functions }, { fly, chatbotApi, data: ctxData }) {
     const chatbot = new Telegraf(config.token)
 
     chatbot.use(session())
@@ -122,10 +120,10 @@ module.exports = {
         }
 
         const context = {
-          ...ctx.toData(),
+          ...ctxData,
           eventType: 'chatbot',
           chatbot: {
-            api: (name, data) => $chatbotApi(service, name, data),
+            api: (name, data) => chatbotApi(service, name, data),
             send: (reply) => sendMessage(reply, ctx),
             update: (reply) => updateMessage(reply, ctx),
             delete: (reply) => deleteMessage(reply, ctx)
@@ -308,7 +306,9 @@ function formatMessage (reply, ctx) {
     }
   }
 
-  if (reply.actions) {
+  if (reply.action) {
+    ctx.session.action = reply.action
+  } else if (reply.actions) {
     ctx.session.actions = reply.actions
   }
 
@@ -379,8 +379,8 @@ function initSession (ctx) {
 
 function matchMessage (functions, update, session = {}, ctx) {
   if (session) {
-    if (session.actions && update.message) {
-      const action = matchAction(update.message, session.actions)
+    if ((session.actions || session.action) && update.message) {
+      const action = session.action || matchAction(update.message, session.actions)
       delete session.actions
 
       // No action will reply
@@ -450,13 +450,22 @@ function matchMessage (functions, update, session = {}, ctx) {
 }
 
 function matchAction (message, actions) {
-  return Object.keys(actions).find(action => matchEntry('message_add', message, actions[action]))
+  const action = Object.keys(actions).find(action => matchEntry('message_add', message, actions[action]))
+  if (!action) {
+    return actions.default
+  }
+  return action
 }
 
 function matchEntry (type, message, entry) {
   if (!Array.isArray(entry)) entry = [entry]
   return entry.some(et => {
     if (typeof et === 'string') {
+      /**
+       * event type
+       *
+       * :message_add Add message
+       */
       if (et.startsWith(':')) {
         return et.substring(1) === type
       } else if (message && message.text) {
@@ -464,8 +473,14 @@ function matchEntry (type, message, entry) {
       }
       return false
     } else if (et instanceof RegExp && message) {
+      /**
+       * RegExp match message text
+       */
       return et.test(message.text)
     } else if (typeof et === 'function' && message) {
+      /**
+       * Custom function
+       */
       return et(message.text)
     }
   })
