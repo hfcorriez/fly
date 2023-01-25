@@ -383,37 +383,43 @@ function initSession (ctx) {
 }
 
 function matchMessage (functions, update, session = {}, ctx) {
-  if (session) {
-    if ((session.actions || session.action) && update.message) {
-      const action = session.action || matchAction(update.message, session.actions)
-      delete session.actions
-
-      // No action will reply
-      if (!action) {
-        ctx.reply(sendTGMessage(ctx.session.lastSent, ctx))
-        return {}
-      }
-
-      return { name: session.scene, action }
-    } else if (session.confirm && update.callback_query) {
-      const { yes, no } = session.confirm
-      delete session.confirm
-      if (update.callback_query.data === 'YES') {
-        return { name: session.scene, action: yes }
-      } else if (update.callback_query.data === 'NO') {
-        return { name: session.scene, action: no }
-      } else {
-        ctx.reply(sendTGMessage(ctx.session.lastSent, ctx))
-        return {}
-      }
-    }
-  }
-
   const { callback_query: callbackQuery, message } = update
   const { type: eventType } = parseEvent(update)
   const match = {
     message: message || (callbackQuery ? callbackQuery.message : null),
     from: message ? message.from : (callbackQuery ? callbackQuery.from : null)
+  }
+
+  if (session) {
+    /**
+     * Match session to process internal types
+     */
+    if ((session.actions || session.action) && update.message) {
+      // Match action
+      const action = session.action || matchAction(update.message, session.actions)
+      // Remove exists actions selections
+      delete session.actions
+
+      // No action will reply directly
+      if (!action) {
+        ctx.reply(sendTGMessage(ctx.session.lastSent, ctx))
+        return { ...match }
+      }
+
+      // Return scene and action
+      return { ...match, name: session.scene, action }
+    } else if (session.confirm && update.callback_query) {
+      const { yes, no } = session.confirm
+      delete session.confirm
+      if (update.callback_query.data === 'YES') {
+        return { ...match, name: session.scene, action: yes }
+      } else if (update.callback_query.data === 'NO') {
+        return { ...match, name: session.scene, action: no }
+      } else {
+        ctx.reply(sendTGMessage(ctx.session.lastSent, ctx))
+        return { ...match }
+      }
+    }
   }
 
   if (eventType === 'button_click') {
