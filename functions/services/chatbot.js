@@ -308,8 +308,13 @@ function formatMessage (reply, ctx) {
 
   if (reply.action) {
     ctx.session.action = reply.action
+    ctx.session.actions = null
   } else if (reply.actions) {
     ctx.session.actions = reply.actions
+    ctx.session.action = null
+  } else {
+    ctx.session.action = null
+    ctx.session.actions = null
   }
 
   if (reply.confirm) {
