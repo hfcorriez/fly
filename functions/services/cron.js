@@ -16,7 +16,7 @@ module.exports = {
       chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
     })
 
-    ctx.fly.find('cron').forEach(fn => table.push([fn.events.cron.time, fn.path]))
+    ctx.fly.find('cron').forEach(fn => table.push([fn.events.cron.time || fn.events.cron.schedule, fn.path]))
     console.log(table.toString())
     return { $command: { wait: true } }
   },
@@ -49,9 +49,9 @@ module.exports = {
   findFn (event, ctx) {
     return ctx.fly.find('cron').filter(fn => {
       const target = fn.events.cron
-      const cron = target.time || target.default
-      if (!cron) return false
-      const interval = cronParser.parseExpression(cron, {
+      const schedule = target.time || target.schedule || target.default
+      if (!schedule) return false
+      const interval = cronParser.parseExpression(schedule, {
         currentDate: new Date(event.time * 1000),
         tz: process.env.TZ
       })
