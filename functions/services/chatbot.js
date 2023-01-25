@@ -438,7 +438,11 @@ function matchMessage (functions, update, session = {}, ctx) {
   }
 
   if (!match.name) {
-    const fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
+    let fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
+    if (!fn) {
+      fn = functions.find(fn => fn.events.chatbot.entry === ':fallback')
+    }
+
     if (fn) {
       match.name = fn.name
       if (callbackQuery && callbackQuery.data) {
