@@ -67,7 +67,7 @@ module.exports = {
       const { update, session } = ctx
 
       // Match message to decide how to do next
-      const { name, message, action, data, type, from } = matchMessage(functions, update, session, ctx)
+      const { name, message, action, data, type, source, from } = matchMessage(functions, update, session, ctx)
       fly.info('match message:', name, action, data, type)
 
       /**
@@ -114,6 +114,7 @@ module.exports = {
           text: update.message && update.message.text,
           data,
           from,
+          source,
           message,
           session: ctx.session || {},
           service
@@ -409,6 +410,7 @@ function matchMessage (functions, update, session = {}, ctx) {
   const { type: eventType } = parseEvent(update)
   const match = {
     message: message || (callbackQuery ? callbackQuery.message : null),
+    source: callbackQuery && callbackQuery.message,
     from: message ? message.from : (callbackQuery ? callbackQuery.from : null)
   }
 
@@ -471,8 +473,8 @@ function matchMessage (functions, update, session = {}, ctx) {
     } else if (action.startsWith('[c]')) {
       match.name = String(action.substr(3)).trim()
       match.type = 'card'
-    } else if (!/^\[[a-z]\]/.test(action) && (session.scene || data.scene)) {
-      match.name = session.scene || data.scene
+    } else if (!/^\[[a-z]\]/.test(action) && (data.scene || session.scene)) {
+      match.name = data.scene || session.scene
       match.action = action
     }
     match.data = data
