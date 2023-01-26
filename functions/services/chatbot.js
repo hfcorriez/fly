@@ -20,11 +20,11 @@ module.exports = {
     }
   },
 
-  runTelegram ({ service, config, functions }, { fly, chatbotApi, data: ctxData }) {
-    const chatbot = new Telegraf(config.token)
+  runTelegram ({ service, config, functions }, { fly, data: ctxData }) {
+    const telegraf = new Telegraf(config.token)
 
-    chatbot.use(session())
-    chatbot.use((ctx, next) => {
+    telegraf.use(session())
+    telegraf.use((ctx, next) => {
       const { update } = ctx
       const { chat, from } = parseEvent(update)
       fly.info('update', update)
@@ -63,7 +63,7 @@ module.exports = {
 
       return next()
     })
-    chatbot.use(async (ctx, next) => {
+    telegraf.use(async (ctx, next) => {
       const { update, session } = ctx
 
       // Match message to decide how to do next
@@ -123,7 +123,7 @@ module.exports = {
           ...ctxData,
           eventType: 'chatbot',
           chatbot: {
-            api: (name, data) => chatbotApi(service, name, data),
+            api: (name, data) => telegraf.telegram.callApi(name, data || {}),
             send: (reply) => sendMessage(reply, ctx),
             update: (reply) => updateMessage(reply, ctx),
             delete: (reply) => deleteMessage(reply, ctx)
@@ -158,10 +158,10 @@ module.exports = {
       await next()
     })
 
-    chatbot.launch()
+    telegraf.launch()
 
-    process.once('SIGINT', () => chatbot.stop('SIGINT'))
-    process.once('SIGTERM', () => chatbot.stop('SIGTERM'))
+    process.once('SIGINT', () => telegraf.stop('SIGINT'))
+    process.once('SIGTERM', () => telegraf.stop('SIGTERM'))
     fly.info('chatbot launch', config.service)
   }
 }
