@@ -107,7 +107,7 @@ module.exports = {
         }
 
         ctx.session.scene = name
-        ctx.session.step = action || 'main'
+        ctx.session.action = action || 'main'
 
         const event = {
           bot: ctx.botInfo,
@@ -126,7 +126,8 @@ module.exports = {
             api: (name, data) => telegraf.telegram.callApi(name, data || {}),
             send: (reply) => sendMessage(reply, ctx),
             update: (reply) => updateMessage(reply, ctx),
-            delete: (reply) => deleteMessage(reply, ctx)
+            delete: (reply) => deleteMessage(reply, ctx),
+            end: () => initSession(ctx)
           }
         }
         if (!action) {
@@ -149,6 +150,8 @@ module.exports = {
           if (historyMessage) {
             updateTgMessage(historyMessage, ctx)
           }
+        } else if (action === '_end') {
+          initSession(ctx)
         } else {
           const [error, result] = await fly.method(name, action, event, context)
           ctx.session.data = null
@@ -174,6 +177,9 @@ function deleteMessage (message, ctx) {
   else messageId = /^\d+$/.test(message) ? message : ctx.session.card[message]
 
   if (!messageId) return false
+  if (message && message.end) {
+    initSession(ctx)
+  }
 
   return ctx.deleteMessage(messageId)
 }
@@ -347,14 +353,14 @@ function buildButton (button, ctx, reply) {
     ...button.data,
     ...button.event,
     scene: ctx.session.scene,
-    step: reply.card
+    action: reply.card
   }).toString()
 
   if (typeof button === 'string') {
     return { text: button, callback_data: lcfirst(button) + ' ' + data }
-  } else if (button.step) {
+  } else if (button.action) {
     // callback data will be "action x=1&y=2" when button has data
-    return { text: button.text, callback_data: button.step + ' ' + data }
+    return { text: button.text, callback_data: button.action + ' ' + data }
   } else if (button.url) {
     return button
   } else if (button.scene) {

@@ -15,7 +15,7 @@ module.exports = {
         'Upload',
         'Update',
         'Delete',
-        { text: 'Data', step: 'data', data: { type: 'display' } },
+        { text: 'Data', action: 'data', data: { type: 'display' } },
         'Confirm',
         'Condition',
         { text: 'Redirect', scene: 'redirectChat', data: { test: 1 } }
