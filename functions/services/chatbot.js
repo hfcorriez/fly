@@ -471,10 +471,8 @@ function matchMessage (functions, update, session = {}, ctx) {
     } else if (action.startsWith('[c]')) {
       match.name = String(action.substr(3)).trim()
       match.type = 'card'
-    } else if (session.scene &&
-      // Not action with [x]
-      !/^\[[a-z]\]/.test(action)) {
-      match.name = session.scene
+    } else if (!/^\[[a-z]\]/.test(action) && (session.scene || data.scene)) {
+      match.name = session.scene || data.scene
       match.action = action
     }
     match.data = data
