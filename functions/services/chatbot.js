@@ -127,6 +127,7 @@ module.exports = {
             send: (reply) => sendMessage(reply, ctx),
             update: (reply) => updateMessage(reply, ctx),
             delete: (reply) => deleteMessage(reply, ctx),
+            freeze: (reply) => freezeMessage(reply, ctx),
             end: () => initSession(ctx)
           }
         }
@@ -184,16 +185,31 @@ function deleteMessage (message, ctx) {
   return ctx.deleteMessage(messageId)
 }
 
-function updateMessage (reply, ctx) {
-  const message = formatMessage(reply, ctx)
-  const card = message.card
+function freezeMessage (reply, ctx) {
+  const card = reply.card
 
   // record message history for action
   if (card && ctx.session.history[card]) {
-    ctx.session.history[card].push(message)
+    const message = ctx.session.history[card].pop()
+    ctx.telegram.editMessageText(message.chat.id, message.message_id, null, message.text, { reply_markup: {} })
   }
 
-  return updateTgMessage(message, ctx)
+  if (reply.end) {
+    initSession(ctx)
+  }
+}
+
+async function updateMessage (reply, ctx) {
+  const message = formatMessage(reply, ctx)
+  const card = message.card
+
+  const sendMessage = await updateTgMessage(message, ctx)
+
+  // record message history for action
+  if (card && ctx.session.history[card]) {
+    ctx.session.history[card].push(sendMessage)
+  }
+  return sendMessage
 }
 
 function updateTgMessage (message, ctx) {
@@ -342,7 +358,7 @@ function formatMessage (reply, ctx) {
   }
 
   if (reply.end) {
-    ctx.session = {}
+    initSession(ctx)
   }
 
   return { text, photo, file, type, extra, card: reply.card }
@@ -396,6 +412,18 @@ function matchMessage (functions, update, session = {}, ctx) {
     from: message ? message.from : (callbackQuery ? callbackQuery.from : null)
   }
 
+  /**
+   * Math function first if match entry
+   */
+  let fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
+  if (fn) {
+    match.name = fn.name
+    if (callbackQuery && callbackQuery.data) {
+      match.data = callbackQuery.data
+    }
+    return match
+  }
+
   if (session) {
     /**
      * Match session to process internal types
@@ -428,6 +456,9 @@ function matchMessage (functions, update, session = {}, ctx) {
     }
   }
 
+  /**
+   * Handle button click
+   */
   if (eventType === 'button_click') {
     const [action, query] = callbackQuery.data.split(' ')
     const data = query ? fromEntries(new URLSearchParams(query).entries()) : {}
@@ -449,22 +480,15 @@ function matchMessage (functions, update, session = {}, ctx) {
     match.data = data
   }
 
+  // Fallback
   if (!match.name) {
-    let fn = functions.find(fn => matchEntry(eventType, message, fn.events.chatbot.entry))
-    if (!fn) {
-      fn = functions.find(fn => fn.events.chatbot.entry === ':fallback')
-    }
-
+    fn = functions.find(fn => fn.events.chatbot.entry === ':fallback')
     if (fn) {
       match.name = fn.name
       if (callbackQuery && callbackQuery.data) {
         match.data = callbackQuery.data
       }
     }
-    // Ignore duplicate entry (not useful)
-    // if (match.fn && match.fn.name === session.scene && ) {
-    //   match.fn = null
-    // }
   }
 
   return match
@@ -481,18 +505,13 @@ function matchAction (message, actions) {
 function matchEntry (type, message, entry) {
   if (!Array.isArray(entry)) entry = [entry]
   return entry.some(et => {
-    if (typeof et === 'string') {
+    if (typeof et === 'string' && message) {
       /**
        * event type
        *
        * :message_add Add message
        */
-      if (et.startsWith(':')) {
-        return et.substring(1) === type
-      } else if (message && message.text) {
-        return et.startsWith('/') ? message.text.startsWith(et) : et === message.text
-      }
-      return false
+      return et.startsWith('/') ? message.text.startsWith(et) : et === message.text
     } else if (et instanceof RegExp && message) {
       /**
        * RegExp match message text
