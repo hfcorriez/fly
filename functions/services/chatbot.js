@@ -505,19 +505,19 @@ function matchAction (message, actions) {
 function matchEntry (type, message, entry) {
   if (!Array.isArray(entry)) entry = [entry]
   return entry.some(et => {
-    if (typeof et === 'string' && message) {
+    if (typeof et === 'string' && message && message.text) {
       /**
        * event type
        *
        * :message_add Add message
        */
       return et.startsWith('/') ? message.text.startsWith(et) : et === message.text
-    } else if (et instanceof RegExp && message) {
+    } else if (et instanceof RegExp && message && message.text) {
       /**
        * RegExp match message text
        */
       return et.test(message.text)
-    } else if (typeof et === 'function' && message) {
+    } else if (typeof et === 'function' && message && message.text) {
       /**
        * Custom function
        */
