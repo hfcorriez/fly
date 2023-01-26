@@ -68,6 +68,7 @@ module.exports = {
 
       // Match message to decide how to do next
       const { name, message, action, data, type, from } = matchMessage(functions, update, session, ctx)
+      fly.info('match message:', name, action, data, type)
 
       /**
        * Support card action
@@ -91,10 +92,9 @@ module.exports = {
       const fn = fly.get(name)
       // Check fn exists and is chatbot fn
       if (!fn) {
-        // @todo need send error log
         fly.info('no fn exists', name, action)
         return
-      } else if (type !== 'fn' && (!fn.events.chatbot || (action && !fn[action]))) {
+      } else if (type !== 'fn' && (!fn.events.chatbot || (action && action !== '_back' && !fn[action]))) {
         fly.info('not chatbot fn:', name, action, fn)
         return
       }
