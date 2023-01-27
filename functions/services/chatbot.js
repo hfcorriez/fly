@@ -458,7 +458,7 @@ function parseEvent (update) {
     type = 'file'
     chat = message.chat
     from = message.from
-  } else if (message && update.edited_message) {
+  } else if (message) {
     type = 'message'
     chat = message.chat
     from = message.from
