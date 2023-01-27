@@ -26,8 +26,8 @@ module.exports = {
     telegraf.use(session())
     telegraf.use((ctx, next) => {
       const { update } = ctx
-      const { chat, from } = parseEvent(update)
-      fly.info('update', update)
+      const { chat, from, type } = parseEvent(update)
+      fly.info('update', type, update)
       fly.info('session', ctx.session)
 
       if (!from) return
@@ -383,7 +383,7 @@ async function matchMessage (functions, update, session = {}, ctx) {
 
   // Fallback
   if (!match.name) {
-    fn = functions.find(fn => fn.events.chatbot.entry === `:${eventType}`)
+    fn = functions.find(fn => fn.events.chatbot.entry.includes(`:${eventType}`))
     if (!fn) fn = functions.find(fn => fn.events.chatbot.entry === ':fallback')
     if (fn) {
       match.name = fn.name
