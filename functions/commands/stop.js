@@ -8,7 +8,7 @@ module.exports = {
       path: process.argv[1]
     })
     await pm.stop(service)
-    await pm.status(service)
+    await pm.status()
   },
 
   configCommand: {
