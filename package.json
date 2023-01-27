@@ -1,6 +1,6 @@
 {
   "name": "fly",
-  "version": "4.4.3",
+  "version": "4.4.4",
   "description": "For back-end development",
   "main": "lib/index.js",
   "bin": {
@@ -40,7 +40,6 @@
     "node-ipc": "^9.1.1",
     "path-to-regexp": "^6.2.0",
     "pm2": "^5.2.0",
-    "telegraf": "^4.11.2",
     "through2": "^4.0.2",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",
