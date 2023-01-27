@@ -1,6 +1,6 @@
 const { Telegraf, session } = require('telegraf')
-const fs = require('fs')
-const { lcfirst, fromEntries } = require('../../lib/utils')
+const { formatMessage } = require('../../lib/chatUtils')
+const { fromEntries } = require('../../lib/utils')
 
 module.exports = {
   configService: {
@@ -67,8 +67,8 @@ module.exports = {
       const { update, session } = ctx
 
       // Match message to decide how to do next
-      const { name, message, action, data, type, source, from } = matchMessage(functions, update, session, ctx)
-      fly.info('match message:', name, action, data, type)
+      const { name, message, action, data, type, source, photo, file, from } = await matchMessage(functions, update, session, ctx)
+      fly.info('match message:', name, action, data, type, photo, file)
 
       /**
        * Support card action
@@ -110,14 +110,16 @@ module.exports = {
         ctx.session.action = action || 'main'
 
         const event = {
-          bot: ctx.botInfo,
-          text: update.message && update.message.text,
-          data,
-          from,
-          source,
-          message,
-          session: ctx.session || {},
-          service
+          bot: ctx.botInfo, // Bot info
+          service, // Service name
+          text: message && message.text,
+          data, // Data from card and button
+          from, // From user
+          source, // Click from source
+          message, // Original message
+          photo, // Photos,
+          file, // File,
+          session: ctx.session || {}
         }
 
         const context = {
@@ -201,7 +203,7 @@ function freezeMessage (reply, ctx) {
 }
 
 async function updateMessage (reply, ctx) {
-  const message = formatMessage(reply, ctx)
+  const message = formatMessage(reply, ctx.session)
   const card = message.card
 
   const sendMessage = await updateTgMessage(message, ctx)
@@ -210,6 +212,11 @@ async function updateMessage (reply, ctx) {
   if (card && ctx.session.history[card]) {
     ctx.session.history[card].push(sendMessage)
   }
+
+  if (reply.end) {
+    initSession(ctx)
+  }
+
   return sendMessage
 }
 
@@ -222,7 +229,7 @@ function updateTgMessage (message, ctx) {
 }
 
 async function sendMessage (reply, ctx) {
-  const message = formatMessage(reply, ctx)
+  const message = formatMessage(reply, ctx.session)
   const card = message.card
   const sentMessage = await sendTGMessage(message, ctx)
 
@@ -240,6 +247,10 @@ async function sendMessage (reply, ctx) {
 
   ctx.session.lastSent = message
 
+  if (reply.end) {
+    initSession(ctx)
+  }
+
   return sentMessage
 }
 
@@ -254,140 +265,6 @@ function sendTGMessage (message, ctx) {
     default:
       return ctx.reply(text, extra)
   }
-}
-
-function formatMessage (reply, ctx) {
-  if (typeof reply === 'string') reply = { text: reply }
-
-  let text = reply.text
-  let photo = reply.photo
-  let file = reply.file
-  let type
-  let extra = {}
-
-  // Photo format
-  if (photo) {
-    type = 'photo'
-    if (typeof photo === 'string') {
-      if (photo.startsWith('/') && fs.existsSync(photo)) {
-        photo = { source: photo }
-      } else if (photo.startsWith('http')) {
-        photo = { url: photo }
-      } else {
-        type = null
-      }
-    }
-    if (text && !photo.caption) {
-      photo.caption = text
-    }
-  } else if (file) {
-    type = 'file'
-    if (typeof file === 'string') {
-      if (file.startsWith('/') && fs.existsSync(file)) {
-        file = { source: file }
-      } else if (photo.startsWith('http')) {
-        file = { url: file }
-      } else {
-        type = null
-      }
-    }
-  }
-
-  if (reply.buttons) {
-    const isButtonGrid = Array.isArray(reply.buttons[0])
-    const inlineKeyboard = []
-
-    if (!isButtonGrid) {
-      let buttons = reply.buttons.map(b => buildButton(b, ctx, reply)).filter(b => b)
-
-      // extra = Markup.inlineKeyboard(buttons, reply.buttonsOptions)
-      if (reply.buttonsColumns) {
-        let columns = parseInt(reply.buttonsColumns)
-        for (let i = 0, j = buttons.length; i < j; i += columns) {
-          inlineKeyboard.push(buttons.slice(i, i + columns))
-        }
-      } else {
-        inlineKeyboard.push(buttons)
-      }
-    } else {
-      reply.buttons.forEach(buttonLine => {
-        inlineKeyboard.push(buttonLine.map(b => buildButton(b, ctx, reply)).filter(b => b))
-      })
-    }
-
-    extra.reply_markup = { inline_keyboard: inlineKeyboard }
-  }
-
-  if (reply.markdown) {
-    text = reply.markdown
-    extra.parse_mode = 'MarkdownV2'
-  }
-
-  if (reply.session && typeof reply.session === 'object') {
-    for (let key in reply.session) {
-      ctx.session[key] = reply.session[key]
-    }
-  }
-
-  if (reply.action) {
-    ctx.session.action = reply.action
-    ctx.session.actions = null
-  } else if (reply.actions) {
-    ctx.session.actions = reply.actions
-    ctx.session.action = null
-  } else {
-    ctx.session.action = null
-    ctx.session.actions = null
-  }
-
-  if (reply.confirm) {
-    extra.reply_markup = {
-      inline_keyboard: [
-        [{ text: 'YES', callback_data: 'YES' }, { text: 'NO', callback_data: 'NO' }]
-      ]
-    }
-    ctx.session.confirm = reply.confirm
-  }
-
-  if (reply.entities) {
-    extra.entities = reply.entities
-  }
-
-  // reply to quote message
-  if (reply.reply_to) {
-    extra.reply_to_message_id = reply.reply_to
-  }
-
-  if (reply.end) {
-    initSession(ctx)
-  }
-
-  return { text, photo, file, type, extra, card: reply.card }
-}
-
-function buildButton (button, ctx, reply) {
-  const data = new URLSearchParams({
-    ...button.data,
-    ...button.event,
-    scene: ctx.session.scene,
-    action: reply.card
-  }).toString()
-
-  if (typeof button === 'string') {
-    return { text: button, callback_data: lcfirst(button) + ' ' + data }
-  } else if (button.action) {
-    // callback data will be "action x=1&y=2" when button has data
-    return { text: button.text, callback_data: button.action + ' ' + data }
-  } else if (button.url) {
-    return button
-  } else if (button.scene) {
-    return { text: button.text, callback_data: '[s]' + button.scene + ' ' + data }
-  } else if (button.fn) {
-    return { text: button.text, callback_data: '[f]' + button.fn + ' ' + data }
-  } else if (button.card) {
-    return { text: button.text, callback_data: '[c]' + button.card + ' ' + data }
-  }
-  return null
 }
 
 function initSession (ctx) {
@@ -405,13 +282,37 @@ function initSession (ctx) {
   })
 }
 
-function matchMessage (functions, update, session = {}, ctx) {
+async function matchMessage (functions, update, session = {}, ctx) {
   const { callback_query: callbackQuery, message } = update
   const { type: eventType } = parseEvent(update)
   const match = {
     message: message || (callbackQuery ? callbackQuery.message : null),
     source: callbackQuery && callbackQuery.message,
     from: message ? message.from : (callbackQuery ? callbackQuery.from : null)
+  }
+
+  if (update.message) {
+    if (update.message.photo) {
+      match.photo = await Promise.all(update.message.photo.map(async p => {
+        return {
+          fileId: p.file_id,
+          fileSize: p.file_size,
+          fileUrl: await ctx.telegram.getFileLink(p.file_id),
+          width: p.width,
+          height: p.height
+        }
+      }))
+    } else if (update.message.document) {
+      const doc = update.message.document
+      match.file = {
+        fileId: doc.file_id,
+        fileSize: doc.file_size,
+        fileUrl: await ctx.telegram.getFileLink(doc.file_id),
+        fileName: doc.file_name,
+        mimeType: doc.mime_type,
+        thumb: doc.thumb
+      }
+    }
   }
 
   /**
@@ -461,7 +362,7 @@ function matchMessage (functions, update, session = {}, ctx) {
   /**
    * Handle button click
    */
-  if (eventType === 'button_click') {
+  if (eventType === 'button') {
     const [action, query] = callbackQuery.data.split(' ')
     const data = query ? fromEntries(new URLSearchParams(query).entries()) : {}
 
@@ -482,7 +383,8 @@ function matchMessage (functions, update, session = {}, ctx) {
 
   // Fallback
   if (!match.name) {
-    fn = functions.find(fn => fn.events.chatbot.entry === ':fallback')
+    fn = functions.find(fn => fn.events.chatbot.entry === `:${eventType}`)
+    if (!fn) fn = functions.find(fn => fn.events.chatbot.entry === ':fallback')
     if (fn) {
       match.name = fn.name
       if (callbackQuery && callbackQuery.data) {
@@ -517,11 +419,11 @@ function matchEntry (type, message, entry) {
        * RegExp match message text
        */
       return et.test(message.text)
-    } else if (typeof et === 'function' && message && message.text) {
+    } else if (typeof et === 'function' && message) {
       /**
        * Custom function
        */
-      return et(message.text)
+      return et(message)
     }
   })
 }
@@ -531,35 +433,33 @@ function parseEvent (update) {
   let type, chat, from
 
   if (update.callback_query) {
-    type = 'button_click'
+    type = 'button'
     chat = update.callback_query.message.chat
     from = update.callback_query.from
   } else if (update.my_chat_member) {
-    if (update.my_chat_member.new_chat_member.status === 'member') {
-      type = 'bot_join'
-    } else if (update.my_chat_member.new_chat_member.status === 'left') {
-      type = 'bot_left'
+    if (update.my_chat_member.new_chat_member.status) {
+      type = 'bot'
     }
     chat = update.my_chat_member.chat
     from = update.my_chat_member.from
-  } else if (message && message.new_chat_member) {
-    type = 'member_join'
-    chat = message.chat
-    from = message.from
-  } else if (message && message.left_chat_member) {
-    type = 'member_left'
+  } else if (message && (message.new_chat_member || message.left_chat_member)) {
+    type = 'member'
     chat = message.chat
     from = message.from
   } else if (message && (message.new_chat_title || message.new_chat_photo || message.delete_chat_photo)) {
-    type = 'channel_update'
+    type = 'channel'
+    chat = message.chat
+    from = message.from
+  } else if (message && message.photo) {
+    type = 'photo'
+    chat = message.chat
+    from = message.from
+  } else if (message && message.document) {
+    type = 'file'
     chat = message.chat
     from = message.from
   } else if (message && update.edited_message) {
-    type = 'message_edit'
-    chat = message.chat
-    from = message.from
-  } else if (message) {
-    type = 'message_add'
+    type = 'message'
     chat = message.chat
     from = message.from
   }
