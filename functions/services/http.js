@@ -219,6 +219,7 @@ module.exports = {
           reply.code(500).type('application/json').send({ message: 'no body return' })
         }
         this.log({ evt, reply, name }, fly)
+        return reply
       }
     })
 
