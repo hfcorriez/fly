@@ -4,6 +4,7 @@ const mime = require('mime')
 const { URL } = require('url')
 const path = require('path')
 const fastify = require('fastify')()
+const fastifyStatic = require('@fastify/static')
 const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
 
 fastify.register(require('@fastify/multipart'))
@@ -27,11 +28,13 @@ module.exports = {
     const { bind, port, cors, static: staticConfigs, context } = event
 
     if (staticConfigs && staticConfigs.length) {
-      for (let staticConfig of staticConfigs) {
+      for (let i in staticConfigs) {
+        const staticConfig = staticConfigs[i]
         fly.debug('register static:', staticConfig)
-        fastify.register(require('@fastify/static'), {
+        fastify.register(fastifyStatic, {
           root: path.join(fly.project.dir, staticConfig.root),
-          prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/')
+          prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/'),
+          decorateReply: i === 0
         })
       }
     }
