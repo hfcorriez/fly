@@ -25,7 +25,7 @@ module.exports = {
 
   main (event, ctx) {
     const { fly, matchHttp } = ctx
-    const { bind, port, cors, static: staticConfigs, context } = event
+    const { bind, port, cors, staticMaxAge, static: staticConfigs, context } = event
 
     if (staticConfigs && staticConfigs.length) {
       for (let i in staticConfigs) {
@@ -34,7 +34,8 @@ module.exports = {
         fastify.register(fastifyStatic, {
           root: path.join(fly.project.dir, staticConfig.root),
           prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/'),
-          decorateReply: i === 0
+          decorateReply: i === 0,
+          maxAge: staticConfig.maxAge || staticMaxAge || 0
         })
       }
     }
