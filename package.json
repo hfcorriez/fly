@@ -1,6 +1,6 @@
 {
   "name": "fly",
-  "version": "4.5.3",
+  "version": "4.5.4",
   "description": "For back-end development",
   "main": "lib/index.js",
   "bin": {
@@ -31,6 +31,7 @@
     "dayjs": "^1.10.7",
     "debug": "^4.3.2",
     "fastify": "^4.13.0",
+    "fastify-sse-v2": "^3.0.0",
     "form-data": "^4.0.0",
     "fs-extra": "^9.0.0",
     "js-yaml": "^4.1.0",

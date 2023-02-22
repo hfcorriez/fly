@@ -40,6 +40,8 @@ module.exports = {
       }
     }
 
+    fastify.register(require('fastify-sse-v2'))
+
     fastify.route({
       method: ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS'],
       url: '/*',
@@ -188,6 +190,14 @@ module.exports = {
         // set headers
         if (result.headers) Object.assign(headers, result.headers)
         Object.keys(headers).forEach(key => reply.header(key, headers[key]))
+
+        // sse support
+        if (result.event && typeof result.event === 'function') {
+          return result.event((data) => {
+            fly.debug('send sse data', data)
+            return reply.sse(data)
+          })
+        }
 
         // set status
         if (result.status) reply.code(result.status)
