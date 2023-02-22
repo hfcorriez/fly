@@ -193,10 +193,11 @@ module.exports = {
 
         // sse support
         if (result.event && typeof result.event === 'function') {
-          return result.event((data) => {
+          await result.event((data) => {
             fly.debug('send sse data', data)
             return reply.sse(data)
           })
+          return reply
         }
 
         // set status
