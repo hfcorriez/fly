@@ -3,7 +3,11 @@ const fs = require('fs')
 const mime = require('mime')
 const { URL } = require('url')
 const path = require('path')
-const fastify = require('fastify')()
+
+const Loader = require('../../lib/loader')
+const initialConfig = Loader.getConfig(process.cwd(), process.env.NODE_ENV || 'development').initialConfig || {}
+const fastify = require('fastify')(initialConfig)
+
 const fastifyStatic = require('@fastify/static')
 const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
 
