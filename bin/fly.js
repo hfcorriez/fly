@@ -10,6 +10,34 @@ console.log(colors.green(`▶ FLY ${pkg.version}`))
 console.log(colors.gray('> ' + Object.keys(process.versions).map(key => `${key}(${process.versions[key]})`).join(' | ')))
 
 /**
+ * Process args and debug
+ */
+let argv = process.argv.slice(2)
+let verbose = false
+
+if (!process.stdin.isTTY) {
+  colors.disable()
+}
+
+if (!process.env.DEBUG) {
+  verbose = process.argv.includes('-v')
+  if (verbose) {
+    argv = process.argv.slice(2).filter(i => i !== '-v')
+  }
+  let verbosePattern = null
+
+  if (verbose) {
+    verbosePattern = '*:*\\|'
+  } else if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
+    verbosePattern = '*:*\\|,-*▶*:debug*,-*▶*:info*,-*\\$*:debug*'
+  } else {
+    verbosePattern = '*:error*\\|,*:warn*\\|,*:info*\\|,-*▶*:*,-*\\$*:*'
+  }
+  console.log(colors.gray(`(verbose mode: ${verbosePattern})`))
+  debug.enable(verbosePattern)
+}
+
+/**
  * Run compile with another process to avoid fly runtime waste boostrap memory
  */
 if (process.argv.includes('compile')) {
@@ -23,34 +51,6 @@ if (process.argv.includes('compile')) {
   if (process.stdin.isTTY) {
   // Call compile force to avoid load functions in memory
     execSync(`DEBUG=no ${process.argv[0]} ${__filename} compile`)
-  }
-
-  /**
- * Process args and debug
- */
-  let argv = process.argv.slice(2)
-  let verbose = false
-
-  if (!process.stdin.isTTY) {
-    colors.disable()
-  }
-
-  if (!process.env.DEBUG) {
-    verbose = process.argv.includes('-v')
-    if (verbose) {
-      argv = process.argv.slice(2).filter(i => i !== '-v')
-    }
-    let verbosePattern = null
-
-    if (verbose) {
-      verbosePattern = '*:*\\|'
-    } else if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
-      verbosePattern = '*:*\\|,-*▶*:debug*,-*▶*:info*,-*\\$*:debug*'
-    } else {
-      verbosePattern = '*:error*\\|,*:warn*\\|,*:info*\\|,-*▶*:*,-*\\$*:*'
-    }
-    console.log(colors.gray(`(verbose mode: ${verbosePattern})`))
-    debug.enable(verbosePattern)
   }
 
   const clusterCount = process.env.CLUSTER === 'max' ? require('os').cpus().length : parseInt(process.env.CLUSTER || '1', 10)
