@@ -15,6 +15,9 @@ console.log(colors.gray('> ' + Object.keys(process.versions).map(key => `${key}(
 let argv = process.argv.slice(2)
 let verbose = false
 
+process.env.FLY_RUNTIME = process.argv0
+console.log(colors.gray(`> runtime: ${process.env.FLY_RUNTIME}`))
+
 if (!process.stdin.isTTY) {
   colors.disable()
 }
@@ -33,7 +36,7 @@ if (!process.env.DEBUG) {
   } else {
     verbosePattern = '*:error*\\|,*:warn*\\|,*:info*\\|,-*▶*:*,-*\\$*:*'
   }
-  console.log(colors.gray(`(verbose mode: ${verbosePattern})`))
+  console.log(colors.gray(`> verbose mode: ${verbosePattern}`))
   debug.enable(verbosePattern)
 }
 
