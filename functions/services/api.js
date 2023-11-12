@@ -10,7 +10,7 @@ module.exports = {
     endpoint: '',
     keys: [],
     functions: [],
-    useContext: false
+    useContext: false,
   },
 
   main (event, { fly }) {
@@ -23,7 +23,7 @@ module.exports = {
       if (keys && keys.length && !keys.includes(key)) {
         reply.send({
           code: 100,
-          message: 'auth failed'
+          message: 'auth failed',
         })
         return
       }
@@ -37,7 +37,7 @@ module.exports = {
       if (!name || name.startsWith('$') || (functions && functions.length && !functions.includes(name))) {
         reply.send({
           code: 101,
-          message: 'function not exists'
+          message: 'function not exists',
         })
         return
       }
@@ -57,7 +57,7 @@ module.exports = {
           fly.info('call function error:', err.message, err)
           reply.send({
             code: err.code || 1,
-            message: err.message || 'call function failed'
+            message: err.message || 'call function failed',
           })
         }
       }
@@ -69,7 +69,7 @@ module.exports = {
 
         const table = new Table({
           head: ['Fn', 'Path'],
-          chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
+          chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
         })
         fly.find().filter(fn => !fn.name.startsWith('$')).forEach(fn => table.push([fn.name, fn.path]))
         console.log(table.toString())
@@ -85,7 +85,7 @@ module.exports = {
       '{',
       Object.keys(body).join(', '),
       '}',
-      ctx.id || '-'
+      ctx.id || '-',
     ].join(' '))
-  }
+  },
 }

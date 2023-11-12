@@ -5,7 +5,7 @@ const dayjs = require('dayjs')
 module.exports = {
   configService: {
     name: 'Cron deamon',
-    singleton: true
+    singleton: true,
   },
 
   main (event, ctx) {
@@ -13,7 +13,7 @@ module.exports = {
 
     const table = new Table({
       head: ['Time', 'Path'],
-      chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
+      chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
     })
 
     ctx.fly.find('cron').forEach(fn => table.push([fn.events.cron.time || fn.events.cron.schedule, fn.path]))
@@ -53,12 +53,12 @@ module.exports = {
       if (!schedule) return false
       const interval = cronParser.parseExpression(schedule, {
         currentDate: new Date(event.time * 1000),
-        tz: process.env.TZ
+        tz: process.env.TZ,
       })
       ctx.fly.debug(fn.name, 'matched')
       const currentTime = dayjs(interval.next()._date.ts).startOf('minute').unix() - 60
       return event.time === currentTime
     })
-  }
+  },
 
 }

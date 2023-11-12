@@ -7,7 +7,7 @@ module.exports = {
     const functions = fly.find()
     const table = new Table({
       head: ['Name', 'Props', 'Events', 'File'],
-      chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
+      chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
     })
 
     functions.forEach(fn => {
@@ -25,14 +25,14 @@ module.exports = {
   configCommand: {
     _: 'list [filter]',
     args: {
-      '--system': Boolean
+      '--system': Boolean,
     },
     alias: {
-      '--system': '-s'
+      '--system': '-s',
     },
     descriptions: {
       _: 'List functions',
-      '--system': 'Show system functions'
-    }
-  }
+      '--system': 'Show system functions',
+    },
+  },
 }

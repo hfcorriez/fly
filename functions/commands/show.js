@@ -13,7 +13,7 @@ module.exports = {
     _: 'show <fn>',
     descriptions: {
       _: 'Show full function info',
-      '<fn>': 'Function name'
-    }
-  }
+      '<fn>': 'Function name',
+    },
+  },
 }

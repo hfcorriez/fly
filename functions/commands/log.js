@@ -5,14 +5,14 @@ module.exports = {
     const { service } = event.params
     await new PM({
       name: fly.project.name,
-      path: process.argv[1]
+      path: process.argv[1],
     }).log(service)
   },
 
   configCommand: {
     _: `log [service]`,
     descriptions: {
-      _: `Show service log`
-    }
-  }
+      _: `Show service log`,
+    },
+  },
 }

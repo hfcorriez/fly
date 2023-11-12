@@ -16,7 +16,7 @@ module.exports = {
 
     const pm = new PM({
       name: fly.project.name,
-      path: process.argv[1]
+      path: process.argv[1],
     })
 
     ipc.serve(_ => {
@@ -58,14 +58,14 @@ module.exports = {
   configCommand: {
     _: `debug <service>`,
     args: {
-      '--filter': String
+      '--filter': String,
     },
     alias: {
-      '--filter': '-f'
+      '--filter': '-f',
     },
     descriptions: {
       _: 'Debug online server',
-      '<service>': 'Service type'
-    }
-  }
+      '<service>': 'Service type',
+    },
+  },
 }

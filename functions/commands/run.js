@@ -5,7 +5,7 @@ const utils = require('../../lib/utils')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT']
 const debugStore = {
   names: null,
-  log: null
+  log: null,
 }
 
 module.exports = {
@@ -45,7 +45,7 @@ module.exports = {
       project: fly.project.name,
       type: service,
       pid: process.pid,
-      env: fly.project.env
+      env: fly.project.env,
     }
 
     // broadcast startup events
@@ -102,7 +102,7 @@ module.exports = {
       ipc.of['fly-debugger'].on('connect', _ => ipc.of['fly-debugger'].emit('message', {
         type: 'service',
         service: this.service,
-        id: ipc.config.id
+        id: ipc.config.id,
       }))
       ipc.of['fly-debugger'].on('disconnect', _ => this.stopDebug(fly))
       ipc.of['fly-debugger'].on('error', _ => {
@@ -131,20 +131,20 @@ module.exports = {
     args: {
       '--instance': Number,
       '--bind': String,
-      '--port': Number
+      '--port': Number,
     },
     alias: {
       '--instance': '-i',
       '--bind': '-b',
-      '--port': '-p'
+      '--port': '-p',
     },
     descriptions: {
       _: `Run service in foregroud`,
       '--instance': 'The instance number',
       '--bind': 'Bind address',
-      '--port': 'Bind port'
-    }
-  }
+      '--port': 'Bind port',
+    },
+  },
 }
 
 function toNamespace (regexp) {

@@ -7,7 +7,7 @@ const fastify = require('fastify')()
 module.exports = {
   configService: {
     name: 'File server',
-    port: 5050
+    port: 5050,
   },
 
   main (event) {
@@ -228,7 +228,7 @@ module.exports = {
                 const icon = (typeof file === 'string' || file.isDirectory()) ? '🗂' : `<div class="file-icon file-icon-xs" data-type="${type}"></div>`
                 return `<li>${icon} <a href="${path.join(urlObj.pathname, name)}">${name}</a></li>`
               }).join(''),
-              `</ul></body></html>`
+              `</ul></body></html>`,
             ].join(''))
           } else {
             res.type(mime.getType(filePath)).send(fs.createReadStream(filePath))
@@ -236,7 +236,7 @@ module.exports = {
         } else {
           res.status(404).send('404 Not found')
         }
-      }
+      },
     })
 
     return new Promise((resolve, reject) => {
@@ -245,5 +245,5 @@ module.exports = {
         resolve({ address, $command: { wait: true } })
       })
     })
-  }
+  },
 }

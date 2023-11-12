@@ -5,7 +5,7 @@ module.exports = {
     const { service } = event.params
     const pm = new PM({
       name: fly.project.name,
-      path: process.argv[1]
+      path: process.argv[1],
     })
     await pm.restart(service)
     await pm.status(service)
@@ -14,7 +14,7 @@ module.exports = {
   configCommand: {
     _: `restart [service]`,
     descriptions: {
-      _: `Restart service`
-    }
-  }
+      _: `Restart service`,
+    },
+  },
 }

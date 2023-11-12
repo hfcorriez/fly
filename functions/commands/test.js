@@ -107,13 +107,13 @@ module.exports = {
   configCommand: {
     _: 'test [fn]',
     args: {
-      '--timeout': Number
+      '--timeout': Number,
     },
     descriptions: {
       '_': 'Test functions',
-      '<fn>': 'Function name'
-    }
-  }
+      '<fn>': 'Function name',
+    },
+  },
 }
 
 function _exitIfTimeout (timeout, beforeExit) {

@@ -9,7 +9,7 @@ module.exports = {
     // Hot reload
     const pm = new PM({
       name: fly.project.name,
-      path: process.argv[1]
+      path: process.argv[1],
     })
 
     if (service !== 'all') {
@@ -37,10 +37,10 @@ module.exports = {
         maxMemory,
         env: {
           BIND: bind,
-          PORT: port
+          PORT: port,
         },
         instance: config.singleton ? 1 : config.instance,
-        cluster: config.cluster
+        cluster: config.cluster,
       })
     }
   },
@@ -58,12 +58,12 @@ module.exports = {
       '--bind': String,
       '--port': Number,
       '--cron-restart': String,
-      '--max-memory': String
+      '--max-memory': String,
     },
     alias: {
       '--instance': '-i',
       '--bind': '-b',
-      '--port': '-p'
+      '--port': '-p',
     },
     descriptions: {
       _: `Start service as daemon`,
@@ -71,7 +71,7 @@ module.exports = {
       '--bind': 'Bind address',
       '--port': 'Bind port',
       '--cron-restart': 'Schedule time to restart with cron pattern',
-      '--max-memory': 'Max memory(MB) to reload'
-    }
-  }
+      '--max-memory': 'Max memory(MB) to reload',
+    },
+  },
 }

@@ -5,7 +5,7 @@ module.exports = {
     const { service } = event.params
     const pm = new PM({
       name: fly.project.name,
-      path: process.argv[1]
+      path: process.argv[1],
     })
     await pm.stop(service)
     await pm.status()
@@ -14,7 +14,7 @@ module.exports = {
   configCommand: {
     _: `stop [service]`,
     descriptions: {
-      _: `Stop service`
-    }
-  }
+      _: `Stop service`,
+    },
+  },
 }

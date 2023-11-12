@@ -6,16 +6,16 @@ module.exports = {
   config: {
     args: {
       '--context': String,
-      '--help': Boolean
+      '--help': Boolean,
     },
     alias: {
       '--context': '-c',
-      '--help': '-h'
+      '--help': '-h',
     },
     descriptions: {
       '--context': 'Set context',
-      '--help': 'Show help'
-    }
+      '--help': 'Show help',
+    },
   },
 
   async main (event, { fly, eventId }) {
@@ -24,7 +24,7 @@ module.exports = {
     const evt = {
       argv,
       args: {},
-      params: {}
+      params: {},
     }
 
     fly.debug('parse command:', argv.join(' '))
@@ -64,7 +64,7 @@ module.exports = {
       const [result, err] = await fly.call(fn, evt, {
         eventId: evt.args['event-id'] || eventId,
         eventType: 'command',
-        ...context
+        ...context,
       }, true)
       if (err) throw err
 
@@ -103,12 +103,12 @@ module.exports = {
       Object.assign(
         {}, this.config.args, target.args || {},
         this.config.alias ? invert(this.config.alias) : {},
-        target.alias ? invert(target.alias) : {}
+        target.alias ? invert(target.alias) : {},
       ),
       {
         permissive: true,
-        argv: source.argv
-      }
+        argv: source.argv,
+      },
     )
 
     const paramsNames = target._.match(/(<\S+>)|(\[\S+\])/g)
@@ -148,5 +148,5 @@ module.exports = {
     }
 
     return false
-  }
+  },
 }

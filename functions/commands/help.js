@@ -43,11 +43,11 @@ module.exports = {
         utils.padding(
           [
             key + (alias[key] ? ',' + alias[key] : ''),
-            ['Boolean'].includes(args[key].name) ? '' : args[key].name.toLowerCase()
+            ['Boolean'].includes(args[key].name) ? '' : args[key].name.toLowerCase(),
           ].join(' '),
-          28
+          28,
         ),
-        descriptions[key] || ''
+        descriptions[key] || '',
       )
     })
   },
@@ -56,7 +56,7 @@ module.exports = {
     fallback: true,
     _: 'help',
     descriptions: {
-      _: 'Show help'
-    }
-  }
+      _: 'Show help',
+    },
+  },
 }
