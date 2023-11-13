@@ -195,10 +195,11 @@ module.exports = {
         if (result.event && typeof result.event === 'function') {
           await result.event((data) => {
             fly.debug('send sse data', data)
+            reply.sse(data)
+
             if (data && data.event && ['close', 'end'].includes(data.event)) {
               reply.sseContext.source.end()
             }
-            return reply.sse(data)
           })
           return reply
         }
