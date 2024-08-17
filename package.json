@@ -1,6 +1,6 @@
 {
   "name": "fly",
-  "version": "4.6.5",
+  "version": "4.5.7",
   "description": "For back-end development",
   "main": "lib/index.js",
   "bin": {
@@ -35,11 +35,12 @@
     "form-data": "^4.0.0",
     "fs-extra": "^9.0.0",
     "js-yaml": "^4.1.0",
+    "md5-file": "^5.0.0",
     "micromatch": "^4.0.4",
     "mime": "^3.0.0",
     "node-ipc": "^9.1.1",
     "path-to-regexp": "^6.2.0",
-    "pm2": "^5.3.0",
+    "pm2": "^5.2.0",
     "through2": "^4.0.2",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",
