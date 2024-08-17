@@ -193,13 +193,27 @@ module.exports = {
 
         // sse support
         if (result.event && typeof result.event === 'function') {
-          await result.event((data) => {
-            fly.debug('send sse data', data)
-            if (data && data.event && ['close', 'end'].includes(data.event)) {
+          try {
+            const timeout = setTimeout(() => {
+              fly.warn('SSE timeout reached')
               reply.sseContext.source.end()
-            }
-            return reply.sse(data)
-          })
+            }, 30000) // 设置30秒超时
+
+            await result.event((data) => {
+              fly.debug('send sse data', data)
+              reply.sse(data)
+
+              if (data && data.event && ['close', 'end'].includes(data.event)) {
+                clearTimeout(timeout)
+                reply.sseContext.source.end()
+              }
+            })
+
+            clearTimeout(timeout)
+          } catch (error) {
+            fly.error('SSE error:', error)
+            reply.sseContext.source.end()
+          }
           return reply
         }
 
