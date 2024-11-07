@@ -13,14 +13,14 @@ fastify.register(require('@fastify/formbody'))
 module.exports = {
   errors: {
     '404': fs.readFileSync(path.join(__dirname, './pages/404.html')),
-    '500': fs.readFileSync(path.join(__dirname, './pages/500.html'))
+    '500': fs.readFileSync(path.join(__dirname, './pages/500.html')),
   },
 
   configService: {
     singleton: false,
     name: 'Http Server',
     port: parseInt(process.env.PORT || 3000, 10),
-    address: '127.0.0.1'
+    address: process.env.BIND || '127.0.0.1',
   },
 
   main (event, ctx) {
@@ -35,7 +35,7 @@ module.exports = {
           root: path.join(fly.project.dir, staticConfig.root),
           prefix: staticConfig.prefix + (staticConfig.prefix.endsWith('/') ? '' : '/'),
           decorateReply: i === 0,
-          maxAge: staticConfig.maxAge || staticMaxAge || 0
+          maxAge: staticConfig.maxAge || staticMaxAge || 0,
         })
       }
     }
@@ -62,7 +62,7 @@ module.exports = {
           body: request.body || {},
           query: { ...request.query },
           search: urlObj.search,
-          cookies: {}
+          cookies: {},
         }
 
         // fly.info(evt.method, evt.url)
@@ -88,7 +88,7 @@ module.exports = {
               'access-control-allow-origin': request.headers['origin'] || '*',
               'access-control-allow-methods': request.headers['access-control-request-method'] || 'GET,HEAD,PUT,PATCH,POST,DELETE',
               'access-control-allow-credentials': 'true',
-              'access-control-allow-headers': request.headers['access-control-request-headers'] || '*'
+              'access-control-allow-headers': request.headers['access-control-request-headers'] || '*',
             }
 
             if (target && typeof target.cors === 'string') {
@@ -167,7 +167,7 @@ module.exports = {
             } else {
               reply.code(404).type('application/json').send({
                 code: 404,
-                message: `path not found`
+                message: `path not found`,
               })
             }
             this.log({ evt, reply, name }, fly)
@@ -180,7 +180,7 @@ module.exports = {
           reply.code(500).type('application/json').send({
             code: err.code || 500,
             message: err.message,
-            stack: fly.project.env === 'development' ? err.stack.split('\n') : undefined
+            stack: fly.project.env === 'development' ? err.stack.split('\n') : undefined,
           })
           fly.error(`call <${name}> failed`, err)
           this.log({ evt, reply, name }, fly)
@@ -252,7 +252,7 @@ module.exports = {
         }
         this.log({ evt, reply, name }, fly)
         return reply
-      }
+      },
     })
 
     if (!port) throw new Error('port must be specified')
@@ -263,7 +263,7 @@ module.exports = {
 
         const table = new Table({
           head: ['Method', 'Path', 'Fn'],
-          chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' }
+          chars: { 'mid': '', 'left-mid': '', 'mid-mid': '', 'right-mid': '' },
         })
 
         this.buildRoutes(fly.find('http')).forEach(route =>
@@ -286,7 +286,7 @@ module.exports = {
     let res = reply.raw
     fly.info([
       event.method.toLowerCase() + '/' + res.statusCode,
-      event.host + event.path
+      event.host + event.path,
     ].join(' '))
   },
 
@@ -300,5 +300,5 @@ module.exports = {
       let e = fn.events.http
       return { method: e.method || 'get', path: e.path, domain: e.domain, fn: fn.name }
     })
-  }
+  },
 }
