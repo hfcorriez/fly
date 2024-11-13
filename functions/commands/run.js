@@ -21,7 +21,13 @@ module.exports = {
     }
 
     try {
-      if (service === 'all') {
+      if (service.includes(',')) {
+        const services = service.split(',')
+        for (const s of services) {
+          const { config, fn } = await getServiceConfig({ service: s, args })
+          await this.run(fn, config, ctx)
+        }
+      } else if (service === 'all') {
         for (const s in ctx.fly.service) {
           const { config, fn } = await getServiceConfig({ service: s, args })
           await this.run(fn, config, ctx)
