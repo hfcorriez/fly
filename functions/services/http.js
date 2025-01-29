@@ -3,12 +3,6 @@ const fs = require('fs')
 const mime = require('mime')
 const { URL } = require('url')
 const path = require('path')
-const fastify = require('fastify')({ bodyLimit: 100 * 1024 * 1024 })
-const fastifyStatic = require('@fastify/static')
-const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
-
-fastify.register(require('@fastify/multipart'))
-fastify.register(require('@fastify/formbody'))
 
 module.exports = {
   errors: {
@@ -26,6 +20,13 @@ module.exports = {
   main (event, ctx) {
     const { fly, matchHttp } = ctx
     const { bind, port, cors, staticMaxAge, static: staticConfigs, context } = event
+
+    const fastify = require('fastify')({ bodyLimit: 100 * 1024 * 1024 })
+    const fastifyStatic = require('@fastify/static')
+    const { handleUpload, cleanUploadFiles, contentTypeRegex } = require('../../lib/multipartParser')
+
+    fastify.register(require('@fastify/multipart'))
+    fastify.register(require('@fastify/formbody'))
 
     if (staticConfigs && staticConfigs.length) {
       for (let i in staticConfigs) {

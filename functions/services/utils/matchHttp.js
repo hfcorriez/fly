@@ -91,5 +91,5 @@ module.exports = {
     }
 
     return { match, length: matchLength, mode, path: !!pathMatched, params, target, source }
-  }
+  },
 }

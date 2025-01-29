@@ -1,6 +1,5 @@
 const colors = require('colors/safe')
 const debug = require('debug')
-const ipc = require('node-ipc')
 const utils = require('../../lib/utils')
 const EXIT_SIGNALS = ['exit', 'SIGHUP', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT']
 const debugStore = {
@@ -102,6 +101,7 @@ module.exports = {
     debugStore.log = debug.log
     debugStore.names = debug.names
 
+    const ipc = require('node-ipc')
     ipc.config.id = `${this.service.project}-${process.pid}`
     ipc.config.logger = _ => {}
     ipc.config.stopRetrying = true

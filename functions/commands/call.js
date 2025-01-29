@@ -79,13 +79,13 @@ module.exports = {
       '--data': String,
       '--timeout': Number,
       '--error': Boolean,
-      '--interval': Number
+      '--interval': Number,
     },
     alias: {
       '--data': '-d',
       '--timeout': '-t',
       '--error': '-e',
-      '--interval': '-i'
+      '--interval': '-i',
     },
     descriptions: {
       '_': 'Call function',
@@ -94,9 +94,9 @@ module.exports = {
       '--data': 'Event data, support JSON and URL-QUERY-ENCODED',
       '--timeout': 'Execution timeout',
       '--error': 'Show full error',
-      '--interval': 'Run function every seconds'
-    }
-  }
+      '--interval': 'Run function every seconds',
+    },
+  },
 }
 
 function _exitIfTimeout (timeout, beforeExit) {

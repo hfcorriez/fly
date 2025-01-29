@@ -14,16 +14,16 @@ module.exports = {
       '-c',
       JSON.stringify({ eventId, eventType, ...context }),
       ...timeout ? ['--timeout', timeout] : [],
-      process.argv.find(arg => ['-v', '-vv'].includes(arg))
+      process.argv.find(arg => ['-v', '-vv'].includes(arg)),
     ]
     fly.debug('fork command', command.join(' '))
     const subprocess = childProcess.spawn(process.argv[0], command, {
       env: process.env,
       cwd: process.cwd(),
       detached: true,
-      stdio: stdio ? 'inherit' : 'ignore'
+      stdio: stdio ? 'inherit' : 'ignore',
     })
     subprocess.unref()
     return true
-  }
+  },
 }

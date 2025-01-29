@@ -21,7 +21,7 @@ module.exports = {
       name: dst.split('/').pop(),
       version: '1.0.0',
       description: '',
-      dependencies: {}
+      dependencies: {},
     }, null, 2))
 
     console.log(`▶ FLY project ready: ${dst}`)
@@ -31,16 +31,16 @@ module.exports = {
     _: 'new [dir]',
     args: {
       '--force': Boolean,
-      '--source': String
+      '--source': String,
     },
     alias: {
-      '--source': '-s'
+      '--source': '-s',
     },
     descriptions: {
       _: 'Create new fly project',
       '[dir]': 'Dir name',
       '--force': 'Force create when dir exists',
-      '--source': 'Select source to create. support: http (default), project'
-    }
-  }
+      '--source': 'Select source to create. support: http (default), project',
+    },
+  },
 }

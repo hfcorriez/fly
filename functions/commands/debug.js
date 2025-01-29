@@ -1,11 +1,6 @@
 const colors = require('colors/safe')
-const ipc = require('node-ipc')
 const PM = require('../../lib/pm')
 const utils = require('../../lib/utils')
-
-ipc.config.id = 'fly-debugger'
-ipc.config.retry = 1500
-ipc.config.logger = _ => {}
 
 module.exports = {
   async main (event, { fly }) {
@@ -16,8 +11,13 @@ module.exports = {
 
     const pm = new PM({
       name: fly.project.name,
-      path: process.argv[1]
+      path: process.argv[1],
     })
+
+    const ipc = require('node-ipc')
+    ipc.config.id = 'fly-debugger'
+    ipc.config.retry = 1500
+    ipc.config.logger = _ => {}
 
     ipc.serve(_ => {
       ipc.server.on('message', (data, socket) => {
@@ -58,14 +58,14 @@ module.exports = {
   configCommand: {
     _: `debug <service>`,
     args: {
-      '--filter': String
+      '--filter': String,
     },
     alias: {
-      '--filter': '-f'
+      '--filter': '-f',
     },
     descriptions: {
       _: 'Debug online server',
-      '<service>': 'Service type'
-    }
-  }
+      '<service>': 'Service type',
+    },
+  },
 }

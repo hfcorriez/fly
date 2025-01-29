@@ -1,6 +1,6 @@
 const DEFAULT_SERVICES = {
   http: { fn: '$http' },
-  cron: { fn: '$cron', singleton: true }
+  cron: { fn: '$cron', singleton: true },
 }
 
 module.exports = ({ args, service }, { fly }) => {
